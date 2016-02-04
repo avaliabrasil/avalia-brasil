@@ -1,0 +1,24 @@
+Requisitos de Diversos Formulários:
+
+SERVPERF: Um item tem apenas uma resposta de avaliação.
+
+SERVQUAL: Um item tem resposta de avaliação e expectativa.
+
+IPPS: Propõe medir avaliação, expectativa e valor (importância).
+
+Para avaliar a importância, pode-se:
+
+ - Ordenar;
+ - Definir um grau de importância:
+  -- Com escala equilibrada;
+  -- Com escala desequilibrada.
+
+Linguagem deve reproduzir a expressão oral.
+
+
+Perguntas Iniciais Interessantes para a estratificação. Isto pode ser vinculado ao usuário:
+
+Idade, Sexo, Escolaridade, Serviços Usados, Frequência de Uso.
+
+Pré-Teste do Instrumento.
+

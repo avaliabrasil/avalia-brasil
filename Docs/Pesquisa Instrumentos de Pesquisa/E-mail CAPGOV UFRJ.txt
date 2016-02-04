@@ -1,0 +1,29 @@
+Link:
+
+http://capgov.cos.ufrj.br/capgov/contact
+
+E-mail:
+
+
+Olá, 
+
+Peço que encaminhe este e-mail aos responsáveis pelo eIPPS.
+
+Somos os autores do Projeto Avalia Brasil, o qual foi premiado pelo concurso do Ministério das Comunicações - InovApps 2015. Assim como o eIPPS, nosso aplicativo serve para medição da qualidade do serviço público. Um vídeo com o protótipo de nosso aplicativo pode ser visto nesta página:
+
+http://avaliabrasil.instapage.com/
+
+Neste ponto do projeto, estamos estudando os possíveis instrumentos a utilizar, o que inclui o IPPS, e também o SERVQUAL ou SERVPERF. Considerando que o IPPS já é uma adaptação para a realidade brasileira, estamos estudando a possibilidade de desenvolver nosso aplicativo considerando permitir a comparação dos resultados do Avalia Brasil com o IPPS, usando as mesmas perguntas e mesmo cálculo do IPPS.
+
+Para tomar esta decisão, gostaríamos de obter um print do formulário que é disponibilizado ao usuário para que ele responda as perguntas, o que não achamos nos manuais do IPPS encontrados na internet.
+Também não foi possível localizar alguma amostra do software utilizado para que o mesmo sirva como referência. Como o eIPPS é um sistema Web, seria possível que cedessem uma senha de acesso para estudarmos o sistema?
+
+Caso não seja possível atender a estas solicitações, é possível que encaminhem esta solicitação aos responsáveis pelo IPPS? Não conseguimos contato pelo e-mail alo.segep@planejamento.gov.br.
+
+Obrigado.
+
+Agradeço a atenção
+Pedro N. Lima
+pedrolima.n@gmail.com
+Projeto Avalia Brasil
+GMAP | UNISINOS - Grupo de Pesquisa em Modelagem para Aprendizagem

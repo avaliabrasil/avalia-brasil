@@ -34,7 +34,7 @@ SELECT
     u.*
 FROM
 	-- Aqui vão as tabelas de origem dos dados 
-    usuario AS u
+    instituicao AS u
     
 ORDER BY 
 	u.nome ASC -- Critério de Ordenamento
