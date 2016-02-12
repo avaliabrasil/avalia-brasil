@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Avalia Brasil</string>
+    <string name="login_with_facebook">Login With Facebook</string>
+    <string name="anonymous_login"><u>Anonymous Login</u></string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
