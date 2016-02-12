@@ -43,6 +43,33 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.avaliabrasil.avaliabrasil.PlaceActivity" />
         </activity>
+        <activity
+            android:name=".PlaceStatisticsActivity"
+            android:label="@string/title_activity_place_statistics"
+            android:parentActivityName=".PlaceActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.avaliabrasil.avaliabrasil.PlaceActivity" />
+        </activity>
+        <activity
+            android:name=".RankingActivity"
+            android:label="@string/title_activity_ranking"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.avaliabrasil.avaliabrasil.MainActivity" />
+        </activity>
+        <activity
+            android:name=".NewPlaceActivity"
+            android:label="@string/title_activity_new_place"
+            android:parentActivityName=".PlaceActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.avaliabrasil.avaliabrasil.PlaceActivity" />
+        </activity>
     </application>
 
 </manifest>

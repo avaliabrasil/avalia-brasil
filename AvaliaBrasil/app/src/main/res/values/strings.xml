@@ -96,4 +96,7 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="title_activity_evaluation">EvaluationActivity</string>
+    <string name="title_activity_place_statistics">PlaceStatisticsActivity</string>
+    <string name="title_activity_ranking">RankingActivity</string>
+    <string name="title_activity_new_place">NewPlaceActivity</string>
 </resources>
