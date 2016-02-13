@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.avaliabrasil.avaliabrasil.TempSearchActivity">
+    <item
+        android:id="@+id/places_list"
+        android:orderInCategory="100"
+        android:title="@string/places_list"
+        app:showAsAction="never" />
+    
+</menu>

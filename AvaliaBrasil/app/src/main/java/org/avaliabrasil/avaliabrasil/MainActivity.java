@@ -1,5 +1,6 @@
 package org.avaliabrasil.avaliabrasil;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+            startTempSearchActivity();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -106,5 +108,11 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void startTempSearchActivity(){
+        Intent intent_temp_searchactivity = new Intent(this,TempSearchActivity.class);
+        //intent_temp_searchactivity.putExtra(USRID, userId);
+        startActivity(intent_temp_searchactivity);
     }
 }

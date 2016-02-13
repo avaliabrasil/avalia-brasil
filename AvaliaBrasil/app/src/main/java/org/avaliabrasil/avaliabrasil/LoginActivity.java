@@ -25,5 +25,4 @@ public class LoginActivity extends  AppCompatActivity {
         startActivity(intent_main_activity);
     }
 
-
 }
