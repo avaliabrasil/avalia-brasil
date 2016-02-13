@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.6.24)
 # Database: avaliabrasil_dev
-# Generation Time: 2016-02-13 4:36:25 PM +0000
+# Generation Time: 2016-02-13 6:01:34 PM +0000
 # ************************************************************
 
 
@@ -34,7 +34,7 @@ CREATE TABLE `answer_likert` (
   UNIQUE KEY `idresposta_UNIQUE` (`id`),
   KEY `idavaliacao_idx` (`id_evaluation`),
   KEY `idpergunta_idx` (`id_question`),
-  CONSTRAINT `idavaliacao-resp` FOREIGN KEY (`id_evaluation`) REFERENCES `evaluation` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `idavaliacao-resp` FOREIGN KEY (`id_evaluation`) REFERENCES `survey` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `idpergunta-resp` FOREIGN KEY (`id_question`) REFERENCES `question` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -54,7 +54,7 @@ CREATE TABLE `answer_number` (
   UNIQUE KEY `idresposta_UNIQUE` (`id`),
   KEY `idavaliacao_idx` (`id_evaluation`),
   KEY `idpergunta_idx` (`id_question`),
-  CONSTRAINT `idavaliacao-resp1` FOREIGN KEY (`id_evaluation`) REFERENCES `evaluation` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `idavaliacao-resp1` FOREIGN KEY (`id_evaluation`) REFERENCES `survey` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `idpergunta-resp1` FOREIGN KEY (`id_question`) REFERENCES `question` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -74,7 +74,7 @@ CREATE TABLE `answer_text` (
   UNIQUE KEY `idresposta_UNIQUE` (`id`),
   KEY `idavaliacao_idx` (`id_evaluation`),
   KEY `idpergunta_idx` (`id_question`),
-  CONSTRAINT `idavaliacao-resp0` FOREIGN KEY (`id_evaluation`) REFERENCES `evaluation` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `idavaliacao-resp0` FOREIGN KEY (`id_evaluation`) REFERENCES `survey` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `idpergunta-resp0` FOREIGN KEY (`id_question`) REFERENCES `question` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -931,12 +931,12 @@ VALUES
 UNLOCK TABLES;
 
 
-# Dump of table evaluation
+# Dump of table survey
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `evaluation`;
+DROP TABLE IF EXISTS `survey`;
 
-CREATE TABLE `evaluation` (
+CREATE TABLE `survey` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `id_user` int(11) NOT NULL,
@@ -985,6 +985,7 @@ CREATE TABLE `item` (
   `description` varchar(100) NOT NULL,
   `status` int(11) NOT NULL DEFAULT '0',
   `order` int(11) NOT NULL,
+  `is_negative` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `iditem_UNIQUE` (`id`),
   KEY `iddimensao-master_idx` (`id_masterdimension`),
@@ -1023,6 +1024,7 @@ CREATE TABLE `masterinstrument` (
   `name` varchar(45) NOT NULL,
   `datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `status` tinyint(1) NOT NULL DEFAULT '0',
+  `likertpoints` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `idinstrumento-master_UNIQUE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
