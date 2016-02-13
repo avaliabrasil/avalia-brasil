@@ -70,10 +70,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.avaliabrasil.avaliabrasil.PlaceActivity" />
         </activity>
-        <activity
-            android:name=".TempSearchActivity"
-            android:label="@string/title_activity_temp_search"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -163,8 +163,8 @@ public class MainActivity extends AppCompatActivity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_temp_search, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.map_tab_textview);
+            View rootView = inflater.inflate(R.layout.fragment_places_list, container, false);
+            TextView textView = (TextView) rootView.findViewById(R.id.places_list_text_view);
             textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
         }
