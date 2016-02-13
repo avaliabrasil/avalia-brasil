@@ -12,4 +12,11 @@
         android:text="Inserir ListView dos lugares aqui"
         android:id="@+id/places_list_text_view"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/temp_open_place_activity"
+        android:onClick="startPlaceActivity"
+        android:text="Start Place Activity!"/>
+
 </LinearLayout>

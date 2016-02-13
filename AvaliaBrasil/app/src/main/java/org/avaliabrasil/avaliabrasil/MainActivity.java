@@ -1,5 +1,6 @@
 package org.avaliabrasil.avaliabrasil;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -18,13 +19,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     //TODO: Implementar variável userId ou outra corretamente!
     private static String USRID = "userId";
+    public static String userId = "12351 {Pedro Nascimento de Lima!}";
 
     // Variáveis para o ViewPager e Tabs!
     private SectionsPagerAdapter mSectionsPagerAdapter;
@@ -66,9 +67,11 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(mViewPager);
 
 
-        //TODO: Tirar isto e colocar código real depois! Adicionei apenas para mostrar o exemplo!
-        String userId = getIntent().getExtras().getString(USRID);
-        Toast.makeText(this, userId, Toast.LENGTH_SHORT).show();
+        //TODO: Tirar isto e colocar código real depois!
+        // Quando adicionei uma activity chamada dentro do fragment, io app parava quando clicava-se no botão voltar do Place Activity!
+        // Comentei estas linhas e funcinou, mas não entendi porque.
+        //String userId = getIntent().getExtras().getString(USRID);
+        // Toast.makeText(this, userId, Toast.LENGTH_SHORT).show();
 
     }
 
@@ -205,6 +208,8 @@ public class MainActivity extends AppCompatActivity
 
             return rootView;
         }
+
+
     }
 
     /**
@@ -251,6 +256,16 @@ public class MainActivity extends AppCompatActivity
             }
             return null;
         }
+    }
+
+    // Button to open a activity
+
+    // TODO: Tempo problema aqui...
+    public void startPlaceActivity (View view) {
+        Intent intent_place_activity = new Intent(this, PlaceActivity.class);
+        intent_place_activity.putExtra(USRID, userId);
+        startActivity(intent_place_activity);
+
     }
 
 

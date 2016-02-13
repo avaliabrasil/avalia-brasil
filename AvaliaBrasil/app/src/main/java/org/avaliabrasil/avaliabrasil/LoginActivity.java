@@ -8,8 +8,8 @@ import android.view.View;
 public class LoginActivity extends  AppCompatActivity {
 
     //TODO: Implementar variável userId ou outra corretamente!
-    private static String USRID = "userId";
-    private String userId = "12351 {Pedro Nascimento de Lima!}";
+    public static String USRID = "userId";
+    public static String userId = "12351 {Pedro Nascimento de Lima!}";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
