@@ -27,6 +27,7 @@
              style="@style/MainActionButton"
              android:id="@+id/evaluate_place"
              android:layout_weight="1"
+             android:onClick="startEvaluationActivity"
              />
 
          <Button
@@ -35,6 +36,7 @@
              android:text="@string/see_statistics"
              android:id="@+id/see_statistics"
              android:layout_weight="1"
+             android:onClick="startStatisticsActivity"
 
               />
      </LinearLayout>
@@ -92,6 +94,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="List View com informações aqui!"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New Place!"
+            android:id="@+id/new_place_button"
+            android:onClick="startNewPlaceActivity"
+            />
 
     </LinearLayout>
 
