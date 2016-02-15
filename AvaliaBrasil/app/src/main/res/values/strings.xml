@@ -114,5 +114,6 @@
     <string name="temp_place_phone">(51) 3212-2015</string>
     <string name="temp_place_mail">email@site.com.br</string>
     <string name="temp_place_open_hours">Aberto hoje 08:00 - 21:00</string>
+    <string name="submit_answer">Submit Answer</string>
 
 </resources>

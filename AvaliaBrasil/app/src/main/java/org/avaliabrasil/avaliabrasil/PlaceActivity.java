@@ -26,7 +26,7 @@ public class PlaceActivity extends AppCompatActivity {
 
     }
 
-    private String getPlaceName(){
+    public String getPlaceName(){
         // Temporário, enquanto não implementamos um template provider
         return getString(R.string.temp_place_name);
     }
