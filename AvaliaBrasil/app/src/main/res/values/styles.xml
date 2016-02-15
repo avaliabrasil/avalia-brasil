@@ -18,8 +18,24 @@
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="TextButton">
-        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
-        <item name="android:textStyle">italic</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="MainActionButton">
+
+    </style>
+
+    <style name="SecondaryActionButton">
+
+    </style>
+
+    <style name="DefaultText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/blackText</item>
+    </style>
+
+    <style name="DefaultText.GreyText" >
+        <item name="android:textColor">@color/greyText</item>
     </style>
 
 </resources>

@@ -105,4 +105,14 @@
     <string name="title_activity_new_place">NewPlaceActivity</string>
     <string name="title_activity_temp_search">TempSearchActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
+    <string name="evaluate_place">Evaluate Place</string>
+    <string name="see_statistics">See Statistics</string>
+    <string name="quality_index_label">Quality Index</string>
+    <string name="state_ranking_position_label">State Ranking Position</string>
+    <string name="temp_place_name">UPA Zona Norte</string>
+    <string name="temp_place_adress">Praça Ernest Herman</string>
+    <string name="temp_place_phone">(51) 3212-2015</string>
+    <string name="temp_place_mail">email@site.com.br</string>
+    <string name="temp_place_open_hours">Aberto hoje 08:00 - 21:00</string>
+
 </resources>

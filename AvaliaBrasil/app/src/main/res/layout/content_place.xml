@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,10 +9,91 @@
     tools:context="org.avaliabrasil.avaliabrasil.PlaceActivity"
     tools:showIn="@layout/activity_place">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:text="@string/large_text" />
+        android:orientation="vertical"
+        android:layout_margin="8dp">
+
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="horizontal">
+
+         <Button
+             android:layout_width="0dp"
+             android:layout_height="wrap_content"
+             android:text="@string/evaluate_place"
+             style="@style/MainActionButton"
+             android:id="@+id/evaluate_place"
+             android:layout_weight="1"
+             />
+
+         <Button
+             android:layout_width="0dp"
+             android:layout_height="wrap_content"
+             android:text="@string/see_statistics"
+             android:id="@+id/see_statistics"
+             android:layout_weight="1"
+
+              />
+     </LinearLayout>
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+           <TextView
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:text="@string/quality_index_label"
+               style="@style/DefaultText"
+               android:layout_weight="6"/>
+           <View
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_weight=".5"/>
+
+           <Button
+               android:layout_width="1dp"
+               android:layout_height="wrap_content"
+               android:text="3,8"
+               android:layout_weight="1"
+               style="@style/TextButton"
+               />
+       </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/state_ranking_position_label"
+                style="@style/DefaultText"
+                android:layout_weight="6"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                android:src="@drawable/ic_menu_camera"
+                android:layout_gravity="center"/>
+
+            <Button
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"
+                android:text="12°"
+                android:layout_weight="1"
+                style="@style/TextButton"
+                />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="List View com informações aqui!"/>
+
+    </LinearLayout>
+
 
 </android.support.v4.widget.NestedScrollView>
