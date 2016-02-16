@@ -1,0 +1,8 @@
+Chave Google Maps:
+
+AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0
+
+Open Weather Map API Key:
+
+e819c55704a3d427bf71f411be80a35a
+
