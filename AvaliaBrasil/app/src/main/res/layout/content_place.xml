@@ -61,6 +61,7 @@
                android:text="3,8"
                android:layout_weight="1"
                style="@style/TextButton"
+               android:id="@+id/quality_index"
                />
        </LinearLayout>
 
@@ -72,7 +73,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/state_ranking_position_label"
                 style="@style/DefaultText"
-                android:layout_weight="6"/>
+                android:layout_weight="6"
+                />
 
             <ImageView
                 android:layout_width="0dp"
@@ -84,9 +86,10 @@
             <Button
                 android:layout_width="1dp"
                 android:layout_height="wrap_content"
-                android:text="12°"
+                android:text="20°"
                 android:layout_weight="1"
                 style="@style/TextButton"
+                android:id="@+id/ranking_position"
                 />
         </LinearLayout>
 
@@ -102,6 +105,10 @@
             android:id="@+id/new_place_button"
             android:onClick="startNewPlaceActivity"
             />
+        <ListView
+            android:id="@+id/listview_place_info"
+            android:layout_width="match_parent"
+            android:layout_height="300dp" />
 
     </LinearLayout>
 
