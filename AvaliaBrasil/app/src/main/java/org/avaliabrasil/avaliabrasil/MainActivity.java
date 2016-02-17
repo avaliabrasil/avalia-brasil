@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity
         // Toast.makeText(this, userId, Toast.LENGTH_SHORT).show();
         //TODO: Tirar isto e colocar código real depois!
         // Defining the UserId:
-        // Teste!
         userId = getIntent().getExtras().getInt(USRID);
         Toast.makeText(this,"Id de Usuário : " + userId,Toast.LENGTH_SHORT).show();
 
