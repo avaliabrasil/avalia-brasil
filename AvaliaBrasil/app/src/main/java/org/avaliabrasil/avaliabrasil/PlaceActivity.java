@@ -34,18 +34,7 @@ public class PlaceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_place);
-
-        // Definindo o título da Toolbar
-        CollapsingToolbarLayout toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        toolbarLayout.setTitle(getPlaceName());
-
-        // Ativando a opção voltar da Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        // Preparing variables:
 
         String PlaceDataStringArray [] = {
                 "Praça Ernest Ludwig Herman",
@@ -64,7 +53,22 @@ public class PlaceActivity extends AppCompatActivity {
                         R.id.list_item_forecast_textview, // Id of Textview
                         placeInfoList // ListName
                 );
-        // Referenciando o ListView e ligando o Adapter a ele
+
+
+
+        setContentView(R.layout.activity_place);
+
+        // Definindo o título da Toolbar
+        CollapsingToolbarLayout toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        toolbarLayout.setTitle(getPlaceName());
+
+        // Ativando a opção voltar da Toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    // Referenciando o ListView e ligando o Adapter a ele
         ListView placeInfoListView = (ListView) findViewById(R.id.listview_place_info);
         placeInfoListView.setAdapter(placeListAdapter);
 

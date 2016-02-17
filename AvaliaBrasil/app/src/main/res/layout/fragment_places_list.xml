@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/temp_open_place_activity"
         android:onClick="startPlaceActivity"
-        android:text="Start Place Activity!"/>
+        android:text="Start Place Activity!"
+        style="@style/MainActionButton"/>
 
 </LinearLayout>

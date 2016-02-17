@@ -11,6 +11,11 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="org.avaliabrasil.avaliabrasil.LoginActivity">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"/>
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="30dp"
@@ -19,28 +24,37 @@
         android:layout_weight="3" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:text="@string/login_with_facebook"
         android:id="@+id/login_button"
         android:layout_below="@+id/avaliaBrasilLogo"
-        android:layout_gravity="center"
-        android:layout_marginTop="32dp"
         android:onClick="startMainActivity"
-        android:layout_weight="2"
+        android:layout_weight="1"
+        style="@style/FacebookButton"
         />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"/>
+
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center"
-        android:layout_weight="1"
+        android:layout_weight="0.5"
         android:text="@string/anonymous_login"
         android:id="@+id/anonymous_button"
         android:layout_below="@+id/login_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:onClick="startMainActivity"/>
+        android:onClick="startMainActivity"
+        style="@style/FacebookSecondaryButton"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"/>
 
     <!--Button
         android:layout_width="wrap_content"

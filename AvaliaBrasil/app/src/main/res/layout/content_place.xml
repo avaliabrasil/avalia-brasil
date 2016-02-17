@@ -37,6 +37,7 @@
              android:id="@+id/see_statistics"
              android:layout_weight="1"
              android:onClick="startStatisticsActivity"
+             style="@style/SecondaryActionButton"
 
               />
      </LinearLayout>
@@ -104,6 +105,7 @@
             android:text="New Place!"
             android:id="@+id/new_place_button"
             android:onClick="startNewPlaceActivity"
+            style="@style/SecondaryActionButton"
             />
         <ListView
             android:id="@+id/listview_place_info"
