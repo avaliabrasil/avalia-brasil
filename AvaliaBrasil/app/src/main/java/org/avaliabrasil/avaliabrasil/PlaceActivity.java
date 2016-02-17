@@ -9,6 +9,8 @@ import android.view.View;
 
 public class PlaceActivity extends AppCompatActivity {
 
+    public static String GOOGLEPLACEID = "googlePlacesId";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +30,9 @@ public class PlaceActivity extends AppCompatActivity {
 
     public String getPlaceName(){
         // Temporário, enquanto não implementamos um template provider
-        return getString(R.string.temp_place_name);
+
+        // Temporário, apenas para testar intent:
+        return getIntent().getExtras().getString(GOOGLEPLACEID);
     }
 
     public void startEvaluationActivity (View view) {

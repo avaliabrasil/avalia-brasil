@@ -19,19 +19,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     //TODO: Implementar variável userId ou outra corretamente!
     private static String USRID = "userId";
-    public static String userId = "12351 {Pedro Nascimento de Lima!}";
+    private int userId = 0;
+    private static String GOOGLEPLACESID = "googlePlacesId";
+
+
+
+    // Definindo o Google Place Id que será passado para o Place Activity
+    public String googlePlacesId = "asdasgd8218hdddDdsSAD";
 
     // Variáveis para o ViewPager e Tabs!
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
 
     @Override
@@ -66,12 +70,14 @@ public class MainActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.search_tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-
-        //TODO: Tirar isto e colocar código real depois!
         // Quando adicionei uma activity chamada dentro do fragment, io app parava quando clicava-se no botão voltar do Place Activity!
         // Comentei estas linhas e funcinou, mas não entendi porque.
         //String userId = getIntent().getExtras().getString(USRID);
         // Toast.makeText(this, userId, Toast.LENGTH_SHORT).show();
+        //TODO: Tirar isto e colocar código real depois!
+        // Defining the UserId:
+        userId = getIntent().getExtras().getInt(USRID);
+        Toast.makeText(this,"Id de Usuário : " + userId,Toast.LENGTH_SHORT).show();
 
     }
 
@@ -111,7 +117,6 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
     // TODO: Tirar este menu!
     @Override
@@ -262,10 +267,10 @@ public class MainActivity extends AppCompatActivity
 
     // TODO: Tempo problema aqui...
     public void startPlaceActivity (View view) {
-        Intent intent_place_activity = new Intent(this, PlaceActivity.class);
+        Intent intent_place_activity = new Intent(MainActivity.this, PlaceActivity.class);
         intent_place_activity.putExtra(USRID, userId);
+        intent_place_activity.putExtra(GOOGLEPLACESID, googlePlacesId);
         startActivity(intent_place_activity);
-
     }
 
 
