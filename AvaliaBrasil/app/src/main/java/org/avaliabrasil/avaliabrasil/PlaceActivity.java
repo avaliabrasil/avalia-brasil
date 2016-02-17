@@ -118,10 +118,18 @@ public class PlaceActivity extends AppCompatActivity {
 
             try {
                 // Mudar isso depois!
-                final String API_BASE_URL = "http://avaliabrasil.siteseguro.ws/fakeapi/Place/ID/file.json";
-                final String OBJECT_PARAM = "";
+                final String API_BASE_URL = "http://avaliabrasil.siteseguro.ws/fakeapi";
+                final String API_OBJECT = "Place";
+                final String API_FILENAME = "file.json";
+                String baseUrl = API_BASE_URL;
+                baseUrl += "/"
+                        + API_OBJECT
+                        + "/"
+                        + googlePlaceId
+                        + "/"
+                        + API_FILENAME;
                 // TODO: Aqui a URI deveria ser construída de modo correto
-                Uri builtUri = Uri.parse(API_BASE_URL).buildUpon().build();
+                Uri builtUri = Uri.parse(baseUrl).buildUpon().build();
                         //appendQueryParameter(OBJECT_PARAM, variableName) . Inserir antes do Build
                     URL url = new URL(builtUri.toString());
                 Log.v(LOG_TAG, "Built URL "+ builtUri.toString());
@@ -228,7 +236,5 @@ public class PlaceActivity extends AppCompatActivity {
             }
 
         }
-
-
         }
-    }
+}

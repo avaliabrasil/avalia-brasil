@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity
     private static String GOOGLEPLACESID = "googlePlacesId";
 
 
-
     // Definindo o Google Place Id que será passado para o Place Activity
     public String googlePlacesId = "asdasgd8218hdddDdsSAD";
 
