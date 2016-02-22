@@ -6,9 +6,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import org.avaliabrasil.avaliabrasil.data.AvBContract.PlaceEntry;
 
 
-/**
- * Created by Pedro on 22/02/2016.
- */
 public class AvBDBHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
@@ -19,7 +16,7 @@ public class AvBDBHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void OnCreate (SQLiteDatabase sqLiteDatabase) {
+    public void onCreate (SQLiteDatabase sqLiteDatabase) {
 
         // Criando Tabela Places
 
@@ -31,13 +28,13 @@ public class AvBDBHelper extends SQLiteOpenHelper {
                         PlaceEntry.COLUMN_PLACE_ID + " TEXT UNIQUE NOT NULL, " +
                         PlaceEntry.COLUMN_NAME + " TEXT NOT NULL, " +
                         PlaceEntry.COLUMN_DATE_TIME + " TEXT NOT NULL, " +
-                        PlaceEntry.COLUMN_STATUS + " INTEGER NOT NULL " +
+                        PlaceEntry.COLUMN_STATUS + " INTEGER NOT NULL, " +
 
                         // Local-Only Columns
                         PlaceEntry.COLUMN_ADRESS + " TEXT NOT NULL, " +
                         PlaceEntry.COLUMN_PHONE + " TEXT NOT NULL, " +
                         PlaceEntry.COLUMN_EMAIL + " TEXT NOT NULL, " +
-                        PlaceEntry.COLUMN_OPEN_HOURS + " TEXT NOT NULL, " +
+                        PlaceEntry.COLUMN_OPEN_HOURS + " TEXT NOT NULL " +
                         " );";
 
 
@@ -46,7 +43,7 @@ public class AvBDBHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void OnUpgrade (SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+    public void onUpgrade (SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
 
         // TODO: Rever política atual de atualização da base de dados! Deste modo ele irá excluir tudo!
         sqLiteDatabase.execSQL("DROP TABPE IF EXISTS" + PlaceEntry.TABLE_NAME);
