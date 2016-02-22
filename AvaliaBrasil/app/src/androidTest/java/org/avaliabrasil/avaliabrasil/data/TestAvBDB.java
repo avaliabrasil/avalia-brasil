@@ -1,5 +1,6 @@
 package org.avaliabrasil.avaliabrasil.data;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
@@ -83,6 +84,49 @@ public class TestAvBDB extends AndroidTestCase {
         assertTrue("Error: The database doesn't contain all of the required location entry columns",
                 placeColumnHashSet.isEmpty());
         db.close();
+    }
+
+    public long testPlaceTable(){
+        AvBDBHelper avBDBHelper = new AvBDBHelper(mContext);
+
+        // Pegando a base
+        SQLiteDatabase db = avBDBHelper.getWritableDatabase();
+
+        // Criando conteúdo fake
+        ContentValues testValues = TestUtilities.createPlaceValues();
+
+        long locationRowId;
+        // Insere os Dados
+        locationRowId = db.insert(AvBContract.PlaceEntry.TABLE_NAME, null, testValues);
+
+        // Verifica se retornou algum id!
+        assertTrue(locationRowId != -1);
+
+        // Fazendo uma query na Base!
+        Cursor cursor = db.query(AvBContract.PlaceEntry.TABLE_NAME,// Tabela
+                null, // Al columns!
+                null, // Columns for the "where" clause
+                null, // Values for the "where" clause
+                null, // columns to group by
+                null, // columns to filter by row groups
+                null // sort order
+                );
+
+        // Verificar se chegou algum resultado!
+        assertTrue( "Error: No Records returned from location query", cursor.moveToFirst() );
+
+        // Verificar os dados do Cursor com os dados Originais
+
+        TestUtilities.validateCurrentRecord("Error: Location Query Validation Failed", cursor, testValues);
+
+        // Verificar se existe só este item na base de dados
+        assertFalse("Error: More than one record returned from location query", cursor.moveToNext());
+
+        // Fechando cursor e base de dados
+
+        cursor.close();
+        db.close();
+        return locationRowId;
     }
 
 }
