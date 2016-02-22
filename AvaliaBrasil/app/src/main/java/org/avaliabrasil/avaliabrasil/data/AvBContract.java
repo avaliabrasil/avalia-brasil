@@ -1,6 +1,7 @@
 package org.avaliabrasil.avaliabrasil.data;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
@@ -63,6 +64,19 @@ public class AvBContract {
         public static final String COLUMN_EMAIL = "email";
         public static final String COLUMN_OPEN_HOURS = "openhours";
 
+
+        // Construindo a URI do Place
+        public static Uri buildPlaceUri (long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        // Função para pegar a o Id do Place da Uri:
+        public static long getPlaceIdFromUri (Uri uri) {
+            return Long.parseLong(uri.getPathSegments().get(1));
+        }
+
     }
+
+
 
 }
