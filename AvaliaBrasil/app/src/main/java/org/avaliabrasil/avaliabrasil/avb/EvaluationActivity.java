@@ -1,10 +1,12 @@
-package org.avaliabrasil.avaliabrasil;
+package org.avaliabrasil.avaliabrasil.avb;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Button;
 import android.widget.TextView;
+
+import org.avaliabrasil.avaliabrasil.R;
 
 public class EvaluationActivity extends AppCompatActivity {
 

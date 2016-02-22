@@ -1,4 +1,4 @@
-package org.avaliabrasil.avaliabrasil;
+package org.avaliabrasil.avaliabrasil.avb;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.avaliabrasil.avaliabrasil.R;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.search_tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
 
         // Quando adicionei uma activity chamada dentro do fragment, io app parava quando clicava-se no botão voltar do Place Activity!
         // Comentei estas linhas e funcinou, mas não entendi porque.

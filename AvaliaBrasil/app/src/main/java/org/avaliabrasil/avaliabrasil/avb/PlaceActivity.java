@@ -1,4 +1,4 @@
-package org.avaliabrasil.avaliabrasil;
+package org.avaliabrasil.avaliabrasil.avb;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import org.avaliabrasil.avaliabrasil.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 

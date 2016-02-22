@@ -1,9 +1,11 @@
-package org.avaliabrasil.avaliabrasil;
+package org.avaliabrasil.avaliabrasil.avb;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import org.avaliabrasil.avaliabrasil.R;
 
 public class LoginActivity extends  AppCompatActivity {
 
