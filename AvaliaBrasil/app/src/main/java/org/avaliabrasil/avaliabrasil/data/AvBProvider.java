@@ -28,8 +28,14 @@ public class AvBProvider extends ContentProvider {
 
     static {
         sPlaceInfoQueryBuilder = new SQLiteQueryBuilder();
-    }
 
+        // É necessário definir as tabelas de uma query builder antes de chamar a query.
+        // Se for realizar um join, abaixo deve ser formada a string correspondente!
+        // FROM ... place
+        sPlaceInfoQueryBuilder.setTables(
+                AvBContract.PlaceEntry.TABLE_NAME
+        );
+    }
 
     //place.place_id = ?
     private static final String sPlaceIdSelection =
@@ -37,7 +43,7 @@ public class AvBProvider extends ContentProvider {
                     "." + AvBContract.PlaceEntry.COLUMN_PLACE_ID + " = ? ";
 
 
-    private Cursor getPlaceByGooglePlacesId(Uri uri, String[] projection) {
+    private Cursor getPlaceByGooglePlacesId(Uri uri, String[] projection, String sortOrder) {
         String placeId = AvBContract.PlaceEntry.getPlaceIdFromUri(uri);
         String[] selectionArgs = new String[]{placeId} ;
         String selection = sPlaceIdSelection;
@@ -48,20 +54,21 @@ public class AvBProvider extends ContentProvider {
                 selectionArgs,
                 null,
                 null,
-                null
+                sortOrder
         );
     }
 
 
-    private Cursor getAllPlaces(Uri uri) {
+    private Cursor getAllPlaces(Uri uri, String[] projection, String sortOrder) {
 
-        return sPlaceInfoQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+        return sPlaceInfoQueryBuilder.query(
+                mOpenHelper.getReadableDatabase(),
+                projection,
                 null,
                 null,
                 null,
                 null,
-                null,
-                null
+                sortOrder
         );
     }
 
@@ -133,12 +140,12 @@ public class AvBProvider extends ContentProvider {
             // Lista de Lugares
             case PLACES_LIST:
             {
-                retCursor = getAllPlaces(uri);
+                retCursor = getAllPlaces(uri, projection, sortOrder);
                 break;
             }
             // Informações de um Lugar
             case PLACE: {
-                retCursor = getPlaceByGooglePlacesId(uri, projection);
+                retCursor = getPlaceByGooglePlacesId(uri, projection, sortOrder);
                 break;
             }
 
