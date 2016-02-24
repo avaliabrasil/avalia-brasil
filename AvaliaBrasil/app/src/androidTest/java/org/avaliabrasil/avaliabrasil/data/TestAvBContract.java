@@ -1,5 +1,6 @@
 package org.avaliabrasil.avaliabrasil.data;
 
+import android.net.Uri;
 import android.test.AndroidTestCase;
 
 /**
@@ -7,9 +8,19 @@ import android.test.AndroidTestCase;
  */
 public class TestAvBContract extends AndroidTestCase {
 
-    // intentionally includes a slash to make sure Uri is getting quoted correctly
-    private static final String TEST_GOOGLE_ID = "/North Pole";
-    private static final long TEST_WEATHER_DATE = 1419033600L;  // December 20th, 2014
+    private static final String GOOGLE_PLACE = "asdasgd8218hdddDdsSAD";
 
 //     public void testBuild
+
+    public void testBuildGooglePlaceUri(){
+        Uri placeUri = AvBContract.PlaceEntry.buildGooglePlaceUri(GOOGLE_PLACE);
+
+        assertNotNull("Null Uri returned", placeUri);
+
+        assertEquals("Google Place Id wasn't appended to the end of Uri", GOOGLE_PLACE,
+                placeUri.getLastPathSegment());
+
+        assertEquals("Google Place Uri doesn't match our expected result", placeUri.toString(),
+                "content://org.avaliabrasil.avaliabrasil/place/asdasgd8218hdddDdsSAD");
+    }
 }

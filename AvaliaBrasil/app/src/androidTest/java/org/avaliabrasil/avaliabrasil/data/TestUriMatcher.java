@@ -11,11 +11,9 @@ public class TestUriMatcher extends AndroidTestCase {
 
     private static final String GOOGLE_PLACE = "asdasgd8218hdddDdsSAD";
 
-
     // Como Formas as Uris!
     private static final Uri TEST_PLACE_DIR = AvBContract.PlaceEntry.CONTENT_URI;
     private static final Uri TEST_PLACE_ITEM = AvBContract.PlaceEntry.buildGooglePlaceUri(GOOGLE_PLACE);
-
 
     public void testUriMatcher() {
         UriMatcher testMatcher = AvBProvider.buildUriMatcher();
@@ -27,6 +25,4 @@ public class TestUriMatcher extends AndroidTestCase {
                 testMatcher.match(TEST_PLACE_ITEM),AvBProvider.PLACE);
 
     }
-
-    
 }
