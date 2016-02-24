@@ -1,7 +1,6 @@
 package org.avaliabrasil.avaliabrasil.data;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.text.format.Time;
@@ -66,13 +65,17 @@ public class AvBContract {
 
 
         // Construindo a URI do Place
-        public static Uri buildPlaceUri (long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
+        public static Uri buildGooglePlaceUri (String googlePlaceId) {
+            // Alternativa 1: Adicionando como um parâmetro da query:
+            // return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_PLACE_ID, googlePlaceId).build();
+
+            // Alternativa 2: Adicionando como um caminho mesmo:
+            return CONTENT_URI.buildUpon().appendPath(googlePlaceId).build();
         }
 
         // Função para pegar a o Id do Place da Uri:
-        public static long getPlaceIdFromUri (Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(1));
+        public static String getPlaceIdFromUri (Uri uri) {
+            return uri.getPathSegments().get(1);
         }
 
     }
