@@ -26,6 +26,10 @@ public class AvBProvider extends ContentProvider {
 
     private static final SQLiteQueryBuilder sPlaceInfoQueryBuilder;
 
+    static {
+        sPlaceInfoQueryBuilder = new SQLiteQueryBuilder();
+    }
+
 
     //place.place_id = ?
     private static final String sPlaceIdSelection =
@@ -72,7 +76,7 @@ public class AvBProvider extends ContentProvider {
         // 1) The code passed into the constructor represents the code to return for the root
         // URI.  It's common to use NO_MATCH as the code for this case. Add the constructor below.
 
-        private static final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = AvBContract.CONTENT_AUTHORITY;
 
         // 2) Use the addURI function to match each of the types.  Use the constants from
@@ -129,7 +133,7 @@ public class AvBProvider extends ContentProvider {
             // Lista de Lugares
             case PLACES_LIST:
             {
-                retCursor = getAllPlaces(uri, projection);
+                retCursor = getAllPlaces(uri);
                 break;
             }
             // Informações de um Lugar
@@ -194,12 +198,10 @@ public class AvBProvider extends ContentProvider {
             default:
                 throw new UnsupportedOperationException("Unknown Uri on Delete Content Provider Method " + uri);
         }
-
         if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
         return rowsDeleted;
-
     }
 
     /* Acho que não vou precisar desse método por enquanto.

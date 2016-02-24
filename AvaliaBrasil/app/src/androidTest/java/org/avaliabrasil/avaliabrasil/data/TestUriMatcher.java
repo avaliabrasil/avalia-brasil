@@ -7,19 +7,11 @@ import android.test.AndroidTestCase;
  * Created by Pedro on 23/02/2016.
  */
 public class TestUriMatcher extends AndroidTestCase {
-    private static final String LOCATION_QUERY = "London, UK";
-    private static final long TEST_DATE = 1419033600L;  // December 20th, 2014
-    private static final long TEST_LOCATION_ID = 10L;
 
-    // content://com.example.android.sunshine.app/weather"
-
-    // content://org.avaliabrasil.avaliabrasil/place
+    private static final String GOOGLE_PLACE = "asdasgd8218hdddDdsSAD";
 
     private static final Uri TEST_PLACE_DIR = AvBContract.PlaceEntry.CONTENT_URI;
-
-    // content://org.avaliabrasil.avaliabrasil/place/id
-
-    private static final Uri TEST_PLACE_DIR = AvBContract.PlaceEntry.CONTENT_ITEM_TYPE;
+    private static final Uri TEST_PLACE_ITEM = AvBContract.PlaceEntry.buildGooglePlaceUri(GOOGLE_PLACE);
 
     /*
         Students: This function tests that your UriMatcher returns the correct integer value

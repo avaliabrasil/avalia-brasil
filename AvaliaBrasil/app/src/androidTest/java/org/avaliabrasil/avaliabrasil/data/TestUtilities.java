@@ -14,7 +14,7 @@ public class TestUtilities extends AndroidTestCase {
 
     private static String GOOGLEPLACESID = "asdasgd8218hdddDdsSAD";
 
-    public ContentValues createPlaceValues () {
+    static ContentValues createPlaceValues () {
         ContentValues testValues = new ContentValues();
         testValues.put(AvBContract.PlaceEntry.COLUMN_PLACE_ID, GOOGLEPLACESID);
         testValues.put(AvBContract.PlaceEntry.COLUMN_ADRESS, "Rua João Neves");
