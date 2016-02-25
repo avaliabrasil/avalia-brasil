@@ -166,7 +166,7 @@ public class AvBProvider extends ContentProvider {
         Uri returnUri;
 
         switch (match) {
-            case PLACE: {
+            case PLACES_LIST: {
                 long _id = db.insert(AvBContract.PlaceEntry.TABLE_NAME, null, values);
                 if ( _id > 0 ) {
                     String place_id = values.getAsString(AvBContract.PlaceEntry.COLUMN_PLACE_ID);
@@ -228,7 +228,7 @@ public class AvBProvider extends ContentProvider {
         int rowsUpdated;
 
         switch (match) {
-            case PLACE:
+            case PLACES_LIST:
                 rowsUpdated = db.update(AvBContract.PlaceEntry.TABLE_NAME, values,selection,
                         selectionArgs);
                 break;
@@ -277,5 +277,4 @@ public class AvBProvider extends ContentProvider {
         mOpenHelper.close();
         super.shutdown();
     }
-
 }
