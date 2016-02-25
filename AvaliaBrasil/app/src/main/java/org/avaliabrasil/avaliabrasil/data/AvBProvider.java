@@ -196,7 +196,7 @@ public class AvBProvider extends ContentProvider {
         if (selection == null) selection = "1";
 
         switch (match){
-            case PLACE:
+            case PLACES_LIST:
                 rowsDeleted = db.delete(
                         AvBContract.PlaceEntry.TABLE_NAME,
                         selection,
@@ -246,7 +246,7 @@ public class AvBProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case PLACE:
+            case PLACES_LIST:
                 db.beginTransaction();
                 int returnCount = 0;
                 try {

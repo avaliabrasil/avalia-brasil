@@ -160,7 +160,7 @@ public class TestProvider extends AndroidTestCase {
         This test uses the provider to insert and then update the data. Uncomment this test to
         see if your update location is functioning correctly.
      */
-    public void testUpdateLocation() {
+    public void testUpdatePlace() {
         // Create a new map of values, where column names are the keys
         ContentValues values = TestUtilities.createPlaceValues();
 
@@ -264,28 +264,22 @@ public class TestProvider extends AndroidTestCase {
     // Student: Uncomment this test after you have completed writing the delete functionality
     // in your provider.  It relies on insertions with testInsertReadProvider, so insert and
     // query functionality must also be complete before this test can be used.
-//    public void testDeleteRecords() {
-//        testInsertReadProvider();
-//
-//        // Register a content observer for our location delete.
-//        TestUtilities.TestContentObserver locationObserver = TestUtilities.getTestContentObserver();
-//        mContext.getContentResolver().registerContentObserver(LocationEntry.CONTENT_URI, true, locationObserver);
-//
-//        // Register a content observer for our weather delete.
-//        TestUtilities.TestContentObserver weatherObserver = TestUtilities.getTestContentObserver();
-//        mContext.getContentResolver().registerContentObserver(WeatherEntry.CONTENT_URI, true, weatherObserver);
-//
-//        deleteAllRecordsFromProvider();
-//
-//        // Students: If either of these fail, you most-likely are not calling the
-//        // getContext().getContentResolver().notifyChange(uri, null); in the ContentProvider
-//        // delete.  (only if the insertReadProvider is succeeding)
-//        locationObserver.waitForNotificationOrFail();
-//        weatherObserver.waitForNotificationOrFail();
-//
-//        mContext.getContentResolver().unregisterContentObserver(locationObserver);
-//        mContext.getContentResolver().unregisterContentObserver(weatherObserver);
-//    }
+    public void testDeleteRecords() {
+        testInsertReadProvider();
+
+        // Register a content observer for Place Delete
+        TestUtilities.TestContentObserver placeObserver = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(PlaceEntry.CONTENT_URI, true, placeObserver);
+
+        deleteAllRecordsFromProvider();
+
+        // Students: If either of these fail, you most-likely are not calling the
+        // getContext().getContentResolver().notifyChange(uri, null); in the ContentProvider
+        // delete.  (only if the insertReadProvider is succeeding)
+        placeObserver.waitForNotificationOrFail();
+
+        mContext.getContentResolver().unregisterContentObserver(placeObserver);
+    }
 
 
     static private final int BULK_INSERT_RECORDS_TO_INSERT = 10;
@@ -306,68 +300,45 @@ public class TestProvider extends AndroidTestCase {
     // in your provider.  Note that this test will work with the built-in (default) provider
     // implementation, which just inserts records one-at-a-time, so really do implement the
     // BulkInsert ContentProvider function.
-//    public void testBulkInsert() {
-//        // first, let's create a location value
-//        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
-//        Uri locationUri = mContext.getContentResolver().insert(LocationEntry.CONTENT_URI, testValues);
-//        long locationRowId = ContentUris.parseId(locationUri);
-//
-//        // Verify we got a row back.
-//        assertTrue(locationRowId != -1);
-//
-//        // Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made
-//        // the round trip.
-//
-//        // A cursor is your primary interface to the query results.
-//        Cursor cursor = mContext.getContentResolver().query(
-//                LocationEntry.CONTENT_URI,
-//                null, // leaving "columns" null just returns all the columns.
-//                null, // cols for "where" clause
-//                null, // values for "where" clause
-//                null  // sort order
-//        );
-//
-//        TestUtilities.validateCursor("testBulkInsert. Error validating LocationEntry.",
-//                cursor, testValues);
-//
-//        // Now we can bulkInsert some weather.  In fact, we only implement BulkInsert for weather
-//        // entries.  With ContentProviders, you really only have to implement the features you
-//        // use, after all.
-//        ContentValues[] bulkInsertContentValues = createBulkInsertWeatherValues(locationRowId);
-//
-//        // Register a content observer for our bulk insert.
-//        TestUtilities.TestContentObserver weatherObserver = TestUtilities.getTestContentObserver();
-//        mContext.getContentResolver().registerContentObserver(WeatherEntry.CONTENT_URI, true, weatherObserver);
-//
-//        int insertCount = mContext.getContentResolver().bulkInsert(WeatherEntry.CONTENT_URI, bulkInsertContentValues);
-//
-//        // Students:  If this fails, it means that you most-likely are not calling the
-//        // getContext().getContentResolver().notifyChange(uri, null); in your BulkInsert
-//        // ContentProvider method.
-//        weatherObserver.waitForNotificationOrFail();
-//        mContext.getContentResolver().unregisterContentObserver(weatherObserver);
-//
-//        assertEquals(insertCount, BULK_INSERT_RECORDS_TO_INSERT);
-//
-//        // A cursor is your primary interface to the query results.
-//        cursor = mContext.getContentResolver().query(
-//                WeatherEntry.CONTENT_URI,
-//                null, // leaving "columns" null just returns all the columns.
-//                null, // cols for "where" clause
-//                null, // values for "where" clause
-//                WeatherEntry.COLUMN_DATE + " ASC"  // sort order == by DATE ASCENDING
-//        );
-//
-//        // we should have as many records in the database as we've inserted
-//        assertEquals(cursor.getCount(), BULK_INSERT_RECORDS_TO_INSERT);
-//
-//        // and let's make sure they match the ones we created
-//        cursor.moveToFirst();
-//        for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, cursor.moveToNext() ) {
-//            TestUtilities.validateCurrentRecord("testBulkInsert.  Error validating WeatherEntry " + i,
-//                    cursor, bulkInsertContentValues[i]);
-//        }
-//        cursor.close();
-//    }
+    public void testBulkInsert() {
+        // Now we can bulkInsert some weather.  In fact, we only implement BulkInsert for weather
+        // entries.  With ContentProviders, you really only have to implement the features you
+        // use, after all.
+        ContentValues[] bulkInsertContentValues = createBulkInsertPlaceValues();
+
+        // Register a content observer for our bulk insert.
+        TestUtilities.TestContentObserver placeObserver = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(PlaceEntry.CONTENT_URI, true, placeObserver);
+
+        int insertCount = mContext.getContentResolver().bulkInsert(PlaceEntry.CONTENT_URI, bulkInsertContentValues);
+
+        // Students:  If this fails, it means that you most-likely are not calling the
+        // getContext().getContentResolver().notifyChange(uri, null); in your BulkInsert
+        // ContentProvider method.
+        placeObserver.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(placeObserver);
+
+        assertEquals(insertCount, BULK_INSERT_RECORDS_TO_INSERT);
+
+        // A cursor is your primary interface to the query results.
+        Cursor cursor = mContext.getContentResolver().query(
+                PlaceEntry.CONTENT_URI,
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null  // sort order
+        );
+
+        // we should have as many records in the database as we've inserted
+        assertEquals(cursor.getCount(), BULK_INSERT_RECORDS_TO_INSERT);
+
+        // and let's make sure they match the ones we created
+        cursor.moveToFirst();
+        for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, cursor.moveToNext() ) {
+            TestUtilities.validateCurrentRecord("testBulkInsert.  Error validating WeatherEntry " + i,
+                    cursor, bulkInsertContentValues[i]);
+        }
+        cursor.close();
+    }
 }
 
