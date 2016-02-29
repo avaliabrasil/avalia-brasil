@@ -13,15 +13,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
+import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesMapFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -80,6 +79,9 @@ public class MainActivity extends AppCompatActivity
         // Defining the UserId:
         userId = getIntent().getExtras().getInt(USRID);
         Toast.makeText(this,"Id de Usuário : " + userId,Toast.LENGTH_SHORT).show();
+
+        // TODO: Inicializar um SyncAdapter só quando o usuário fizer uma busca!
+        // AvbSyncAdapter.initializeSyncAdapter(this);
 
     }
 
@@ -143,83 +145,6 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-
-    // Métodos para a TabView!
-
-    // PlacesMapFragment: Map of nearby found places
-    public static class PlacesMapFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        //TODO: Colocar outros parâmetros se necessário
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlacesMapFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlacesMapFragment newInstance(int sectionNumber) {
-            PlacesMapFragment fragment = new PlacesMapFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_places_map, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.places_map_text_view);
-
-            // Não vou alterar o texto do Places Map!
-            // textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
-    }
-
-    //PlacesListFragment: List of nearby found places
-    public static class PlacesListFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlacesListFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlacesListFragment newInstance(int sectionNumber) {
-            PlacesListFragment fragment = new PlacesListFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_places_list, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.places_list_text_view);
-
-            // Não vou alterar o texto do Places List!
-            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-
-            return rootView;
-        }
-
-
-    }
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -266,8 +191,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    // Button to open a activity
-
     // TODO: Tempo problema aqui...
     public void startPlaceActivity (View view) {
         Intent intent_place_activity = new Intent(MainActivity.this, PlaceActivity.class);
@@ -275,6 +198,5 @@ public class MainActivity extends AppCompatActivity
         intent_place_activity.putExtra(GOOGLEPLACESID, googlePlacesId);
         startActivity(intent_place_activity);
     }
-
 
 }
