@@ -27,17 +27,13 @@ public class AvBDBHelper extends SQLiteOpenHelper {
                         PlaceEntry._ID + " INTEGER PRIMARY KEY," +
                         PlaceEntry.COLUMN_PLACE_ID + " TEXT UNIQUE NOT NULL, " +
                         PlaceEntry.COLUMN_NAME + " TEXT NOT NULL, " +
-                        PlaceEntry.COLUMN_DATE_TIME + " TEXT NOT NULL, " +
-                        PlaceEntry.COLUMN_STATUS + " INTEGER NOT NULL, " +
 
                         // Local-Only Columns
-                        PlaceEntry.COLUMN_ADRESS + " TEXT NOT NULL, " +
-                        PlaceEntry.COLUMN_PHONE + " TEXT NOT NULL, " +
-                        PlaceEntry.COLUMN_EMAIL + " TEXT NOT NULL, " +
-                        PlaceEntry.COLUMN_OPEN_HOURS + " TEXT NOT NULL " +
+                        PlaceEntry.COLUMN_ADRESS + " TEXT, " +
+                        PlaceEntry.COLUMN_PHONE + " TEXT, " +
+                        PlaceEntry.COLUMN_EMAIL + " TEXT, " +
+                        PlaceEntry.COLUMN_OPEN_HOURS + " TEXT" +
                         " );";
-
-
         // Rodando as Instruções SQL para criar tabelas
         sqLiteDatabase.execSQL(SQL_CREATE_PLACE_TABLE);
     }

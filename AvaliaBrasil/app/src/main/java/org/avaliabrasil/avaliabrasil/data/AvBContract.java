@@ -51,17 +51,42 @@ public class AvBContract {
         public static final String TABLE_NAME = "place";
 
         // Table Columns
-        // Colunas que estarão no Mysql
+        // Colunas que estarão no Mysql:
         public static final String COLUMN_PLACE_ID = "place_id";
         public static final String COLUMN_NAME = "name";
-        public static final String COLUMN_DATE_TIME = "datetime";
-        public static final String COLUMN_STATUS = "status";
 
-        // Colunas que não estarão no Mysql
+        // Colunas que não estarão no Mysql, e virão do Google:
         public static final String COLUMN_ADRESS = "adress";
         public static final String COLUMN_PHONE = "phone";
         public static final String COLUMN_EMAIL = "email";
         public static final String COLUMN_OPEN_HOURS = "openhours";
+
+
+//        // Colunas de cadastro necessárias para outras funções, e que incluem
+//        "city";
+//        "state";
+//        "category";
+//        "type";
+//
+//
+//        // Colunas com Dados Temporários:
+//        "national_rankingPosition";
+//        "regional_rankingPosition";
+//        "state_rankingPosition";
+//        "municipal_rankingPosition";
+//
+//
+//        "national_rankingStatus";
+//        "regional_rankingStatus";
+//        "state_rankingStatus";
+//        "municipal_rankingStatus";
+//
+//        "lastWeekSurveys";
+
+
+        // Tabela de Histórico de Índice de Qualidade, para mostrar
+
+        //
 
 
         // Construindo a URI do Place

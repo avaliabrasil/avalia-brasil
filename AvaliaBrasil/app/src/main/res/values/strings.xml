@@ -118,5 +118,12 @@
     <string name="local">Local</string>
     <string name="category">Category</string>
     <string name="place_type">Place Type</string>
+    <string name="search_places">Search</string>
+    <string name="search_hint">Search Places</string>
+
+    <!-- SyncAdapter related -->
+    <string name="api_url">http://api.avaliabrasil.org</string>
+    <string name="sync_account_type">avaliabrasil.org</string>
+    <string name="content_authority">org.avaliabrasil.avaliabrasil</string>
 
 </resources>
