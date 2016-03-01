@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
 
 /**
  * {@link PlacesListAdapter} exposes a list of Places
@@ -17,51 +18,33 @@ import org.avaliabrasil.avaliabrasil.R;
  */
 public class PlacesListAdapter extends CursorAdapter {
 
-
     /**
      * Cache of the children views for a forecast list item.
      */
     public static class ViewHolder {
         public final ImageView iconView;
-        public final TextView dateView;
-        public final TextView descriptionView;
-        public final TextView highTempView;
-        public final TextView lowTempView;
+        public final TextView nameView;
+        public final TextView addressView;
+        public final TextView distanceView;
 
         public ViewHolder(View view) {
-            iconView = (ImageView) view.findViewById(R.id.list_item_icon);
-            dateView = (TextView) view.findViewById(R.id.list_item_date_textview);
-            descriptionView = (TextView) view.findViewById(R.id.list_item_forecast_textview);
-            highTempView = (TextView) view.findViewById(R.id.list_item_high_textview);
-            lowTempView = (TextView) view.findViewById(R.id.list_item_low_textview);
+            iconView = (ImageView) view.findViewById(R.id.place_icon);
+            nameView = (TextView) view.findViewById(R.id.place_name_text_view);
+            addressView = (TextView) view.findViewById(R.id.place_address_text_view);
+            distanceView = (TextView) view.findViewById(R.id.place_distance_text_view);
         }
     }
 
-    public ForecastAdapter(Context context, Cursor c, int flags) {
+    public PlacesListAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        // Choose the layout type
-        int viewType = getItemViewType(cursor.getPosition());
-        int layoutId = -1;
-        switch (viewType) {
-            case VIEW_TYPE_TODAY: {
-                layoutId = R.layout.list_item_forecast_today;
-                break;
-            }
-            case VIEW_TYPE_FUTURE_DAY: {
-                layoutId = R.layout.list_item_forecast;
-                break;
-            }
-        }
 
-        View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
-
+        View view = LayoutInflater.from(context).inflate(R.layout.list_item_place_info, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         view.setTag(viewHolder);
-
         return view;
     }
 
@@ -70,58 +53,24 @@ public class PlacesListAdapter extends CursorAdapter {
 
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-        int viewType = getItemViewType(cursor.getPosition());
-        switch (viewType) {
-            case VIEW_TYPE_TODAY: {
-                // Get weather icon
-                viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
-                        cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
-                break;
-            }
-            case VIEW_TYPE_FUTURE_DAY: {
-                // Get weather icon
-                viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
-                        cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
-                break;
-            }
-        }
+        // Ler Place Name do Cursor
+        viewHolder.nameView.setText(cursor.getString(PlacesListFragment.COL_PLACE_NAME));
 
-        // Read date from cursor
-        long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
-        // Find TextView and set formatted date on it
-        viewHolder.dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
+        // Ler Place Address
+        viewHolder.addressView.setText(cursor.getString(PlacesListFragment.COL_PLACE_ADDRESS));
 
-        // Read weather forecast from cursor
-        String description = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
-        // Find TextView and set weather forecast on it
-        viewHolder.descriptionView.setText(description);
+        // Ler Place Distance
+        viewHolder.distanceView.setText(cursor.getString(PlacesListFragment.COL_PLACE_DISTANCE));
 
-        // For accessibility, add a content description to the icon field
-        viewHolder.iconView.setContentDescription(description);
-
-        // Read user preference for metric or imperial temperature units
-        boolean isMetric = Utility.isMetric(context);
-
-        // Read high temperature from cursor
-        double high = cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
-        viewHolder.highTempView.setText(Utility.formatTemperature(context, high, isMetric));
-
-        // Read low temperature from cursor
-        double low = cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
-        viewHolder.lowTempView.setText(Utility.formatTemperature(context, low, isMetric));
     }
 
-    public void setUseTodayLayout(boolean useTodayLayout) {
-        mUseTodayLayout = useTodayLayout;
-    }
+//    @Override
+//    public int getItemViewType(int position) {
+//        return (position == 0 && mUseTodayLayout) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
+//    }
 
-    @Override
-    public int getItemViewType(int position) {
-        return (position == 0 && mUseTodayLayout) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        return VIEW_TYPE_COUNT;
-    }
+//    @Override
+//    public int getViewTypeCount() {
+//        return VIEW_TYPE_COUNT;
+//    }
 }

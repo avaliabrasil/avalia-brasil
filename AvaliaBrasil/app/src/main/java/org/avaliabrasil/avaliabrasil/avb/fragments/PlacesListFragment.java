@@ -7,9 +7,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.location.places.Place;
+
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.data.AvBContract;
 
 /**
  * Created by Pedro on 29/02/2016.
@@ -20,6 +24,32 @@ public class PlacesListFragment extends Fragment implements LoaderManager<Cursor
      * fragment.
      */
     private static final String ARG_SECTION_NUMBER = "section_number";
+
+
+    private ListView mListView;
+    private int mPosition = ListView.INVALID_POSITION;
+
+    private  static final String SELECTED_place = "selected_place";
+
+    private static final int PLACE_LOADER = 0;
+
+    // Projeção com as colunas que eu quero:
+
+    private static final String PLACE_COLUMNS = {
+            AvBContract.PlaceEntry.TABLE_NAME + "." + AvBContract.PlaceEntry._ID,
+            AvBContract.PlaceEntry.COLUMN_PLACE_ID,
+            AvBContract.PlaceEntry.COLUMN_NAME,
+            AvBContract.PlaceEntry.COLUMN_ADRESS
+            // TODO: Criar a coluna de distância depois (ou ignorar a distância completamente!
+
+            //#parei aqui
+    };
+
+    public static final int COL_WEATHER_ID = 0;
+    public static final int COL_PLACE_NAME = 1;
+    public static final int COL_PLACE_ADDRESS = 2;
+    public static final int COL_PLACE_DISTANCE = 3;
+
 
     public PlacesListFragment() {
     }
