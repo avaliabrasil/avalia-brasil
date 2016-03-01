@@ -17,6 +17,7 @@ import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
  * from a {@link Cursor} to a {@link android.widget.ListView}.
  */
 public class PlacesListAdapter extends CursorAdapter {
+    public final String LOG_TAG = this.getClass().getSimpleName();
 
     /**
      * Cache of the children views for a forecast list item.

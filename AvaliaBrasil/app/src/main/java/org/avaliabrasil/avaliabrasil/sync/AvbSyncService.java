@@ -9,6 +9,8 @@ import android.util.Log;
  * Created by Pedro on 29/02/2016.
  */
 public class AvbSyncService extends Service {
+    public final String LOG_TAG = this.getClass().getSimpleName();
+
     private static final Object sSyncAdapterLock = new Object();
     private static AvbSyncAdapter sSunshineSyncAdapter = null;
 

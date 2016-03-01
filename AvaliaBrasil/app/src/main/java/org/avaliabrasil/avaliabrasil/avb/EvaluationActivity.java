@@ -9,6 +9,7 @@ import android.widget.TextView;
 import org.avaliabrasil.avaliabrasil.R;
 
 public class EvaluationActivity extends AppCompatActivity {
+    public final String LOG_TAG = this.getClass().getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

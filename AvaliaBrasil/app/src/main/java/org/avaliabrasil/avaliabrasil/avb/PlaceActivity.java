@@ -51,7 +51,7 @@ public class PlaceActivity extends AppCompatActivity {
                 new ArrayAdapter<String>(
                         this, // Context
                         R.layout.list_item_place_info, // LayoutId
-                        R.id.list_item_forecast_textview, // Id of Textview
+                        R.id.place_name_text_view, // Id of Textview
                         placeInfoList // ListName
                 );
 

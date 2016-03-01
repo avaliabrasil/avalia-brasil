@@ -9,6 +9,7 @@ import android.text.format.Time;
  * Created by Pedro on 22/02/2016.
  */
 public class AvBContract {
+    public final String LOG_TAG = this.getClass().getSimpleName();
 
 
     // Content Authority

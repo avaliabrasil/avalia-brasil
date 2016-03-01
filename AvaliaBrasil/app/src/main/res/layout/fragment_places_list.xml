@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".avb.MainActivity$PlaceholderFragment">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Inserir ListView dos lugares aqui"
-        android:id="@+id/places_list_text_view"/>
-
-    <Button
+    <ListView
+        android:id="@+id/listview_places"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/temp_open_place_activity"
-        android:onClick="startPlaceActivity"
-        android:text="Start Place Activity!"
-        style="@style/MainActionButton"/>
+        android:layout_height="match_parent"
+        android:divider="@color/greyText"
+        android:dividerHeight="1dp"/>
 
-</LinearLayout>
+</FrameLayout>

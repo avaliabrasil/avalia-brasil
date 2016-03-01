@@ -30,7 +30,7 @@ import java.util.Vector;
  * Created by Pedro on 29/02/2016.
  */
 public class AvbSyncAdapter extends AbstractThreadedSyncAdapter {
-    public final String LOG_TAG = AvbSyncAdapter.class.getSimpleName();
+    public final String LOG_TAG = this.getClass().getSimpleName();
 
     public AvbSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -324,8 +324,13 @@ public class AvbSyncAdapter extends AbstractThreadedSyncAdapter {
              * here.
              */
 
+            // Tirei daqui
+            // onAccountCreated(newAccount, context);
+
             onAccountCreated(newAccount, context);
+
         }
+
         return newAccount;
     }
 
@@ -346,7 +351,8 @@ public class AvbSyncAdapter extends AbstractThreadedSyncAdapter {
         /*
          * Finally, let's do a sync to get things started
          */
-        syncImmediately(context);
+        //Não vou chamar esta função agora!
+        // syncImmediately(context);
     }
 
     public static void initializeSyncAdapter(Context context) {

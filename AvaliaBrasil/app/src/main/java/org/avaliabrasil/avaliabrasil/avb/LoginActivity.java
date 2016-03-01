@@ -8,6 +8,7 @@ import android.view.View;
 import org.avaliabrasil.avaliabrasil.R;
 
 public class LoginActivity extends  AppCompatActivity {
+    public final String LOG_TAG = this.getClass().getSimpleName();
 
     //TODO: Implementar variável userId ou outra corretamente!
     public static String USRID = "userId";

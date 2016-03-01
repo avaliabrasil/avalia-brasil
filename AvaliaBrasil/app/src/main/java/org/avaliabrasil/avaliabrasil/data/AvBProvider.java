@@ -14,6 +14,7 @@ import android.net.Uri;
  * Created by Pedro on 23/02/2016.
  */
 public class AvBProvider extends ContentProvider {
+    public final String LOG_TAG = this.getClass().getSimpleName();
 
     // URI Matcher:
     private static final UriMatcher sUriMatcher = buildUriMatcher();

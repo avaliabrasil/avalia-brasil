@@ -8,6 +8,7 @@ import android.os.IBinder;
  * Created by Pedro on 29/02/2016.
  */
 public class AvbAuthenticatorService extends Service {
+    public final String LOG_TAG = this.getClass().getSimpleName();
     // Instance field that stores the authenticator object
     private AvbAuthenticator mAuthenticator;
 

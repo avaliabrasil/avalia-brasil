@@ -11,6 +11,7 @@ import android.os.Bundle;
  * Created by Pedro on 29/02/2016.
  */
 public class AvbAuthenticator extends AbstractAccountAuthenticator {
+    public final String LOG_TAG = this.getClass().getSimpleName();
 
     public AvbAuthenticator(Context context) {
         super(context);

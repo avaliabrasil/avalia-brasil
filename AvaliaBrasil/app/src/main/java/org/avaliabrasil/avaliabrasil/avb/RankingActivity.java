@@ -10,6 +10,7 @@ import android.view.View;
 import org.avaliabrasil.avaliabrasil.R;
 
 public class RankingActivity extends AppCompatActivity {
+    public final String LOG_TAG = this.getClass().getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

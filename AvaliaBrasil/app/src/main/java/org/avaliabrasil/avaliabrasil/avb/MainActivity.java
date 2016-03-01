@@ -21,6 +21,7 @@ import android.widget.Toast;
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesMapFragment;
+import org.avaliabrasil.avaliabrasil.sync.AvbSyncAdapter;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -81,7 +82,9 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this,"Id de Usuário : " + userId,Toast.LENGTH_SHORT).show();
 
         // TODO: Inicializar um SyncAdapter só quando o usuário fizer uma busca!
-        // AvbSyncAdapter.initializeSyncAdapter(this);
+        AvbSyncAdapter.initializeSyncAdapter(this);
+
+        AvbSyncAdapter.syncImmediately(this);
 
     }
 

@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import org.avaliabrasil.avaliabrasil.R;
 
 public class NewPlaceActivity extends AppCompatActivity {
+    public final String LOG_TAG = this.getClass().getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

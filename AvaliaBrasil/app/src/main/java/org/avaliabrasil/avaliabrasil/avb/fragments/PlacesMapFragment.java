@@ -14,6 +14,7 @@ import org.avaliabrasil.avaliabrasil.R;
  */
 // PlacesMapFragment: Map of nearby found places
 public class PlacesMapFragment extends Fragment {
+    public final String LOG_TAG = this.getClass().getSimpleName();
     /**
      * The fragment argument representing the section number for this
      * fragment.

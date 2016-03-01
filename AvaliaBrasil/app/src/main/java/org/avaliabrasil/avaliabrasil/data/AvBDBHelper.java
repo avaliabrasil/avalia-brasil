@@ -7,8 +7,9 @@ import org.avaliabrasil.avaliabrasil.data.AvBContract.PlaceEntry;
 
 
 public class AvBDBHelper extends SQLiteOpenHelper {
+    public final String LOG_TAG = this.getClass().getSimpleName();
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
     static final String DATABASE_NAME = "avaliabrasil.db";
 
     public AvBDBHelper (Context context) {
@@ -42,7 +43,7 @@ public class AvBDBHelper extends SQLiteOpenHelper {
     public void onUpgrade (SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
 
         // TODO: Rever política atual de atualização da base de dados! Deste modo ele irá excluir tudo!
-        sqLiteDatabase.execSQL("DROP TABPE IF EXISTS" + PlaceEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PlaceEntry.TABLE_NAME);
 
         // Recriando a tabela!
         onCreate(sqLiteDatabase);
