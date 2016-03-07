@@ -14,9 +14,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.MainActivity;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlacesListAdapter;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
-import org.avaliabrasil.avaliabrasil.sync.AvbSyncAdapter;
 
 /**
  * Created by Pedro on 29/02/2016.
@@ -59,9 +59,8 @@ public class PlacesListFragment extends Fragment implements LoaderManager.Loader
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Uri placeUri);
+        void onItemSelected(Uri placeUri);
     }
-
 
     public PlacesListFragment() {
     }
@@ -136,18 +135,19 @@ public class PlacesListFragment extends Fragment implements LoaderManager.Loader
 
     // Não vou fazer isso, mas seria interessante caso a pesquisa mude, por exemplo:
     // since we read the location when we create the loader, all we need to do is restart things
-//    void onLocationChanged( ) {
+//    void onQueryChanged(String query) {
+//
+//        Uri uri = placesSearchUri;
+//
+//        if (null!= uri)
+//
 //        updateWeather();
 //        getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
 //    }
 
-    private void updatePlacesList() {
-        AvbSyncAdapter.syncImmediately(getActivity());
-    }
-
-    private void updatePlacesList(View view) {
-        AvbSyncAdapter.syncImmediately(getActivity());
-    }
+//    private void updatePlacesList() {
+//        AvbSyncAdapter.syncImmediately(getActivity());
+//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -159,6 +159,8 @@ public class PlacesListFragment extends Fragment implements LoaderManager.Loader
         }
         super.onSaveInstanceState(outState);
     }
+
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -172,7 +174,10 @@ public class PlacesListFragment extends Fragment implements LoaderManager.Loader
         String sortOrder = AvBContract.PlaceEntry.COLUMN_NAME + " ASC";
 
         // String locationSetting = Utility.getPreferredLocation(getActivity());
-        Uri placesSearchUri = AvBContract.PlaceEntry.CONTENT_URI;
+        // Antes de 02/03, 18:10 Uri placesSearchUri = AvBContract.PlaceEntry.CONTENT_URI;
+        Uri placesSearchUri = ((MainActivity)getActivity()).getSearchUri();
+
+        //#parei aqui. tenho que implementar a nova uri no content provider
 
         return new CursorLoader(getActivity(),
                 placesSearchUri,

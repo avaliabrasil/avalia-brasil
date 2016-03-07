@@ -31,6 +31,7 @@ import java.util.Vector;
  */
 public class AvbSyncAdapter extends AbstractThreadedSyncAdapter {
     public final String LOG_TAG = this.getClass().getSimpleName();
+    public static final String STRING_QUERY = "query";
 
     public AvbSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -48,17 +49,20 @@ public class AvbSyncAdapter extends AbstractThreadedSyncAdapter {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
-        // Will contain the raw JSON response as a string.
-        String forecastJsonStr = null;
-
+        // Definindo uma Query:
+        String query = "";
+        boolean hasQuery = false;
+        if (extras.getString(STRING_QUERY) != null) {
+            query = extras.getString("query");
+            hasQuery = true;
+        }
 
         try {
             // Construct the URL for the OpenWeatherMap query
             // Possible parameters are avaiable at OWM's forecast API page, at
             final String API_BASE_URL = getContext().getString(R.string.api_url);
             final String PLACE_PATH = "/places/";
-            final String NAME_PARAM = "name";
-            final String REQUEST_URL = API_BASE_URL + PLACE_PATH;
+            final String REQUEST_URL = API_BASE_URL + PLACE_PATH + query;
 
             // TODO: Atualizar com o nome do lugar
             // String nameSubstring = "Ab"
@@ -282,10 +286,11 @@ public class AvbSyncAdapter extends AbstractThreadedSyncAdapter {
      * Helper method to have the sync adapter sync immediately
      * @param context The context used to access the account service
      */
-    public static void syncImmediately(Context context) {
+    public static void syncImmediately(Context context, String query) {
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        bundle.putString(STRING_QUERY, query);
         ContentResolver.requestSync(getSyncAccount(context),
                 context.getString(R.string.content_authority), bundle);
     }

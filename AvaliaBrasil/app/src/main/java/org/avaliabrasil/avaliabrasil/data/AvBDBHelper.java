@@ -9,7 +9,7 @@ import org.avaliabrasil.avaliabrasil.data.AvBContract.PlaceEntry;
 public class AvBDBHelper extends SQLiteOpenHelper {
     public final String LOG_TAG = this.getClass().getSimpleName();
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 5;
     static final String DATABASE_NAME = "avaliabrasil.db";
 
     public AvBDBHelper (Context context) {

@@ -1,6 +1,9 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -12,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,10 +25,13 @@ import android.widget.Toast;
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesMapFragment;
+import org.avaliabrasil.avaliabrasil.data.AvBContract;
 import org.avaliabrasil.avaliabrasil.sync.AvbSyncAdapter;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    static final String URI = "URI";
 
     //TODO: Implementar variável userId ou outra corretamente!
     private static String USRID = "userId";
@@ -58,7 +65,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         // Instruções para criar o Section Page!!
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -81,16 +87,14 @@ public class MainActivity extends AppCompatActivity
         userId = getIntent().getExtras().getInt(USRID);
         Toast.makeText(this,"Id de Usuário : " + userId,Toast.LENGTH_SHORT).show();
 
+        // AvbSyncAdapter.initializeSyncAdapter(this);
+
+        AvbSyncAdapter.syncImmediately(this, getSearchQuery());
+
         // TODO: Inicializar um SyncAdapter só quando o usuário fizer uma busca!
-        AvbSyncAdapter.initializeSyncAdapter(this);
-
-        AvbSyncAdapter.syncImmediately(this);
-
     }
 
-    // Métodos para o NavDrawer
-
-    @Override
+        @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -131,6 +135,14 @@ public class MainActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
 
+        // From http://developer.android.com/guide/topics/search/search-dialog.html
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search_places).getActionView();
+        // Assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
      return true;
     }
 
@@ -170,6 +182,7 @@ public class MainActivity extends AppCompatActivity
             switch (position) {
                 case 0:
                     return PlacesListFragment.newInstance(position + 1);
+
                 case 1:
                     return PlacesMapFragment.newInstance(position + 1);
             }
@@ -200,6 +213,28 @@ public class MainActivity extends AppCompatActivity
         intent_place_activity.putExtra(USRID, userId);
         intent_place_activity.putExtra(GOOGLEPLACESID, googlePlacesId);
         startActivity(intent_place_activity);
+    }
+
+    public Uri getSearchUri () {
+        String query = "";
+        // Verificando se tenho alguma pesquisa:
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            query = intent.getStringExtra(SearchManager.QUERY);
+        }
+        Uri uri = AvBContract.PlaceEntry.CONTENT_URI;
+        uri = uri.buildUpon().appendPath(query).build();
+        return uri;
+    }
+
+    public String getSearchQuery () {
+        String query = "";
+        // Verificando se tenho alguma pesquisa:
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            query = intent.getStringExtra(SearchManager.QUERY);
+        }
+        return query;
     }
 
 }
