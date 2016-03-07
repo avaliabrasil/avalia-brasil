@@ -22,6 +22,8 @@ public class AvBContract {
     // Paths Headers
     public static final String PATH_PLACE = "place";
 
+    public static final String PATH_PLACES = "places";
+
 
     // Normalizando as datas :
 
@@ -84,11 +86,9 @@ public class AvBContract {
 //
 //        "lastWeekSurveys";
 
-
         // Tabela de Histórico de Índice de Qualidade, para mostrar
 
         //
-
 
         // Construindo a URI do Place
         public static Uri buildGooglePlaceUri (String googlePlaceId) {

@@ -22,14 +22,18 @@ public class AvBProvider extends ContentProvider {
 
 
     // URI Codes:
+
+    // / places
     static final int PLACES_LIST = 100;
+    // places/* (name substr)
+    static final int PLACES_SEARCH = 110;
+    // place/* (id)
     static final int PLACE = 200;
 
     private static final SQLiteQueryBuilder sPlaceInfoQueryBuilder;
 
     static {
         sPlaceInfoQueryBuilder = new SQLiteQueryBuilder();
-
         // É necessário definir as tabelas de uma query builder antes de chamar a query.
         // Se for realizar um join, abaixo deve ser formada a string correspondente!
         // FROM ... place
@@ -42,6 +46,12 @@ public class AvBProvider extends ContentProvider {
     private static final String sPlaceIdSelection =
             AvBContract.PlaceEntry.TABLE_NAME +
                     "." + AvBContract.PlaceEntry.COLUMN_PLACE_ID + " = ? ";
+
+
+    // place.name LIKE ?
+    private static final String sPlaceNameLikeSelection =
+            AvBContract.PlaceEntry.TABLE_NAME +
+                    "." + AvBContract.PlaceEntry.COLUMN_NAME + " LIKE %?%";
 
 
     private Cursor getPlaceByGooglePlacesId(Uri uri, String[] projection, String sortOrder) {
@@ -71,6 +81,23 @@ public class AvBProvider extends ContentProvider {
                 null,
                 sortOrder
         );
+    }
+
+    private Cursor getPlacesByNameSubstr(Uri uri, String[] projection, String sortOrder) {
+
+        String placeId = AvBContract.PlaceEntry.getPlaceIdFromUri(uri);
+        String[] selectionArgs = new String[]{placeId} ;
+        String selection = sPlaceIdSelection;
+
+        return sPlaceInfoQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                projection,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                sortOrder
+        );
+
     }
 
 
