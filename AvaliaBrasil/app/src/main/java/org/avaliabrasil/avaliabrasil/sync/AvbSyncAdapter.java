@@ -202,7 +202,7 @@ public class AvbSyncAdapter extends AbstractThreadedSyncAdapter {
             if ( placesVector.size() > 0 ) {
                 ContentValues[] cvArray = new ContentValues[placesVector.size()];
                 placesVector.toArray(cvArray);
-                getContext().getContentResolver().bulkInsert(AvBContract.PlaceEntry.CONTENT_URI, cvArray);
+                getContext().getContentResolver().bulkInsert(AvBContract.PlaceEntry.PLACES_URI, cvArray);
             }
 
             Log.d(LOG_TAG, "Place Insert Complete " + placesVector.size() + " Inserted");

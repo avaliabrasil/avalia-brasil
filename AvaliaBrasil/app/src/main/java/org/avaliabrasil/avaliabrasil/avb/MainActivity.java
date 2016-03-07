@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
         }
-        Uri uri = AvBContract.PlaceEntry.CONTENT_URI;
+        Uri uri = AvBContract.PlaceEntry.PLACES_URI;
         uri = uri.buildUpon().appendPath(query).build();
         return uri;
     }

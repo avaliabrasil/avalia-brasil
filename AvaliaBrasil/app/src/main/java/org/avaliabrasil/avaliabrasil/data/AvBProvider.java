@@ -23,7 +23,7 @@ public class AvBProvider extends ContentProvider {
 
     // URI Codes:
 
-    // / places
+    // /places
     static final int PLACES_LIST = 100;
     // places/* (name substr)
     static final int PLACES_SEARCH = 110;
@@ -51,11 +51,11 @@ public class AvBProvider extends ContentProvider {
     // place.name LIKE ?
     private static final String sPlaceNameLikeSelection =
             AvBContract.PlaceEntry.TABLE_NAME +
-                    "." + AvBContract.PlaceEntry.COLUMN_NAME + " LIKE %?%";
+                    "." + AvBContract.PlaceEntry.COLUMN_NAME + " LIKE ?";
 
 
     private Cursor getPlaceByGooglePlacesId(Uri uri, String[] projection, String sortOrder) {
-        String placeId = AvBContract.PlaceEntry.getPlaceIdFromUri(uri);
+        String placeId = AvBContract.PlaceEntry.getStringFromUri(uri);
         String[] selectionArgs = new String[]{placeId} ;
         String selection = sPlaceIdSelection;
 
@@ -85,9 +85,9 @@ public class AvBProvider extends ContentProvider {
 
     private Cursor getPlacesByNameSubstr(Uri uri, String[] projection, String sortOrder) {
 
-        String placeId = AvBContract.PlaceEntry.getPlaceIdFromUri(uri);
-        String[] selectionArgs = new String[]{placeId} ;
-        String selection = sPlaceIdSelection;
+        String nameSubstr = AvBContract.PlaceEntry.getStringFromUri(uri);
+        String[] selectionArgs = new String[]{"%" + nameSubstr + "%"} ;
+        String selection = sPlaceNameLikeSelection;
 
         return sPlaceInfoQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
@@ -117,7 +117,9 @@ public class AvBProvider extends ContentProvider {
         // 2) Use the addURI function to match each of the types.  Use the constants from
         // WeatherContract to help define the types to the UriMatcher.
 
-        matcher.addURI(authority, AvBContract.PATH_PLACE, PLACES_LIST);
+        matcher.addURI(authority, AvBContract.PATH_PLACES, PLACES_LIST);
+
+        matcher.addURI(authority, AvBContract.PATH_PLACES + "/*", PLACES_SEARCH);
 
         matcher.addURI(authority, AvBContract.PATH_PLACE + "/*",PLACE);
 
@@ -150,6 +152,8 @@ public class AvBProvider extends ContentProvider {
 
         switch (match) {
             // Student: Uncomment and fill out these two cases
+            case PLACES_SEARCH:
+                return AvBContract.PlaceEntry.CONTENT_TYPE;
             case PLACES_LIST:
                 return AvBContract.PlaceEntry.CONTENT_TYPE;
             case PLACE:
@@ -171,6 +175,13 @@ public class AvBProvider extends ContentProvider {
                 retCursor = getAllPlaces(uri, projection, sortOrder);
                 break;
             }
+
+            case PLACES_SEARCH:
+            {
+                retCursor = getPlacesByNameSubstr(uri, projection, sortOrder);
+                break;
+            }
+
             // Informações de um Lugar
             case PLACE: {
                 retCursor = getPlaceByGooglePlacesId(uri, projection, sortOrder);

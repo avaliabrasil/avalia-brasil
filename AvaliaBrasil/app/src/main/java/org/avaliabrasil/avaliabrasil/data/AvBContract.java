@@ -11,7 +11,6 @@ import android.text.format.Time;
 public class AvBContract {
     public final String LOG_TAG = this.getClass().getSimpleName();
 
-
     // Content Authority
     public static final String CONTENT_AUTHORITY = "org.avaliabrasil.avaliabrasil";
 
@@ -41,11 +40,14 @@ public class AvBContract {
        Cada classe tem strings que definem a tabela e seus campos
         */
     public static final class PlaceEntry implements BaseColumns {
-        public static final Uri CONTENT_URI =
+        public static final Uri PLACE_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLACE).build();
 
+        public static final Uri PLACES_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLACES).build();
+
         public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PLACE;
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PLACES;
 
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PLACE;
@@ -92,15 +94,11 @@ public class AvBContract {
 
         // Construindo a URI do Place
         public static Uri buildGooglePlaceUri (String googlePlaceId) {
-            // Alternativa 1: Adicionando como um parâmetro da query:
-            // return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_PLACE_ID, googlePlaceId).build();
-
-            // Alternativa 2: Adicionando como um caminho mesmo:
-            return CONTENT_URI.buildUpon().appendPath(googlePlaceId).build();
+            return PLACE_URI.buildUpon().appendPath(googlePlaceId).build();
         }
 
         // Função para pegar a o Id do Place da Uri:
-        public static String getPlaceIdFromUri (Uri uri) {
+        public static String getStringFromUri (Uri uri) {
             return uri.getPathSegments().get(1);
         }
 
