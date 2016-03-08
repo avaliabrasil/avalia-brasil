@@ -87,7 +87,6 @@ public class MainActivity extends AppCompatActivity
         userId = getIntent().getExtras().getInt(USRID);
         Toast.makeText(this,"Id de Usuário : " + userId,Toast.LENGTH_SHORT).show();
 
-        // AvbSyncAdapter.initializeSyncAdapter(this);
 
         AvbSyncAdapter.syncImmediately(this, getSearchQuery());
 
