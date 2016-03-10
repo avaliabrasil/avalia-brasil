@@ -16,6 +16,7 @@ public class AvbAuthenticator extends AbstractAccountAuthenticator {
     public AvbAuthenticator(Context context) {
         super(context);
     }
+    // Usar esse autenticador!! Klaus!
 
     // No properties to edit.
     @Override
