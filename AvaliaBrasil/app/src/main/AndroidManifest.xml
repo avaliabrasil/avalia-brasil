@@ -94,7 +94,7 @@
             android:syncable="true"/>
 
         <!-- SyncAdapter's dummy authentication service -->
-        <service android:name=".sync.AvbAuthenticatorService">
+        <service android:name=".authenticator.AvbAuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -105,7 +105,7 @@
 
         <!-- The SyncAdapter service -->
         <service
-            android:name=".sync.AvbSyncService"
+            android:name=".authenticator.AvbSyncService"
             android:exported="true"
             >
             <intent-filter>

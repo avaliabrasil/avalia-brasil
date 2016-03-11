@@ -1,4 +1,4 @@
-package org.avaliabrasil.avaliabrasil.sync;
+package org.avaliabrasil.avaliabrasil.authenticator;
 
 import android.app.Service;
 import android.content.Intent;

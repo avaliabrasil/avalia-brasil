@@ -26,7 +26,7 @@ import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesMapFragment;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
-import org.avaliabrasil.avaliabrasil.sync.AvbSyncAdapter;
+import org.avaliabrasil.avaliabrasil.authenticator.AvbSyncAdapter;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     //TODO: Implementar variável userId ou outra corretamente!
     private static String USRID = "userId";
-    private int userId = 0;
+    private String userId = "";
     private static String GOOGLEPLACESID = "googlePlacesId";
 
 
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity
         // Toast.makeText(this, userId, Toast.LENGTH_SHORT).show();
         //TODO: Tirar isto e colocar código real depois!
         // Defining the UserId:
-        userId = getIntent().getExtras().getInt(USRID);
+        userId = getIntent().getExtras().getString(USRID);
         Toast.makeText(this,"Id de Usuário : " + userId,Toast.LENGTH_SHORT).show();
 
 
