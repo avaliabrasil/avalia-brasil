@@ -22,10 +22,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
+import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragmentTeste;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesMapFragment;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
 import org.avaliabrasil.avaliabrasil.sync.AvbSyncAdapter;
 
 public class MainActivity extends AppCompatActivity
@@ -180,7 +189,7 @@ public class MainActivity extends AppCompatActivity
 
             switch (position) {
                 case 0:
-                    return PlacesListFragment.newInstance(position + 1);
+                    return PlacesListFragmentTeste.newInstance(position + 1);
 
                 case 1:
                     return PlacesMapFragment.newInstance(position + 1);

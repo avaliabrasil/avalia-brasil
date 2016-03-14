@@ -48,6 +48,17 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".avb.MainActivity" />
         </activity>
+
+        <activity
+            android:name=".avb.PlaceActivityTeste"
+            android:label="@string/title_activity_place"
+            android:parentActivityName=".avb.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".avb.MainActivity" />
+        </activity>
+
         <activity
             android:name=".avb.EvaluationActivity"
             android:label="@string/title_activity_evaluation"
