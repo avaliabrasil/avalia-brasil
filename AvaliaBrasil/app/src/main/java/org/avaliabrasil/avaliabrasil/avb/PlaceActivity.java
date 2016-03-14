@@ -70,8 +70,8 @@ public class PlaceActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     // Referenciando o ListView e ligando o Adapter a ele
-        ListView placeInfoListView = (ListView) findViewById(R.id.listview_place_info);
-        placeInfoListView.setAdapter(placeListAdapter);
+        //ListView placeInfoListView = (ListView) findViewById(R.id.listview_place_info);
+       // placeInfoListView.setAdapter(placeListAdapter);
 
         // Chamando a classe assíncrona!
         FetchPlaceData placeDataTask = new FetchPlaceData();

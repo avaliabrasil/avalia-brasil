@@ -8,10 +8,14 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -40,15 +44,20 @@ import java.util.List;
 
 public class PlaceActivityTeste extends AppCompatActivity {
 
-    private ArrayAdapter<String> PlaceInfoAdapter;
-    private ListView placeInfoListView;
     private CollapsingToolbarLayout toolbarLayout;
+    private LinearLayout placesInfo;
+    private String distance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if(getIntent().getExtras().getString("placeid") == null || getIntent().getExtras().getString("distance") == null){
+            finish();
+        }
+
         String placeid = getIntent().getExtras().getString("placeid");
+        distance = getIntent().getExtras().getString("distance");
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlaceDetails(placeid,"AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
                 new Response.Listener<String>() {
@@ -61,16 +70,34 @@ public class PlaceActivityTeste extends AppCompatActivity {
                         ArrayList<String> placeInfoList = new ArrayList<String>();
 
                         placeInfoList.add("Address: " + placeDetails.getResult().getVicinity());
+                        View view = null;
 
-                        ArrayAdapter<String> placeListAdapter =
-                        new ArrayAdapter<String>(
-                                PlaceActivityTeste.this, // Context
-                                R.layout.list_item_place_info, // LayoutId
-                                R.id.place_name_text_view, // Id of Textview
-                                placeInfoList // ListName
-                        );
+                        if(placeDetails.getResult().getVicinity() != null){
+                            View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
+                            ((TextView)place.findViewById(R.id.place_name_text_view)).setText(placeDetails.getResult().getName());
+                            ((TextView)place.findViewById(R.id.place_address_text_view)).setText(placeDetails.getResult().getVicinity());
+                            ((TextView)place.findViewById(R.id.place_distance_text_view)).setText(distance);
+                            placesInfo.addView(place);
+                        }
 
-                        placeInfoListView.setAdapter(placeListAdapter);
+                        if(placeDetails.getResult().getFormattedPhoneNumber() != null){
+                            view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+                            ((TextView)view.findViewById(R.id.text)).setText(placeDetails.getResult().getFormattedPhoneNumber());
+                            ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
+
+                            placesInfo.addView(view);
+                        }
+
+                        if(placeDetails.getResult().getWebsite() != null){
+                            view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+                            ((TextView)view.findViewById(R.id.text)).setText(placeDetails.getResult().getWebsite());
+                            ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
+
+                            placesInfo.addView(view);
+                        }
+
                         toolbarLayout.setTitle(placeDetails.getResult().getName());
                     }
                 }, new Response.ErrorListener() {
@@ -95,6 +122,7 @@ public class PlaceActivityTeste extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        placeInfoListView = (ListView) findViewById(R.id.listview_place_info);
+        placesInfo = (LinearLayout) findViewById(R.id.placesInfo);
+
     }
 }

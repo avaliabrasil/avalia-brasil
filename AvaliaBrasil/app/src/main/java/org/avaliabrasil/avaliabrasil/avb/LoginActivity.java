@@ -31,6 +31,7 @@ public class LoginActivity extends  AppCompatActivity {
         Intent intent_main_activity = new Intent(this,MainActivity.class);
         intent_main_activity.putExtra(USRID, userId);
         startActivity(intent_main_activity);
+        finish();
     }
 
     // TODO: Login do Usuário..

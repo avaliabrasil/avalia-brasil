@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity
     private int userId = 0;
     private static String GOOGLEPLACESID = "googlePlacesId";
 
+    public static PlaceSearch placeSearch;
+
 
     // Definindo o Google Place Id que será passado para o Place Activity
     public String googlePlacesId = "asdasgd8218hdddDdsSAD";
@@ -93,8 +95,8 @@ public class MainActivity extends AppCompatActivity
         // Toast.makeText(this, userId, Toast.LENGTH_SHORT).show();
         //TODO: Tirar isto e colocar código real depois!
         // Defining the UserId:
-        userId = getIntent().getExtras().getInt(USRID);
-        Toast.makeText(this,"Id de Usuário : " + userId,Toast.LENGTH_SHORT).show();
+//        userId = getIntent().getExtras().getInt(USRID);
+//        Toast.makeText(this,"Id de Usuário : " + userId,Toast.LENGTH_SHORT).show();
 
 
         AvbSyncAdapter.syncImmediately(this, getSearchQuery());

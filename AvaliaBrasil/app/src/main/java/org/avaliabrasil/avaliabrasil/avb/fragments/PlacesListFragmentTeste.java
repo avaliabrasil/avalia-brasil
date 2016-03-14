@@ -21,6 +21,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.MainActivity;
 import org.avaliabrasil.avaliabrasil.avb.PlaceActivityTeste;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlacesListAdapterTeste;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
@@ -63,37 +64,38 @@ public class PlacesListFragmentTeste extends Fragment implements android.locatio
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        if(MainActivity.placeSearch == null) {
+            LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
-        try{
-        location = locationManager
-                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            try {
+                location = locationManager
+                        .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
-        Log.d("Places list", "Lat: " + location.getLatitude() + " and long: " + location.getLongitude());
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getNearlyPlaces(location.getLatitude(), location.getLongitude(), 500, null, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Gson gson = new Gson();
+                                PlaceSearch placeSearch = gson.fromJson(response, PlaceSearch.class);
+                                MainActivity.placeSearch = placeSearch;
+                                mPlacesListAdapter = new PlacesListAdapterTeste(getContext(), placeSearch, location);
+                                mListView.setAdapter(mPlacesListAdapter);
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
 
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getNearlyPlaces(location.getLatitude(),location.getLongitude(),500,null,"AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.d("Teste", "onResponse: " + response);
-                            Gson gson = new Gson();
-                            PlaceSearch placeSearch = gson.fromJson(response, PlaceSearch.class);
-                            mPlacesListAdapter = new PlacesListAdapterTeste(getContext(),placeSearch,  location);
-                            mListView.setAdapter(mPlacesListAdapter);
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                }
-            });
+                Volley.newRequestQueue(getContext()).add(stringRequest);
 
-            Volley.newRequestQueue(getContext()).add(stringRequest);
-
-        }catch(SecurityException e){
-            e.printStackTrace();
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            }
+        }else{
+            mPlacesListAdapter = new PlacesListAdapterTeste(getContext(), MainActivity.placeSearch, location);
         }
-
         setHasOptionsMenu(true);
     }
 
@@ -105,11 +107,21 @@ public class PlacesListFragmentTeste extends Fragment implements android.locatio
 
         mListView = (ListView) rootView.findViewById(R.id.listview_places);
 
+        if(mPlacesListAdapter != null){
+            mListView.setAdapter(mPlacesListAdapter);
+        }
+
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent intent = new Intent(getContext(), PlaceActivityTeste.class);
+                Location placeLocation = new Location("");
+
+                placeLocation.setLatitude(mPlacesListAdapter.getItem(position).getGeometry().getLocation().getLat());
+                placeLocation.setLongitude(mPlacesListAdapter.getItem(position).getGeometry().getLocation().getLng());
+
                 intent.putExtra("placeid",mPlacesListAdapter.getItem(position).getPlaceId());
+                intent.putExtra("distance",(int)location.distanceTo(placeLocation) + "m");
                 startActivity(intent);
             }
         });

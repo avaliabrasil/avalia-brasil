@@ -102,11 +102,18 @@
             android:onClick="startNewPlaceActivity"
             style="@style/SecondaryActionButton"
             />
-        <ListView
-            android:id="@+id/listview_place_info"
-            android:layout_width="match_parent"
-            android:layout_height="300dp" />
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/scrollView" >
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/placesInfo"></LinearLayout>
+        </ScrollView>
     </LinearLayout>
 
 
