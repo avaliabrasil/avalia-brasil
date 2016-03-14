@@ -42,6 +42,7 @@ public class PlaceActivityTeste extends AppCompatActivity {
 
     private ArrayAdapter<String> PlaceInfoAdapter;
     private ListView placeInfoListView;
+    private CollapsingToolbarLayout toolbarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +71,7 @@ public class PlaceActivityTeste extends AppCompatActivity {
                         );
 
                         placeInfoListView.setAdapter(placeListAdapter);
+                        toolbarLayout.setTitle(placeDetails.getResult().getName());
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -84,7 +86,7 @@ public class PlaceActivityTeste extends AppCompatActivity {
         setContentView(R.layout.activity_place);
 
         // Definindo o título da Toolbar
-        CollapsingToolbarLayout toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         toolbarLayout.setTitle("Buscando lugar...");
 
         // Ativando a opção voltar da Toolbar
@@ -93,7 +95,6 @@ public class PlaceActivityTeste extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-    // Referenciando o ListView e ligando o Adapter a ele
         placeInfoListView = (ListView) findViewById(R.id.listview_place_info);
     }
 }

@@ -78,7 +78,7 @@ public class PlacesListFragmentTeste extends Fragment implements android.locatio
                             Log.d("Teste", "onResponse: " + response);
                             Gson gson = new Gson();
                             PlaceSearch placeSearch = gson.fromJson(response, PlaceSearch.class);
-                            mPlacesListAdapter = new PlacesListAdapterTeste(getContext(),placeSearch);
+                            mPlacesListAdapter = new PlacesListAdapterTeste(getContext(),placeSearch,  location);
                             mListView.setAdapter(mPlacesListAdapter);
                         }
                     }, new Response.ErrorListener() {
