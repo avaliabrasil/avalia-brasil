@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
@@ -19,7 +18,7 @@ import org.avaliabrasil.avaliabrasil.rest.javabeans.ResultPlaceSearch;
  * from a {@link Cursor} to a {@link android.widget.ListView}.
  */
 
-public class PlacesListAdapterTeste extends BaseAdapter{
+public class PlacesListAdapterTeste extends BaseAdapter {
     public final String LOG_TAG = this.getClass().getSimpleName();
 
     private final Context context;
@@ -60,10 +59,8 @@ public class PlacesListAdapterTeste extends BaseAdapter{
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.list_item_place_info, parent, false);
         }else{
-            view = (View) convertView;
+            view = convertView;
         }
-
-        //ImageView iconView = (ImageView) view.findViewById(R.id.place_icon);
 
         TextView nameView = (TextView) view.findViewById(R.id.place_name_text_view);
         TextView addressView = (TextView) view.findViewById(R.id.place_address_text_view);
@@ -74,7 +71,7 @@ public class PlacesListAdapterTeste extends BaseAdapter{
         placeLocation.setLongitude(places.getResults().get(position).getGeometry().getLocation().getLng());
 
         TextView distanceView = (TextView) view.findViewById(R.id.place_distance_text_view);
-        distanceView.setText((int)location.distanceTo(placeLocation) + "m");
+       distanceView.setText((int)location.distanceTo(placeLocation) + "m");
 
         nameView.setText(places.getResults().get(position).getName());
         addressView.setText(places.getResults().get(position).getVicinity());
@@ -82,21 +79,10 @@ public class PlacesListAdapterTeste extends BaseAdapter{
         return view;
     }
 
-    /**
-     * Cache of the children views for a forecast list item.
-     */
-    public static class ViewHolder {
-        public final ImageView iconView;
-        public final TextView nameView;
-        public final TextView addressView;
-        public final TextView distanceView;
+    public void update(PlaceSearch places){
+        this.places.getResults().clear();
+        this.places.getResults().addAll(places.getResults());
 
-        public ViewHolder(View view) {
-            iconView = (ImageView) view.findViewById(R.id.place_icon);
-            nameView = (TextView) view.findViewById(R.id.place_name_text_view);
-            addressView = (TextView) view.findViewById(R.id.place_address_text_view);
-            distanceView = (TextView) view.findViewById(R.id.place_distance_text_view);
-        }
+        notifyDataSetChanged();
     }
-
 }
