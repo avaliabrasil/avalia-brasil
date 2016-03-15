@@ -126,4 +126,6 @@
     <string name="sync_account_type">avaliabrasil.org</string>
     <string name="content_authority">org.avaliabrasil.avaliabrasil</string>
 
+    <string name="facebook_app_id">604507936379654</string>
+
 </resources>
