@@ -1,11 +1,13 @@
 package org.avaliabrasil.avaliabrasil.avb.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,11 +28,13 @@ import org.avaliabrasil.avaliabrasil.avb.PlaceActivityTeste;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlacesListAdapterTeste;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
+import org.avaliabrasil.avaliabrasil.sync.Observer;
 
 /**
  * Created by Pedro on 29/02/2016.
  */
-public class PlacesListFragmentTeste extends Fragment implements android.location.LocationListener{
+public class PlacesListFragmentTeste extends Fragment implements android.location.LocationListener,
+        Observer{
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -64,13 +68,28 @@ public class PlacesListFragmentTeste extends Fragment implements android.locatio
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(MainActivity.placeSearch == null) {
+        MainActivity.attachObserver(this);
+
+        try {
             LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
 
-            try {
-                location = locationManager
-                        .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
+            if (!locationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER) || !locationManager
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                showGPSDisabledAlertToUser();
+            }
+
+            location = locationManager
+                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            if (location == null) {
+                location = new Location("");
+                location.setLatitude(0);
+                location.setLongitude(0);
+            }
+
+            if (MainActivity.placeSearch == null) {
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getNearlyPlaces(location.getLatitude(), location.getLongitude(), 500, null, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
                         new Response.Listener<String>() {
                             @Override
@@ -78,7 +97,8 @@ public class PlacesListFragmentTeste extends Fragment implements android.locatio
                                 Gson gson = new Gson();
                                 PlaceSearch placeSearch = gson.fromJson(response, PlaceSearch.class);
                                 MainActivity.placeSearch = placeSearch;
-                                mPlacesListAdapter = new PlacesListAdapterTeste(getContext(), placeSearch, location);
+                                MainActivity.searchResult.getResults().addAll(placeSearch.getResults());
+                                mPlacesListAdapter = new PlacesListAdapterTeste(getContext(), MainActivity.searchResult, location);
                                 mListView.setAdapter(mPlacesListAdapter);
                             }
                         }, new Response.ErrorListener() {
@@ -89,14 +109,37 @@ public class PlacesListFragmentTeste extends Fragment implements android.locatio
                 });
 
                 Volley.newRequestQueue(getContext()).add(stringRequest);
-
-            } catch (SecurityException e) {
-                e.printStackTrace();
+        } else {
+                mPlacesListAdapter = new PlacesListAdapterTeste(getContext(), MainActivity.searchResult, location);
             }
-        }else{
-            mPlacesListAdapter = new PlacesListAdapterTeste(getContext(), MainActivity.placeSearch, location);
+        } catch (SecurityException e){
+            e.printStackTrace();
+            setHasOptionsMenu(true);
         }
-        setHasOptionsMenu(true);
+    }
+
+    private void showGPSDisabledAlertToUser() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder
+                .setMessage(
+                        "GPS está desativado em seu dispositivo. Deseja ativa-lo?")
+                .setCancelable(false)
+                .setPositiveButton("Configurações de ativação do GPS",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent callGPSSettingIntent = new Intent(
+                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(callGPSSettingIntent);
+                            }
+                        });
+        alertDialogBuilder.setNegativeButton("Cancelar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
     }
 
     @Override
@@ -177,5 +220,11 @@ public class PlacesListFragmentTeste extends Fragment implements android.locatio
     @Override
     public void onProviderDisabled(String provider) {
 
+    }
+
+    @Override
+    public void update() {
+        mPlacesListAdapter = new PlacesListAdapterTeste(getContext(), MainActivity.searchResult, location);
+        mListView.setAdapter(mPlacesListAdapter);
     }
 }

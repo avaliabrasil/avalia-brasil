@@ -39,6 +39,7 @@
         <activity
             android:name=".avb.MainActivity"
             android:label="@string/app_name"
+            android:configChanges="orientation|keyboardHidden"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -51,6 +52,7 @@
         <activity
             android:name=".avb.PlaceActivity"
             android:label="@string/title_activity_place"
+            android:configChanges="orientation|keyboardHidden"
             android:parentActivityName=".avb.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -62,6 +64,7 @@
             android:name=".avb.PlaceActivityTeste"
             android:label="@string/title_activity_place"
             android:parentActivityName=".avb.MainActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -71,6 +74,7 @@
         <activity
             android:name=".avb.EvaluationActivity"
             android:label="@string/title_activity_evaluation"
+            android:configChanges="orientation|keyboardHidden"
             android:parentActivityName=".avb.PlaceActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -80,6 +84,7 @@
         <activity
             android:name=".avb.PlaceStatisticsActivity"
             android:label="@string/title_activity_place_statistics"
+            android:configChanges="orientation|keyboardHidden"
             android:parentActivityName=".avb.PlaceActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -89,6 +94,7 @@
         <activity
             android:name=".avb.RankingActivity"
             android:label="@string/title_activity_ranking"
+            android:configChanges="orientation|keyboardHidden"
             android:parentActivityName=".avb.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -98,6 +104,7 @@
         <activity
             android:name=".avb.NewPlaceActivity"
             android:label="@string/title_activity_new_place"
+            android:configChanges="orientation|keyboardHidden"
             android:parentActivityName=".avb.PlaceActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

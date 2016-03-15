@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,7 +36,11 @@ import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragmentTeste;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesMapFragment;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.ResultPlaceSearch;
 import org.avaliabrasil.avaliabrasil.sync.AvbSyncAdapter;
+import org.avaliabrasil.avaliabrasil.sync.Observer;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -49,6 +54,9 @@ public class MainActivity extends AppCompatActivity
 
     public static PlaceSearch placeSearch;
 
+    public static PlaceSearch searchResult = new PlaceSearch();
+
+    private static ArrayList<Observer> observers = new ArrayList<Observer>(4);
 
     // Definindo o Google Place Id que será passado para o Place Activity
     public String googlePlacesId = "asdasgd8218hdddDdsSAD";
@@ -80,6 +88,7 @@ public class MainActivity extends AppCompatActivity
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.view_page_container);
@@ -139,6 +148,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     // TODO: Tirar este menu!
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -151,6 +165,31 @@ public class MainActivity extends AppCompatActivity
         SearchView searchView = (SearchView) menu.findItem(R.id.search_places).getActionView();
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchResult.getResults().clear();
+
+                for(ResultPlaceSearch r : placeSearch.getResults()){
+                    if(r.getVicinity().toLowerCase().contains(query)||r.getName().toLowerCase().contains(query)){
+                        searchResult.getResults().add(r);
+                    }
+                }
+                update();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                if(newText.isEmpty()){
+                    searchResult.getResults().clear();
+                    searchResult.getResults().addAll(placeSearch.getResults());
+                }
+                return true;
+            }
+        });
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 
      return true;
@@ -247,4 +286,17 @@ public class MainActivity extends AppCompatActivity
         return query;
     }
 
+    public static void attachObserver(Observer observer){
+        observers.add(observer);
+    }
+
+    public void clearObserver(){
+        observers.clear();
+    }
+
+    public void update(){
+        for(Observer observer : observers){
+            observer.update();
+        }
+    }
 }
