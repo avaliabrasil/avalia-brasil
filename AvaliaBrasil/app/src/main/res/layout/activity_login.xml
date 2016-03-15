@@ -23,16 +23,13 @@
         android:src="@drawable/retangular_logo"
         android:layout_weight="3" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:text="@string/login_with_facebook"
+    <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button"
-        android:layout_below="@+id/avaliaBrasilLogo"
-        android:onClick="startMainActivity"
-        android:layout_weight="1"
-        style="@style/FacebookButton"
-        />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp" />
 
     <View
         android:layout_width="match_parent"
