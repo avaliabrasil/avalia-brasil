@@ -65,7 +65,6 @@ public class PlacesListAdapterTeste extends BaseAdapter {
         TextView nameView = (TextView) view.findViewById(R.id.place_name_text_view);
         TextView addressView = (TextView) view.findViewById(R.id.place_address_text_view);
 
-
         Location placeLocation = new Location("");
         placeLocation.setLatitude(places.getResults().get(position).getGeometry().getLocation().getLat());
         placeLocation.setLongitude(places.getResults().get(position).getGeometry().getLocation().getLng());

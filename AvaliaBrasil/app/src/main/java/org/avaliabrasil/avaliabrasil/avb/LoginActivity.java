@@ -27,8 +27,7 @@ public class LoginActivity extends  AppCompatActivity {
     }
 
     public void startMainActivity(View view){
-
-        Intent intent_main_activity = new Intent(this,MainActivity.class);
+        Intent intent_main_activity = new Intent(this,MainActivityWithProvider.class);
         intent_main_activity.putExtra(USRID, userId);
         startActivity(intent_main_activity);
         finish();

@@ -2,6 +2,7 @@ package org.avaliabrasil.avaliabrasil.avb.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.location.Location;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,8 +37,11 @@ public class PlacesListAdapter extends CursorAdapter {
         }
     }
 
-    public PlacesListAdapter(Context context, Cursor c, int flags) {
+    private Location location;
+
+    public PlacesListAdapter(Context context, Cursor c, int flags, Location location) {
         super(context, c, flags);
+        this.location = location;
     }
 
     @Override
@@ -55,23 +59,17 @@ public class PlacesListAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         // Ler Place Name do Cursor
-        viewHolder.nameView.setText(cursor.getString(PlacesListFragment.COL_PLACE_NAME));
+        viewHolder.nameView.setText(cursor.getString(cursor.getColumnIndex("name")));
 
         // Ler Place Address
-        viewHolder.addressView.setText(cursor.getString(PlacesListFragment.COL_PLACE_ADDRESS));
+        viewHolder.addressView.setText(cursor.getString(cursor.getColumnIndex("vicinity")));
 
+
+        Location placeLocation = new Location("");
+        placeLocation.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
+        placeLocation.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
         // Ler Place Distance
-        viewHolder.distanceView.setText(cursor.getString(PlacesListFragment.COL_PLACE_DISTANCE));
+        viewHolder.distanceView.setText((int)location.distanceTo(placeLocation) + "m");
 
     }
-
-//    @Override
-//    public int getItemViewType(int position) {
-//        return (position == 0 && mUseTodayLayout) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
-//    }
-
-//    @Override
-//    public int getViewTypeCount() {
-//        return VIEW_TYPE_COUNT;
-//    }
 }

@@ -89,7 +89,7 @@ public class PlacesListFragment extends Fragment implements LoaderManager.Loader
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mPlacesListAdapter = new PlacesListAdapter(getActivity(),null,0);
+        mPlacesListAdapter = new PlacesListAdapter(getActivity(),null,0,null);
         View rootView = inflater.inflate(R.layout.fragment_places_list, container, false);
 
         mListView = (ListView) rootView.findViewById(R.id.listview_places);
