@@ -6,6 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -13,11 +18,20 @@ import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+
 import android.provider.Settings.Secure;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.UserToken;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends  AppCompatActivity {
     public final String LOG_TAG = this.getClass().getSimpleName();
@@ -83,12 +97,46 @@ public class LoginActivity extends  AppCompatActivity {
     //TODO send the info to the server, and fetch it too.
     public void startMainActivity(View view){
 
-        android_id = Secure.getString(getBaseContext().getContentResolver(),
-                Secure.ANDROID_ID);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserToken(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
 
-        Log.d("LoginActivity", "id: " + android_id);
-        Intent intent_main_activity = new Intent(this,MainActivity.class);
-        intent_main_activity.putExtra(USRID, android_id);
-        startActivity(intent_main_activity);
+                        Log.d("LoginActivity", "onResponse: " + response);
+
+                        Gson gson = new Gson();
+                        JsonParser jsonParser = new JsonParser();
+                        JsonObject jo = (JsonObject)jsonParser.parse(response);
+
+                        UserToken userToken = gson.fromJson(jo.get("data").getAsJsonObject(), UserToken.class);
+
+                        Log.d("LoginActivity", userToken.getToken());
+                        Log.d("LoginActivity", userToken.getExpires());
+
+                        Log.d("LoginActivity", "id: " + android_id);
+
+                        Intent intent_main_activity = new Intent(LoginActivity.this,MainActivity.class);
+                        intent_main_activity.putExtra(USRID, android_id);
+                        startActivity(intent_main_activity);
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams () {
+                android_id = Secure.getString(getBaseContext().getContentResolver(),
+                        Secure.ANDROID_ID);
+
+                Map<String, String> params = new HashMap<String, String>();
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.add("userId",new JsonPrimitive(android_id));
+                return params;
+            }
+        };
+        Volley.newRequestQueue(LoginActivity.this).add(stringRequest);
     }
 }
