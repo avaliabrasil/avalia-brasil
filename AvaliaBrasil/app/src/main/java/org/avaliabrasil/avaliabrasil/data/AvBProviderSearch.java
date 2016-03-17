@@ -1,11 +1,11 @@
 package org.avaliabrasil.avaliabrasil.data;
 
 
-import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SearchRecentSuggestionsProvider;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,7 +13,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import org.avaliabrasil.avaliabrasil.data.database.DatabaseHelper;
 import org.avaliabrasil.avaliabrasil.data.database.DatabaseName;
@@ -22,35 +21,36 @@ import org.avaliabrasil.avaliabrasil.data.database.DatabaseWrapper;
 /**
  * Created by Pedro on 23/02/2016.
  */
-public class AvBProviderTest extends ContentProvider {
+public class AvBProviderSearch extends SearchRecentSuggestionsProvider {
+
     public final String LOG_TAG = this.getClass().getSimpleName();
 
-    public static final String CONTENT_AUTHORITY = "org.avaliabrasil.avaliabrasil";
+    public static final String CONTENT_AUTHORITY = "org.avaliabrasil.avaliabrasil.search";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY);
 
-    public static final Uri PLACE_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY+"/places");
+    public final static int MODE = DATABASE_MODE_QUERIES;
 
-    public static final Uri PLACE_DETAILS_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY+"/placesdetails");
+    public static final Uri PLACE_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY+"/places");
 
     public static final String PLACE_PATH = "places";
 
     static final int PLACE = 1;
     static final int PLACE_ID = 2;
-    static final int PLACEDETAILS = 3;
+    static final int SEARCH = 3;
 
     static final UriMatcher uriMatcher;
     static{
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(CONTENT_AUTHORITY, "places", PLACE);
         uriMatcher.addURI(CONTENT_AUTHORITY, "places/*", PLACE_ID);
-        uriMatcher.addURI(CONTENT_AUTHORITY, "placesdetails", PLACEDETAILS);
+        uriMatcher.addURI(CONTENT_AUTHORITY, "search_suggest_query",SEARCH);
     }
 
-    public static Uri getPlaceDetails(String place_id){
-        Uri uri = Uri.parse("content://"+CONTENT_AUTHORITY+"/places/" + place_id);
-        return uri;
+    public AvBProviderSearch() {
+        setupSuggestions(CONTENT_AUTHORITY, MODE);
     }
+
 
     @Override
     public boolean onCreate() {
@@ -64,28 +64,29 @@ public class AvBProviderTest extends ContentProvider {
 
         SQLiteDatabase db = null;
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        Cursor c;
 
         switch (uriMatcher.match(uri)) {
             case PLACE:
                 db = DatabaseWrapper.getDatabase(getContext(), DatabaseName.PLACE_DATABASE);
                 qb.setTables(DatabaseHelper.place_table);
-
-                c = qb.query(db,	projection,	selection, selectionArgs,null, null, sortOrder);
-
-                c.setNotificationUri(getContext().getContentResolver(), uri);
                 break;
             case PLACE_ID:
+                qb.appendWhere( "_id =" + uri.getPathSegments().get(1));
                 db = DatabaseWrapper.getDatabase(getContext(), DatabaseName.PLACE_DETAILS_DATABASE);
-                c = db.rawQuery("select * from place_detail LEFT OUTER join place on place_detail.place_id = place.place_id where place_detail.place_id = ?",new String[]{ uri.getPathSegments().get(1)});
+                qb.setTables(DatabaseHelper.place_detail_table);
+                break;
+            case SEARCH:
+                db = DatabaseWrapper.getDatabase(getContext(), DatabaseName.PLACE_DATABASE);
+                qb.setTables(DatabaseHelper.place_table);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
+        Cursor c = qb.query(db,	projection,	selection, selectionArgs,null, null, sortOrder);
 
 
-
+        c.setNotificationUri(getContext().getContentResolver(), uri);
         return c;
 
     }
@@ -109,34 +110,17 @@ public class AvBProviderTest extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         SQLiteDatabase db = null;
-        long rowID;
 
         switch (uriMatcher.match(uri)){
             case PLACE:
                 db = DatabaseWrapper.getDatabase(getContext(), DatabaseName.PLACE_DATABASE);
-                rowID = db.insertWithOnConflict(	DatabaseHelper.place_table, "", values,SQLiteDatabase.CONFLICT_REPLACE);
-                if(rowID == -1){
-                    db.update(DatabaseHelper.place_table,values,"where place_id = ?",new String[]{values.getAsString("place_id")});
-                }
+                long rowID = db.insert(	DatabaseHelper.place_table, "", values);
                 if (rowID > 0)
                 {
                     Uri _uri = ContentUris.withAppendedId(BASE_CONTENT_URI, rowID);
                     getContext().getContentResolver().notifyChange(_uri, null);
                     return _uri;
                 }
-            case PLACEDETAILS:
-                db = DatabaseWrapper.getDatabase(getContext(), DatabaseName.PLACE_DETAILS_DATABASE);
-                rowID = db.insertWithOnConflict(	DatabaseHelper.place_detail_table, "", values,SQLiteDatabase.CONFLICT_REPLACE);
-                if(rowID == -1){
-                    db.update(DatabaseHelper.place_detail_table,values,"where place_id = ?",new String[]{values.getAsString("place_id")});
-                }
-                if (rowID > 0)
-                {
-                    Uri _uri = ContentUris.withAppendedId(BASE_CONTENT_URI, rowID);
-                    getContext().getContentResolver().notifyChange(_uri, null);
-                    return _uri;
-                }
-
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
@@ -200,10 +184,10 @@ public class AvBProviderTest extends ContentProvider {
                 int returnCount = 0;
                 try {
                     for (ContentValues value : values) {
-                        long rowID = db.insertWithOnConflict(	DatabaseHelper.place_table, "", value,SQLiteDatabase.CONFLICT_REPLACE);
-                        if(rowID == -1){
-                            db.update(DatabaseHelper.place_table,value,"where place_id = ?",new String[]{value.getAsString("place_id")});
+                        if(db.rawQuery("select place_id from place where place_id = ? " ,new String[]{value.getAsString("place_id")}).getCount() > 0){
+                            continue;
                         }
+                        long rowID = db.insert(	DatabaseHelper.place_table, "", value);
                         if (rowID != -1) {
                             returnCount++;
                         }

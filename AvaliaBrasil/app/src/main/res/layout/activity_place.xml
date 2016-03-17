@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".avb.PlaceActivity">
+    tools:context=".avb.PlaceActivity"
+    tools:showIn="@layout/content_place">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -21,6 +22,12 @@
             android:layout_height="match_parent"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <com.google.android.gms.maps.MapView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/mapView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

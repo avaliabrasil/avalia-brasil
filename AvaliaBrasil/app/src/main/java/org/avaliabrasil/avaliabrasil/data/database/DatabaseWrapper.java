@@ -29,13 +29,15 @@ public class DatabaseWrapper {
      */
     public static boolean setUp(@NonNull Context context){
         try{
-            sqLiteOpenHelper = new PlaceDatabase(context);
-            sqLiteOpenHelper.close();
-            sqLiteOpenHelper = new PlaceDetailsDatabase(context);
-            sqLiteOpenHelper.close();
+            //sqLiteOpenHelper = new PlaceDatabase(context);
+            //sqLiteOpenHelper.close();
+            //sqLiteOpenHelper = new PlaceDetailsDatabase(context);
+            //sqLiteOpenHelper.close();
 
+            sqLiteOpenHelper = new DatabaseHelper(context);
             return true;
         }catch(Exception e){
+            e.printStackTrace();
             return false;
         }
     }
@@ -52,9 +54,10 @@ public class DatabaseWrapper {
      */
     public static SQLiteDatabase getDatabase(@NonNull Context context ,@NonNull DatabaseName databaseName) throws SQLiteException{
 
-        close();
+        return sqLiteOpenHelper.getWritableDatabase();
+       // close();
 
-        switch(databaseName){
+        /*switch(databaseName){
             case PLACE_DATABASE:
                 sqLiteOpenHelper = new PlaceDatabase(context);
                 return sqLiteOpenHelper.getWritableDatabase();
@@ -63,7 +66,7 @@ public class DatabaseWrapper {
                 return sqLiteOpenHelper.getWritableDatabase();
             default:
                 throw new SQLiteException("Database not found");
-        }
+        }*/
     }
 
     /**

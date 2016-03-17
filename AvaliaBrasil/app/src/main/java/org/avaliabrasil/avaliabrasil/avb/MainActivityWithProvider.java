@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -14,6 +15,8 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -38,7 +41,7 @@ import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragmentWithProvider;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesMapFragmentWithProvider;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
-import org.avaliabrasil.avaliabrasil.data.AvBProvider;
+import org.avaliabrasil.avaliabrasil.data.AvBProviderSearch;
 import org.avaliabrasil.avaliabrasil.data.AvBProviderTest;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
@@ -235,23 +238,18 @@ public class MainActivityWithProvider extends AppCompatActivity
         SearchView searchView = (SearchView) menu.findItem(R.id.search_places).getActionView();
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-
-                return true;
-            }
-        });
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
 
+
+
      return true;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        //handleIntent(intent);
     }
 
     @Override
@@ -343,5 +341,4 @@ public class MainActivityWithProvider extends AppCompatActivity
         }
         return query;
     }
-
 }
