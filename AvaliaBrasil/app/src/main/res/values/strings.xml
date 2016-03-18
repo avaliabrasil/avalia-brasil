@@ -129,4 +129,6 @@
     <!-- Facebook id -->
     <string name="facebook_app_id">604507936379654</string>
 
+    <string name="google_app_id">AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0</string>
+
 </resources>

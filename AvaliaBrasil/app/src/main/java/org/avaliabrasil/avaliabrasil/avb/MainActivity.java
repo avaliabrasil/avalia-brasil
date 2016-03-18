@@ -1,14 +1,19 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
+import android.Manifest;
+import android.app.ActionBar;
 import android.app.SearchManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -26,6 +31,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,7 +55,7 @@ import org.avaliabrasil.avaliabrasil.sync.Observer;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,LoaderManager.LoaderCallbacks<Cursor>{
+        implements NavigationView.OnNavigationItemSelectedListener,LoaderManager.LoaderCallbacks<Cursor>, LocationListener{
 
     static final String URI = "URI";
 
@@ -87,6 +93,7 @@ public class MainActivity extends AppCompatActivity
      */
     public Stack<Observer> observerStack = new Stack<Observer>();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +116,36 @@ public class MainActivity extends AppCompatActivity
         // Instruções para criar o Section Page!!
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
+
+        try {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+            if (!locationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+                showGPSDisabledAlertToUser();
+            }else {
+                if (location == null) {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            1,
+                            50, this);
+                    Log.d("GPS", "GPS Enabled");
+                    if (locationManager != null) {
+                        location = locationManager
+                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                        Log.d("GPS", "Long: " + location.getLongitude());
+                        Log.d("GPS", "Lat: " + location.getLatitude());
+                    }
+                }
+            }
+        }catch(SecurityException e) {
+            e.printStackTrace();
+        }
+
+        fetchDataFromGoogleAPI();
+
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
 
@@ -119,8 +156,6 @@ public class MainActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.search_tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        fetchDataFromGoogleAPI();
-
         getSupportLoaderManager().initLoader(0, null, MainActivity.this);
 
     }
@@ -129,30 +164,9 @@ public class MainActivity extends AppCompatActivity
      * Method use to fetch the data from the google api every time that the activity is started.
      */
     private void fetchDataFromGoogleAPI(){
-        try {
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-
-            if (!locationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER) || !locationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                showGPSDisabledAlertToUser();
-            }
-
-            location = locationManager
-                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            if (location == null) {
-                location = new Location("");
-                location.setLatitude(0);
-                location.setLongitude(0);
-            }
-            GooglePlacesAPIClient.getNearlyPlaces(MainActivity.this,location);
-
-        } catch (SecurityException e){
-            e.printStackTrace();
-        }
+        GooglePlacesAPIClient.getNearlyPlaces(MainActivity.this, location);
     }
+
 
     /**
      * Show the user a message if the GPS is turned off.
@@ -274,6 +288,27 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        this.location = location;
+        getSupportLoaderManager().restartLoader(0,null,MainActivity.this);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

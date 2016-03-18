@@ -28,7 +28,8 @@ import org.avaliabrasil.avaliabrasil.sync.Observer;
 /**
  * Created by Pedro on 29/02/2016.
  */
-public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerClickListener,Observer/*LoaderManager.LoaderCallbacks<Cursor>*/{
+public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerClickListener,
+        Observer{
     public final String LOG_TAG = this.getClass().getSimpleName();
 
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -67,8 +68,11 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         googleMap = mMapView.getMap();
 
 
+        double latitude = MainActivity.location.getLatitude();
+        double longitude = MainActivity.location.getLongitude();
+
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(MainActivity.location.getLatitude(), MainActivity.location.getLongitude())).zoom(16).build();
+                .target(new LatLng(latitude,longitude)).zoom(16).build();
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
 
