@@ -1,5 +1,7 @@
 package org.avaliabrasil.avaliabrasil.sync;
 
+import android.database.Cursor;
+
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>
  *
@@ -12,5 +14,5 @@ package org.avaliabrasil.avaliabrasil.sync;
  */
 public interface Observer {
 
-    public void update();
+    public void update(Cursor cursor);
 }

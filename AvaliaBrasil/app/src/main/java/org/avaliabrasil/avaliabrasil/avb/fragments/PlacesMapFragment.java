@@ -3,6 +3,7 @@ package org.avaliabrasil.avaliabrasil.avb.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -246,7 +247,7 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
     }
 
     @Override
-    public void update() {
+    public void update(Cursor cursor) {
         googleMap.clear();
         fillMarks();
     }

@@ -71,7 +71,11 @@ public class AvBProviderTest extends ContentProvider {
                 db = DatabaseWrapper.getDatabase(getContext(), DatabaseName.PLACE_DATABASE);
                 qb.setTables(DatabaseHelper.place_table);
 
-                c = qb.query(db,	projection,	selection, selectionArgs,null, null, sortOrder);
+                if(selectionArgs != null){
+                    c = qb.query(db,projection,	"name like ?", selectionArgs,null, null, sortOrder);
+                }else{
+                    c = qb.query(db,projection,	selection, selectionArgs,null, null, sortOrder);
+                }
 
                 c.setNotificationUri(getContext().getContentResolver(), uri);
                 break;
@@ -82,12 +86,7 @@ public class AvBProviderTest extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
-
-
-
-
         return c;
-
     }
 
     @Nullable

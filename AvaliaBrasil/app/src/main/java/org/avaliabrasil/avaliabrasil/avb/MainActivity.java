@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity
 
     public void update(){
         for(Observer observer : observers){
-            observer.update();
+            observer.update(null);
         }
     }
 }

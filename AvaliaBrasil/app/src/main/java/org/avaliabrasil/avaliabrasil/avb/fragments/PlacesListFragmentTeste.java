@@ -3,6 +3,7 @@ package org.avaliabrasil.avaliabrasil.avb.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -223,7 +224,7 @@ public class PlacesListFragmentTeste extends Fragment implements android.locatio
     }
 
     @Override
-    public void update() {
+    public void update(Cursor cursor) {
         mPlacesListAdapter = new PlacesListAdapterTeste(getContext(), MainActivity.searchResult, location);
         mListView.setAdapter(mPlacesListAdapter);
     }

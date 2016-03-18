@@ -29,12 +29,13 @@ import org.avaliabrasil.avaliabrasil.avb.MainActivityWithProvider;
 import org.avaliabrasil.avaliabrasil.avb.PlaceActivityTeste;
 import org.avaliabrasil.avaliabrasil.data.AvBProviderTest;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.ResultPlaceSearch;
+import org.avaliabrasil.avaliabrasil.sync.Observer;
 
 /**
  * Created by Pedro on 29/02/2016.
  */
 // PlacesMapFragment: Map of nearby found places
-public class PlacesMapFragmentWithProvider extends Fragment implements GoogleMap.OnMarkerClickListener,LoaderManager.LoaderCallbacks<Cursor>{
+public class PlacesMapFragmentWithProvider extends Fragment implements GoogleMap.OnMarkerClickListener,Observer/*LoaderManager.LoaderCallbacks<Cursor>*/{
     public final String LOG_TAG = this.getClass().getSimpleName();
 
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -78,7 +79,7 @@ public class PlacesMapFragmentWithProvider extends Fragment implements GoogleMap
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
 
-        getLoaderManager().initLoader(0, null, this);
+        //getLoaderManager().initLoader(0, null, this);
 
         return rootView;
     }
@@ -108,12 +109,38 @@ public class PlacesMapFragmentWithProvider extends Fragment implements GoogleMap
     }
 
     @Override
+    public void update(Cursor cursor) {
+        if(cursor == null){
+            googleMap.clear();
+        }else{
+            MarkerOptions marker;
+
+            cursor.moveToFirst();
+
+            while(cursor.moveToNext()){
+                marker = new MarkerOptions().position(
+                        new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("place_id")));
+
+                // Changing marker icon
+                marker.icon(BitmapDescriptorFactory
+                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+
+                // adding marker
+                googleMap.addMarker(marker);
+            }
+
+            googleMap.setOnMarkerClickListener(this);
+        }
+    }
+
+        /*@Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = AvBProviderTest.PLACE_CONTENT_URI;
         return new CursorLoader(getContext(), uri, null, null, null, null);
-    }
+    }*/
 
-    @Override
+    /*@Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         MarkerOptions marker;
 
@@ -138,7 +165,7 @@ public class PlacesMapFragmentWithProvider extends Fragment implements GoogleMap
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
        googleMap.clear();
-    }
+    }*/
 
     @Override
     public boolean onMarkerClick(Marker marker) {

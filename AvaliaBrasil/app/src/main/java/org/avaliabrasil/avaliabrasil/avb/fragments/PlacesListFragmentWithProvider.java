@@ -40,7 +40,7 @@ import org.avaliabrasil.avaliabrasil.sync.Observer;
 /**
  * Created by Pedro on 29/02/2016.
  */
-public class PlacesListFragmentWithProvider extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class PlacesListFragmentWithProvider extends Fragment implements Observer/*LoaderManager.LoaderCallbacks<Cursor>*/{
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -103,7 +103,7 @@ public class PlacesListFragmentWithProvider extends Fragment implements LoaderMa
             mPosition = savedInstanceState.getInt(SELECTED_place);
         }
 
-        getLoaderManager().initLoader(0, null, this);
+       // getLoaderManager().initLoader(0, null, this);
 
         return rootView;
     }
@@ -132,6 +132,11 @@ public class PlacesListFragmentWithProvider extends Fragment implements LoaderMa
     }
 
     @Override
+    public void update(Cursor cursor) {
+        mPlacesListAdapter.swapCursor(cursor);
+    }
+
+   /* @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = AvBProviderTest.PLACE_CONTENT_URI;
         return new CursorLoader(getContext(), uri, null, null, null, null);
@@ -145,5 +150,5 @@ public class PlacesListFragmentWithProvider extends Fragment implements LoaderMa
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mPlacesListAdapter.swapCursor(null);
-    }
+    }*/
 }
