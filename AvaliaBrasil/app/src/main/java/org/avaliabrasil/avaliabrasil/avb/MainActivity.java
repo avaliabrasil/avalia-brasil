@@ -1,8 +1,13 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
 import android.app.SearchManager;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -10,18 +15,21 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -32,38 +40,52 @@ import com.google.gson.Gson;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
-import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragmentTeste;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesMapFragment;
-import org.avaliabrasil.avaliabrasil.data.AvBContract;
+import org.avaliabrasil.avaliabrasil.data.AvBProvider;
+import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.ResultPlaceSearch;
-import org.avaliabrasil.avaliabrasil.sync.AvbSyncAdapter;
 import org.avaliabrasil.avaliabrasil.sync.Observer;
 
-import java.util.ArrayList;
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,LoaderManager.LoaderCallbacks<Cursor>{
 
     static final String URI = "URI";
 
-    //TODO: Implementar variável userId ou outra corretamente!
-    private static String USRID = "userId";
+    /**
+     * Constant for the {@link Intent}
+     */
+    private static final String USRID = "userId";
+
+    /**
+     * Constant for the {@link Intent}
+     */
+    private static final String GOOGLEPLACESID = "googlePlacesId";
+
+    /**
+     * The user id that comes with the {@link LoginActivity}
+     */
     private int userId = 0;
-    private static String GOOGLEPLACESID = "googlePlacesId";
 
-    public static PlaceSearch placeSearch;
-
-    public static PlaceSearch searchResult = new PlaceSearch();
-
-    private static ArrayList<Observer> observers = new ArrayList<Observer>(4);
-
-    // Definindo o Google Place Id que será passado para o Place Activity
-    public String googlePlacesId = "asdasgd8218hdddDdsSAD";
+    /**
+     * Google places id, used to fetch the places by API
+     */
+    private static final String googlePlacesId = "asdasgd8218hdddDdsSAD";
 
     // Variáveis para o ViewPager e Tabs!
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+
+    /**
+     * User location
+     */
+    public static Location location;
+
+    /**
+     * For notify the fragment children's.
+     */
+    public Stack<Observer> observerStack = new Stack<Observer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,23 +119,70 @@ public class MainActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.search_tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        fetchDataFromGoogleAPI();
 
-        // Quando adicionei uma activity chamada dentro do fragment, io app parava quando clicava-se no botão voltar do Place Activity!
-        // Comentei estas linhas e funcinou, mas não entendi porque.
-        //String userId = getIntent().getExtras().getString(USRID);
-        // Toast.makeText(this, userId, Toast.LENGTH_SHORT).show();
-        //TODO: Tirar isto e colocar código real depois!
-        // Defining the UserId:
-//        userId = getIntent().getExtras().getInt(USRID);
-//        Toast.makeText(this,"Id de Usuário : " + userId,Toast.LENGTH_SHORT).show();
+        getSupportLoaderManager().initLoader(0, null, MainActivity.this);
 
-
-        AvbSyncAdapter.syncImmediately(this, getSearchQuery());
-
-        // TODO: Inicializar um SyncAdapter só quando o usuário fizer uma busca!
     }
 
-        @Override
+    /**
+     * Method use to fetch the data from the google api every time that the activity is started.
+     */
+    private void fetchDataFromGoogleAPI(){
+        try {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+
+            if (!locationManager
+                    .isProviderEnabled(LocationManager.GPS_PROVIDER) || !locationManager
+                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                showGPSDisabledAlertToUser();
+            }
+
+            location = locationManager
+                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            if (location == null) {
+                location = new Location("");
+                location.setLatitude(0);
+                location.setLongitude(0);
+            }
+            GooglePlacesAPIClient.getNearlyPlaces(MainActivity.this,location);
+
+        } catch (SecurityException e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Show the user a message if the GPS is turned off.
+     */
+    private void showGPSDisabledAlertToUser() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder
+                .setMessage(
+                        "GPS está desativado em seu dispositivo. Deseja ativa-lo?")
+                .setCancelable(false)
+                .setPositiveButton("Configurações de ativação do GPS",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent callGPSSettingIntent = new Intent(
+                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(callGPSSettingIntent);
+                            }
+                        });
+        alertDialogBuilder.setNegativeButton("Cancelar",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+    }
+
+
+    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -153,46 +222,43 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-    // TODO: Tirar este menu!
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
 
-        // From http://developer.android.com/guide/topics/search/search-dialog.html
-        // Get the SearchView and set the searchable configuration
+        getMenuInflater().inflate(R.menu.main, menu);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search_places).getActionView();
+        final SearchView searchView = (SearchView) menu.findItem(R.id.search_places).getActionView();
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+
+        ImageView closeButton = (ImageView)searchView.findViewById(R.id.search_close_btn);
+
+        // Set on click listener
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchView.setQuery("",false);
+                getSupportLoaderManager().restartLoader(0,null,MainActivity.this);
+            }
+        });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                searchResult.getResults().clear();
-
-                for(ResultPlaceSearch r : placeSearch.getResults()){
-                    if(r.getVicinity().toLowerCase().contains(query)||r.getName().toLowerCase().contains(query)){
-                        searchResult.getResults().add(r);
-                    }
-                }
-                update();
+                Bundle bundle = new Bundle();
+                bundle.putString("query","%"+query+"%");
+                getSupportLoaderManager().restartLoader(0,bundle,MainActivity.this);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                if(newText.isEmpty()){
-                    searchResult.getResults().clear();
-                    searchResult.getResults().addAll(placeSearch.getResults());
-                }
                 return true;
             }
         });
-        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
-
-     return true;
+        return true;
     }
 
     @Override
@@ -209,10 +275,7 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -221,26 +284,28 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-
-            //TODO: Criar um case aqui.
-            //Se position é 0, retornar nova instância do PlacesListFragment
-            //Se position é 1, retornar nova instância do PlacesMapFragment
 
             switch (position) {
                 case 0:
-                    return PlacesListFragmentTeste.newInstance(position + 1);
+                    PlacesListFragment placesListFragmentWithProvider = PlacesListFragment.newInstance(position + 1);
+
+                    observerStack.add(placesListFragmentWithProvider);
+
+                    return placesListFragmentWithProvider;
 
                 case 1:
-                    return PlacesMapFragment.newInstance(position + 1);
+
+                    PlacesMapFragment placesMapFragmentWithProvider = PlacesMapFragment.newInstance(position + 1);
+
+                    observerStack.add(placesMapFragmentWithProvider);
+
+                    return placesMapFragmentWithProvider;
             }
             return null;
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
             return 2;
         }
 
@@ -256,7 +321,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    // TODO: Tempo problema aqui...
     public void startPlaceActivity (View view) {
         Intent intent_place_activity = new Intent(MainActivity.this, PlaceActivity.class);
         intent_place_activity.putExtra(USRID, userId);
@@ -264,39 +328,28 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent_place_activity);
     }
 
-    public Uri getSearchUri () {
-        String query = "";
-        // Verificando se tenho alguma pesquisa:
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            query = intent.getStringExtra(SearchManager.QUERY);
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        if(args != null){
+            Uri uri = AvBProvider.PLACE_CONTENT_URI;
+            return new CursorLoader(MainActivity.this, uri, null, null, new String[]{args.getString("query","")}, null);
+        }else {
+            Uri uri = AvBProvider.PLACE_CONTENT_URI;
+            return new CursorLoader(MainActivity.this, uri, null, null, null, null);
         }
-        Uri uri = AvBContract.PlaceEntry.PLACES_URI;
-        uri = uri.buildUpon().appendPath(query).build();
-        return uri;
     }
 
-    public String getSearchQuery () {
-        String query = "";
-        // Verificando se tenho alguma pesquisa:
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            query = intent.getStringExtra(SearchManager.QUERY);
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        for(Observer ob : observerStack){
+            ob.update(data);
         }
-        return query;
     }
 
-    public static void attachObserver(Observer observer){
-        observers.add(observer);
-    }
-
-    public void clearObserver(){
-        observers.clear();
-    }
-
-    public void update(){
-        for(Observer observer : observers){
-            observer.update(null);
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        for(Observer ob : observerStack){
+            ob.update(null);
         }
     }
 }

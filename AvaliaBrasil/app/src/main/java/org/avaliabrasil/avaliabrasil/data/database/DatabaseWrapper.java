@@ -29,11 +29,6 @@ public class DatabaseWrapper {
      */
     public static boolean setUp(@NonNull Context context){
         try{
-            //sqLiteOpenHelper = new PlaceDatabase(context);
-            //sqLiteOpenHelper.close();
-            //sqLiteOpenHelper = new PlaceDetailsDatabase(context);
-            //sqLiteOpenHelper.close();
-
             sqLiteOpenHelper = new DatabaseHelper(context);
             return true;
         }catch(Exception e){
@@ -46,27 +41,14 @@ public class DatabaseWrapper {
      * Set the new database by its {@link DatabaseName} and return to the user,
      * if used the same database many times, better call {@link #getLastDatabase()}
      * @param context
-     * @param databaseName
      * @return The selection database.
      * @throws SQLiteException
      * @version 1.0
      * @since 1.0
      */
-    public static SQLiteDatabase getDatabase(@NonNull Context context ,@NonNull DatabaseName databaseName) throws SQLiteException{
+    public static SQLiteDatabase getDatabase(@NonNull Context context) throws SQLiteException{
 
         return sqLiteOpenHelper.getWritableDatabase();
-       // close();
-
-        /*switch(databaseName){
-            case PLACE_DATABASE:
-                sqLiteOpenHelper = new PlaceDatabase(context);
-                return sqLiteOpenHelper.getWritableDatabase();
-            case PLACE_DETAILS_DATABASE:
-                sqLiteOpenHelper = new PlaceDetailsDatabase(context);
-                return sqLiteOpenHelper.getWritableDatabase();
-            default:
-                throw new SQLiteException("Database not found");
-        }*/
     }
 
     /**

@@ -1,131 +1,50 @@
 package org.avaliabrasil.avaliabrasil.avb.fragments;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.MainActivity;
-import org.avaliabrasil.avaliabrasil.avb.PlaceActivityTeste;
-import org.avaliabrasil.avaliabrasil.avb.adapters.PlacesListAdapterTeste;
-import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.ResultPlaceSearch;
+import org.avaliabrasil.avaliabrasil.avb.PlaceActivity;
 import org.avaliabrasil.avaliabrasil.sync.Observer;
 
 /**
  * Created by Pedro on 29/02/2016.
  */
-// PlacesMapFragment: Map of nearby found places
-public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerClickListener,
-        Observer{
+public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerClickListener,Observer/*LoaderManager.LoaderCallbacks<Cursor>*/{
     public final String LOG_TAG = this.getClass().getSimpleName();
-    /**
-     * The fragment argument representing the section number for this
-     * fragment.
-     */
-    //TODO: Colocar outros parâmetros se necessário
+
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    private Location location;
     private MapView mMapView;
     private GoogleMap googleMap;
 
     public PlacesMapFragment() {
     }
 
-    /**
-     * Returns a new instance of this fragment for the given section
-     * number.
-     */
     public static PlacesMapFragment newInstance(int sectionNumber) {
         PlacesMapFragment fragment = new PlacesMapFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-            LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-
-            MainActivity.attachObserver(this);
-
-            try{
-                location = locationManager
-                        .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-                if(!locationManager
-                        .isProviderEnabled(LocationManager.GPS_PROVIDER)||!locationManager
-                        .isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-                    showGPSDisabledAlertToUser();
-                }
-
-                location = locationManager
-                        .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-                if(location == null){
-                    location = new Location("");
-                    location.setLatitude(0);
-                    location.setLongitude(0);
-                }
-
-                if(MainActivity.placeSearch == null){
-
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getNearlyPlaces(location.getLatitude(),location.getLongitude(),500,null,"AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                Gson gson = new Gson();
-                                PlaceSearch placeSearch = gson.fromJson(response, PlaceSearch.class);
-                                MainActivity.placeSearch = placeSearch;
-
-                                MainActivity.searchResult.getResults().addAll(placeSearch.getResults());
-                                fillMarks();
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });
-
-                Volley.newRequestQueue(getContext()).add(stringRequest);
-                }
-            }catch(SecurityException e){
-                e.printStackTrace();
-            }
     }
 
     @Override
@@ -149,39 +68,13 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
 
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(location.getLatitude(), location.getLongitude())).zoom(16).build();
+                .target(new LatLng(MainActivity.location.getLatitude(), MainActivity.location.getLongitude())).zoom(16).build();
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
 
-        if(MainActivity.placeSearch != null){
-            fillMarks();
-        }
+        googleMap.setOnMarkerClickListener(this);
 
         return rootView;
-    }
-
-    private void showGPSDisabledAlertToUser() {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-        alertDialogBuilder
-                .setMessage(
-                        "GPS está desativado em seu dispositivo. Deseja ativa-lo?")
-                .setCancelable(false)
-                .setPositiveButton("Configurações de ativação do GPS",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent callGPSSettingIntent = new Intent(
-                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(callGPSSettingIntent);
-                            }
-                        });
-        alertDialogBuilder.setNegativeButton("Cancelar",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alert = alertDialogBuilder.create();
-        alert.show();
     }
 
     @Override
@@ -208,47 +101,41 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         mMapView.onLowMemory();
     }
 
-    private void fillMarks(){
-        MarkerOptions marker;
+    @Override
+    public void update(Cursor cursor) {
+            googleMap.clear();
 
-        for(ResultPlaceSearch r : MainActivity.searchResult.getResults()){
-            marker = new MarkerOptions().position(
-                    new LatLng(r.getGeometry().getLocation().getLat(), r.getGeometry().getLocation().getLng())).title(r.getPlaceId());
+            MarkerOptions marker;
 
-            // Changing marker icon
-            marker.icon(BitmapDescriptorFactory
-                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+            if(cursor == null){
+                return;
+            }
 
+            if(cursor.isLast()){
+                cursor.moveToPosition(-1);
+            }
 
-            // adding marker
-            googleMap.addMarker(marker);
-        }
+            while(cursor.moveToNext()){
+                marker = new MarkerOptions().position(
+                        new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("place_id")));
 
-        googleMap.setOnMarkerClickListener(this);
+                marker.icon(BitmapDescriptorFactory
+                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+                googleMap.addMarker(marker);
+            }
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        for(ResultPlaceSearch r : MainActivity.placeSearch.getResults()){
-            if(marker.getTitle().contentEquals(r.getPlaceId())){
-                Intent intent = new Intent(getContext(), PlaceActivityTeste.class);
-                Location placeLocation = new Location("");
+        Location placeLocation = new Location("");
+        Intent intent = new Intent(getContext(), PlaceActivity.class);
+        placeLocation.setLatitude(marker.getPosition().latitude);
+        placeLocation.setLongitude(marker.getPosition().longitude);
 
-                placeLocation.setLatitude(r.getGeometry().getLocation().getLat());
-                placeLocation.setLongitude(r.getGeometry().getLocation().getLng());
-
-                intent.putExtra("placeid",r.getPlaceId());
-                intent.putExtra("distance",(int)location.distanceTo(placeLocation) + "m");
-                startActivity(intent);
-                break;
-            }
-        }
+        intent.putExtra("placeid",marker.getTitle());
+        intent.putExtra("distance",(int)MainActivity.location.distanceTo(placeLocation) + "m");
+        startActivity(intent);
         return true;
-    }
-
-    @Override
-    public void update(Cursor cursor) {
-        googleMap.clear();
-        fillMarks();
     }
 }
