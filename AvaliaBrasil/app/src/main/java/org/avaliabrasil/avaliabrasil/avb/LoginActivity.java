@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
@@ -26,11 +25,11 @@ import java.util.Arrays;
 public class LoginActivity extends  AppCompatActivity {
     public final String LOG_TAG = this.getClass().getSimpleName();
 
-
+    /**
+     *  TODO refatorar para classe única
+     */
     private static final int INITIAL_REQUEST=1337;
     private static final int LOCATION_REQUEST=INITIAL_REQUEST+3;
-
-
     private static final String[] INITIAL_PERMS={
             Manifest.permission.ACCESS_FINE_LOCATION
     };
@@ -51,6 +50,9 @@ public class LoginActivity extends  AppCompatActivity {
      */
     private CallbackManager callbackManager;
 
+    //Manter logon mesmo com usuario logado.
+    //TODO se já logado no facebook, ou por login anonimo, redirecionar diretamente a main activity.
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,11 +61,6 @@ public class LoginActivity extends  AppCompatActivity {
         FacebookSdk.sdkInitialize(LoginActivity.this);
 
         setContentView(R.layout.activity_login);
-
-        StrictMode.ThreadPolicy policy = new StrictMode.
-                ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
 
         callbackManager = CallbackManager.Factory.create();
         facebookLoginButton = (LoginButton) findViewById(R.id.login_button);

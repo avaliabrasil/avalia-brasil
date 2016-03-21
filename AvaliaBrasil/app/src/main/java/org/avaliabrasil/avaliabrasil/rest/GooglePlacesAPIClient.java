@@ -5,7 +5,6 @@ import android.content.Context;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -16,7 +15,6 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import org.avaliabrasil.avaliabrasil.avb.MainActivity;
 import org.avaliabrasil.avaliabrasil.data.AvBProvider;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
@@ -81,7 +79,12 @@ public class GooglePlacesAPIClient {
         target.append("&radius=");
         target.append(radius);
 
+        // TODO : Adicionar tipos padrão de lugares para pesquisar
+        // types = new String[]{"health"};
+
         if(types != null && types.length > 0){
+            target.append("&types=");
+            target.append("health");
             //target = target.queryParam("types",types);
         }
 

@@ -1,22 +1,15 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -38,6 +31,7 @@ import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.data.AvBProvider;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
+
 import java.util.ArrayList;
 
 public class PlaceActivity extends AppCompatActivity {
@@ -60,6 +54,7 @@ public class PlaceActivity extends AppCompatActivity {
 
         // Definindo o título da Toolbar
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        //TODO Passar diretamente pelo bundle o nome do lugar
         toolbarLayout.setTitle("Buscando lugar...");
 
         // Ativando a opção voltar da Toolbar

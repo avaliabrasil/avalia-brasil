@@ -1,19 +1,14 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
-import android.Manifest;
-import android.app.ActionBar;
 import android.app.SearchManager;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -37,19 +32,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.gson.Gson;
-
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesMapFragment;
 import org.avaliabrasil.avaliabrasil.data.AvBProvider;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
 import org.avaliabrasil.avaliabrasil.sync.Observer;
 
 import java.util.Stack;
@@ -94,6 +81,9 @@ public class MainActivity extends AppCompatActivity
     public Stack<Observer> observerStack = new Stack<Observer>();
 
 
+    //Revisar parte de usuario sem internet
+    //Revisar rotação de orientação
+    //Dados não retornam
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,23 +107,33 @@ public class MainActivity extends AppCompatActivity
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
 
+        //TODO PRECISA DE MAIS TESTES
         try {
             LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+
+            //Não conforme
             if (!locationManager
                     .isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
                 showGPSDisabledAlertToUser();
             }else {
                 if (location == null) {
+
                     locationManager.requestLocationUpdates(
                             LocationManager.GPS_PROVIDER,
                             1,
                             50, this);
                     Log.d("GPS", "GPS Enabled");
-                    if (locationManager != null) {
+                    if (location != null) {
+
+                        // TODO #Klaus : Este comando está retornando null no meu celular. TEm que tratar este caso.
                         location = locationManager
                                 .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+
+
+                        fetchDataFromGoogleAPI();
 
                         Log.d("GPS", "Long: " + location.getLongitude());
                         Log.d("GPS", "Lat: " + location.getLatitude());
@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
-        fetchDataFromGoogleAPI();
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -157,7 +156,6 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setupWithViewPager(mViewPager);
 
         getSupportLoaderManager().initLoader(0, null, MainActivity.this);
-
     }
 
     /**
@@ -260,7 +258,9 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                //Buscar lista de lugar
                 Bundle bundle = new Bundle();
+                //TODO melhorar
                 bundle.putString("query","%"+query+"%");
                 getSupportLoaderManager().restartLoader(0,bundle,MainActivity.this);
                 return true;
@@ -290,6 +290,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    //TODO tirar fora atualização de localização.
     @Override
     public void onLocationChanged(Location location) {
         this.location = location;

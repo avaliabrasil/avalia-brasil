@@ -15,6 +15,8 @@ import android.support.annotation.Nullable;
  * @version 1.0
  * @since 1.0
  */
+
+//Modificar para o padrão do google
 public class DatabaseWrapper {
 
     private static SQLiteOpenHelper sqLiteOpenHelper;

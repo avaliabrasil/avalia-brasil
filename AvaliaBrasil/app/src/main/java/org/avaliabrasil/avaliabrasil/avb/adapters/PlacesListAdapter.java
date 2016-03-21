@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
 
 /**
  * {@link PlacesListAdapter} exposes a list of Places
@@ -24,6 +23,7 @@ public class PlacesListAdapter extends CursorAdapter {
      * Cache of the children views for a forecast list item.
      */
     public static class ViewHolder {
+        //TODO adicionar margin na box.
         public final ImageView iconView;
         public final TextView nameView;
         public final TextView addressView;

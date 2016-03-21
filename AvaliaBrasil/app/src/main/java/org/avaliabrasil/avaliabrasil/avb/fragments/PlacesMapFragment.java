@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +64,7 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
             e.printStackTrace();
         }
 
+        //TODO colocar padrão
         googleMap = mMapView.getMap();
 
 
@@ -123,6 +123,7 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
                 marker = new MarkerOptions().position(
                         new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("place_id")));
 
+                //TODO Arrumar marcador, para mostrar um nome/titulo.
                 marker.icon(BitmapDescriptorFactory
                         .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
 

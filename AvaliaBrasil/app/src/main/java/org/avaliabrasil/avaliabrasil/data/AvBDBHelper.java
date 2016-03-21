@@ -24,7 +24,7 @@ public class AvBDBHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_PLACE_TABLE =
                 "CREATE TABLE " + PlaceEntry.TABLE_NAME + " (" +
 
-                        // AvaliaBrasil MySql Entries
+
                         PlaceEntry._ID + " INTEGER PRIMARY KEY," +
                         PlaceEntry.COLUMN_PLACE_ID + " TEXT UNIQUE NOT NULL, " +
                         PlaceEntry.COLUMN_NAME + " TEXT NOT NULL, " +
