@@ -46,7 +46,8 @@ public class PlaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getIntent().getExtras().getString("placeid") == null || getIntent().getExtras().getString("distance") == null){
+        if(getIntent().getExtras().getString("placeid") == null || getIntent().getExtras().getString("distance") == null ||
+                getIntent().getExtras().getString("name") == null){
             finish();
         }
 
@@ -55,7 +56,7 @@ public class PlaceActivity extends AppCompatActivity {
         // Definindo o título da Toolbar
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         //TODO Passar diretamente pelo bundle o nome do lugar
-        toolbarLayout.setTitle("Buscando lugar...");
+        toolbarLayout.setTitle(getIntent().getExtras().getString("name"));
 
         // Ativando a opção voltar da Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

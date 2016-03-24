@@ -123,7 +123,7 @@
 
     <!-- SyncAdapter related -->
     <string name="api_url">http://api.avaliabrasil.org</string>
-    <string name="sync_account_type">avaliabrasil.org</string>
+    <string name="sync_account_type">org.avaliabrasil.avaliabrasil</string>
     <string name="content_authority">org.avaliabrasil.avaliabrasil</string>
 
     <!-- Facebook id -->

@@ -1,15 +1,24 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -30,15 +39,23 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesMapFragment;
 import org.avaliabrasil.avaliabrasil.data.AvBProvider;
+import org.avaliabrasil.avaliabrasil.data.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.User;
+import org.avaliabrasil.avaliabrasil.sync.Constant;
 import org.avaliabrasil.avaliabrasil.sync.Observer;
 
+import java.io.IOException;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity
@@ -80,6 +97,15 @@ public class MainActivity extends AppCompatActivity
      */
     public Stack<Observer> observerStack = new Stack<Observer>();
 
+    /**
+     * User defined to {@link org.avaliabrasil.avaliabrasil.sync.AvbAuthenticator}
+     */
+    private User user;
+
+    private AccountManager manager;
+
+
+    GoogleApiClient mGoogleApiClient;
 
     //Revisar parte de usuario sem internet
     //Revisar rotação de orientação
@@ -87,76 +113,51 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        // Add Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        Log.d("MainActivity", "onCreate: ");
 
-        // Add Drawer
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        // Instruções para criar o Section Page!!
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-
-        //TODO PRECISA DE MAIS TESTES
-        try {
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-
-            //Não conforme
-            if (!locationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-
-                showGPSDisabledAlertToUser();
-            }else {
-                if (location == null) {
-
-                    locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER,
-                            1,
-                            50, this);
-                    Log.d("GPS", "GPS Enabled");
-                    if (location != null) {
-
-                        // TODO #Klaus : Este comando está retornando null no meu celular. TEm que tratar este caso.
-                        location = locationManager
-                                .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-
-
-                        fetchDataFromGoogleAPI();
-
-                        Log.d("GPS", "Long: " + location.getLongitude());
-                        Log.d("GPS", "Lat: " + location.getLatitude());
-                    }
-                }
-            }
-        }catch(SecurityException e) {
-            e.printStackTrace();
+        if(savedInstanceState == null){
+            new Loading().execute();
         }
-
-
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.view_page_container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.search_tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-
-        getSupportLoaderManager().initLoader(0, null, MainActivity.this);
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onStart() {
+
+        Log.d("MainActivity", "onStart: ");
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        Log.d("MainActivity", "onStop: ");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("MainActivity", "onResume: ");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("MainActivity", "onPause: ");
+    }
+
+
 
     /**
      * Method use to fetch the data from the google api every time that the activity is started.
@@ -294,6 +295,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location location) {
         this.location = location;
+
+        fetchDataFromGoogleAPI();
+
         getSupportLoaderManager().restartLoader(0,null,MainActivity.this);
     }
 
@@ -323,7 +327,7 @@ public class MainActivity extends AppCompatActivity
 
             switch (position) {
                 case 0:
-                    PlacesListFragment placesListFragmentWithProvider = PlacesListFragment.newInstance(position + 1);
+                    PlacesListFragment placesListFragmentWithProvider = PlacesListFragment.newInstance(position + 1,location);
 
                     observerStack.add(placesListFragmentWithProvider);
 
@@ -331,7 +335,7 @@ public class MainActivity extends AppCompatActivity
 
                 case 1:
 
-                    PlacesMapFragment placesMapFragmentWithProvider = PlacesMapFragment.newInstance(position + 1);
+                    PlacesMapFragment placesMapFragmentWithProvider = PlacesMapFragment.newInstance(position + 1,location);
 
                     observerStack.add(placesMapFragmentWithProvider);
 
@@ -387,5 +391,121 @@ public class MainActivity extends AppCompatActivity
         for(Observer ob : observerStack){
             ob.update(null);
         }
+    }
+
+    private class Loading extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "Executed";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+
+
+            user = ((AvaliaBrasilApplication)getApplication()).getUser();
+
+            manager = AccountManager.get(MainActivity.this);
+
+            Log.d("MainActivity", "onCreate: manager.getAccounts().length: " + manager.getAccounts().length);
+
+            if(manager.getAccounts().length == 0){
+                manager.addAccount(Constant.ACCOUNT_TYPE, Constant.ACCOUNT_TOKEN_TYPE_USER, null, null, MainActivity.this, new AccountManagerCallback<Bundle>() {
+                    @Override
+                    public void run(AccountManagerFuture<Bundle> future) {
+                        try {
+                            Bundle bundle = future.getResult();
+
+                        } catch (OperationCanceledException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (AuthenticatorException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, null);
+            }else{
+                setContentView(R.layout.activity_main);
+
+                // Add Toolbar
+                Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+                setSupportActionBar(toolbar);
+
+                // Add Drawer
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                        MainActivity.this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                drawer.setDrawerListener(toggle);
+                toggle.syncState();
+
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                navigationView.setNavigationItemSelectedListener(MainActivity.this);
+
+                // Instruções para criar o Section Page!!
+                // Create the adapter that will return a fragment for each of the three
+                // primary sections of the activity.
+
+                try {
+                    LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+                    if (!locationManager
+                            .isProviderEnabled(LocationManager.GPS_PROVIDER)&&!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+
+                        showGPSDisabledAlertToUser();
+                    }else {
+                        if (location == null) {
+
+                            Criteria criteria = new Criteria();
+                            criteria.setAccuracy(Criteria.ACCURACY_FINE);
+                            criteria.setAltitudeRequired(false);
+                            criteria.setBearingRequired(false);
+                            criteria.setCostAllowed(true);
+                            criteria.setPowerRequirement(Criteria.POWER_MEDIUM);
+                            String provider = locationManager.getBestProvider(criteria, true);
+                            location = locationManager.getLastKnownLocation(provider == null ? "":provider);
+                        }
+                    }
+                }catch(SecurityException e) {
+                    e.printStackTrace();
+                }
+
+
+                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+
+                // Set up the ViewPager with the sections adapter.
+                mViewPager = (ViewPager) findViewById(R.id.view_page_container);
+                mViewPager.setAdapter(mSectionsPagerAdapter);
+
+                TabLayout tabLayout = (TabLayout) findViewById(R.id.search_tabs);
+                tabLayout.setupWithViewPager(mViewPager);
+
+                getSupportLoaderManager().initLoader(0, null, MainActivity.this);
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+            ImageView view = new ImageView(MainActivity.this);
+            view.setImageDrawable(getDrawable(R.drawable.retangular_logo));
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT
+                    ,ViewGroup.LayoutParams.FILL_PARENT);
+            view.setLayoutParams(layoutParams);
+            setContentView(view);
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
     }
 }

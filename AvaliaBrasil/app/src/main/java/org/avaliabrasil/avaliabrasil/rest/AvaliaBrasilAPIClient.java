@@ -65,7 +65,7 @@ public class AvaliaBrasilAPIClient {
      * @version 1.0
      * @return {@link String} targeting the base API.
      */
-    private static String getUserTokenURL(){
+    public static String getUserTokenURL(){
         StringBuilder target = new StringBuilder();
         target.append(avaliabrasilApiTarget);
         target.append("user/");
@@ -76,39 +76,5 @@ public class AvaliaBrasilAPIClient {
         return target.toString();
     }
 
-    public static void getUserToken(final Context context){
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserTokenURL(),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Gson gson = new Gson();
-                        JsonParser jsonParser = new JsonParser();
-                        JsonObject jo = (JsonObject)jsonParser.parse(response);
-
-                        UserToken userToken = gson.fromJson(jo.get("data").getAsJsonObject(), UserToken.class);
-                        Intent intent_main_activity = new Intent(context,MainActivity.class);
-                        intent_main_activity.putExtra(USRID, android_id);
-                        context.startActivity(intent_main_activity);
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams () {
-                String android_id = Settings.Secure.getString(context.getContentResolver(),
-                        Settings.Secure.ANDROID_ID);
-
-                Map<String, String> params = new HashMap<String, String>();
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.add("userId",new JsonPrimitive(android_id));
-                return params;
-            }
-        };
-        Volley.newRequestQueue(context).add(stringRequest);
-    }
 }

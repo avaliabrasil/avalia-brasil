@@ -3,9 +3,14 @@ package org.avaliabrasil.avaliabrasil.sync;
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
+import android.accounts.AccountManager;
 import android.accounts.NetworkErrorException;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+
+import org.avaliabrasil.avaliabrasil.avb.LoginActivity;
 
 /**
  * Created by Pedro on 29/02/2016.
@@ -13,68 +18,108 @@ import android.os.Bundle;
 public class AvbAuthenticator extends AbstractAccountAuthenticator {
     public final String LOG_TAG = this.getClass().getSimpleName();
 
+    private Context context;
+
     public AvbAuthenticator(Context context) {
         super(context);
+        this.context = context;
     }
-    // Usar esse autenticador!! Klaus!
 
-    // No properties to edit.
     @Override
     public Bundle editProperties(
-            AccountAuthenticatorResponse r, String s) {
+            AccountAuthenticatorResponse r, String authTokenType) {
         throw new UnsupportedOperationException();
     }
 
-    // Because we're not actually adding an account to the device, just return null.
+
     @Override
     public Bundle addAccount(
             AccountAuthenticatorResponse r,
-            String s,
+            String authTokenType,
             String s2,
-            String[] strings,
-            Bundle bundle) throws NetworkErrorException {
-        return null;
+            String[] requiredFeatures,
+            Bundle options) throws NetworkErrorException {
+
+        Log.d("Auth", "addAccount: ");
+
+        Intent intent = new Intent(context, LoginActivity.class);
+
+        intent.putExtra(Constant.ARG_ACCOUNT_TYPE,"");
+        intent.putExtra(Constant.ARG_AUTH_TYPE,"");
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,r);
+
+        Bundle bundle = new Bundle();
+
+        bundle.putParcelable(AccountManager.KEY_INTENT,intent);
+
+        return bundle;
     }
 
-    // Ignore attempts to confirm credentials
+
     @Override
     public Bundle confirmCredentials(
             AccountAuthenticatorResponse r,
             Account account,
-            Bundle bundle) throws NetworkErrorException {
+            Bundle options) throws NetworkErrorException {
+
+        Log.d("Auth", "confirmCredentials: ");
         return null;
     }
 
-    // Getting an authentication token is not supported
+
     @Override
     public Bundle getAuthToken(
             AccountAuthenticatorResponse r,
             Account account,
-            String s,
-            Bundle bundle) throws NetworkErrorException {
-        throw new UnsupportedOperationException();
+            String authTokenType,
+            Bundle options) throws NetworkErrorException {
+
+        Log.d("Auth", "getAuthToken: ");
+
+        Intent intent = new Intent(context, LoginActivity.class);
+
+        intent.putExtra(Constant.ARG_ACCOUNT_TYPE,"");
+        intent.putExtra(Constant.ARG_AUTH_TYPE,"");
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,r);
+
+        Bundle bundle = new Bundle();
+
+        bundle.putParcelable(AccountManager.KEY_INTENT,intent);
+
+        return bundle;
     }
 
-    // Getting a label for the auth token is not supported
+
     @Override
-    public String getAuthTokenLabel(String s) {
-        throw new UnsupportedOperationException();
+    public String getAuthTokenLabel(String authTokenType) {
+
+        Log.d("Auth", "getAuthTokenLabel: ");
+
+        if(authTokenType.equals(Constant.ACCOUNT_TOKEN_TYPE_USER)){
+            return "user";
+        }
+        return "";
     }
 
-    // Updating user credentials is not supported
+
     @Override
     public Bundle updateCredentials(
             AccountAuthenticatorResponse r,
             Account account,
-            String s, Bundle bundle) throws NetworkErrorException {
+            String authTokenType, Bundle options) throws NetworkErrorException {
+
+        Log.d("Auth", "updateCredentials: ");
+
         throw new UnsupportedOperationException();
     }
 
-    // Checking features for the account is not supported
     @Override
     public Bundle hasFeatures(
             AccountAuthenticatorResponse r,
-            Account account, String[] strings) throws NetworkErrorException {
+            Account account, String[] requiredFeatures) throws NetworkErrorException {
+
+        Log.d("Auth", "hasFeatures: ");
+
         throw new UnsupportedOperationException();
     }
 }

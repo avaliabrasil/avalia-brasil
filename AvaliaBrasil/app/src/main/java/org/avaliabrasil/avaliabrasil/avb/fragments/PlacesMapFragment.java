@@ -20,7 +20,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.MainActivity;
 import org.avaliabrasil.avaliabrasil.avb.PlaceActivity;
 import org.avaliabrasil.avaliabrasil.sync.Observer;
 
@@ -35,21 +34,28 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
 
     private MapView mMapView;
     private GoogleMap googleMap;
+    private Location location;
 
     public PlacesMapFragment() {
     }
 
-    public static PlacesMapFragment newInstance(int sectionNumber) {
+    public static PlacesMapFragment newInstance(int sectionNumber, Location location) {
         PlacesMapFragment fragment = new PlacesMapFragment();
+        fragment.setLocation(location);
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setRetainInstance(true);
 
         View rootView = inflater.inflate(R.layout.fragment_places_map, container, false);
 
@@ -64,15 +70,15 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
             e.printStackTrace();
         }
 
-        //TODO colocar padrão
         googleMap = mMapView.getMap();
 
 
-        double latitude = MainActivity.location.getLatitude();
-        double longitude = MainActivity.location.getLongitude();
+        double latitude = location == null  ? 0 : location.getLatitude();
+        double longitude = location== null  ? 0 : location.getLongitude();
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(new LatLng(latitude,longitude)).zoom(16).build();
+
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
 
@@ -107,28 +113,28 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
 
     @Override
     public void update(Cursor cursor) {
-            googleMap.clear();
+        googleMap.clear();
 
-            MarkerOptions marker;
+        MarkerOptions marker;
 
-            if(cursor == null){
-                return;
-            }
+        if(cursor == null){
+            return;
+        }
 
-            if(cursor.isLast()){
-                cursor.moveToPosition(-1);
-            }
+        if(cursor.isLast()){
+            cursor.moveToPosition(-1);
+        }
 
-            while(cursor.moveToNext()){
-                marker = new MarkerOptions().position(
-                        new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("place_id")));
+        while(cursor.moveToNext()){
+            marker = new MarkerOptions().position(
+                    new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("place_id"))).snippet(cursor.getString(cursor.getColumnIndex("name")));
 
-                //TODO Arrumar marcador, para mostrar um nome/titulo.
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+            //TODO Arrumar marcador, para mostrar um nome/titulo.
+            marker.icon(BitmapDescriptorFactory
+                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
 
-                googleMap.addMarker(marker);
-            }
+            googleMap.addMarker(marker);
+        }
     }
 
     @Override
@@ -139,7 +145,9 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         placeLocation.setLongitude(marker.getPosition().longitude);
 
         intent.putExtra("placeid",marker.getTitle());
-        intent.putExtra("distance",(int)MainActivity.location.distanceTo(placeLocation) + "m");
+        intent.putExtra("distance",(int)(location== null  ? 0 : location.distanceTo(placeLocation)) + "m");
+        intent.putExtra("name",marker.getSnippet());
+
         startActivity(intent);
         return true;
     }

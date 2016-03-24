@@ -1,14 +1,24 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
 import android.Manifest;
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorActivity;
+import android.accounts.AccountManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -16,13 +26,23 @@ import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.data.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.User;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.UserToken;
+import org.avaliabrasil.avaliabrasil.sync.Constant;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-public class LoginActivity extends  AppCompatActivity {
+public class LoginActivity extends AccountAuthenticatorActivity {
     public final String LOG_TAG = this.getClass().getSimpleName();
 
     /**
@@ -34,8 +54,10 @@ public class LoginActivity extends  AppCompatActivity {
             Manifest.permission.ACCESS_FINE_LOCATION
     };
 
+    private AccountManager accountManager;
 
 
+    private User user;
     /**
      * Facebook login button
      *
@@ -51,25 +73,29 @@ public class LoginActivity extends  AppCompatActivity {
     private CallbackManager callbackManager;
 
     //Manter logon mesmo com usuario logado.
-    //TODO se já logado no facebook, ou por login anonimo, redirecionar diretamente a main activity.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
+
+        accountManager =  AccountManager.get(this);
 
         FacebookSdk.sdkInitialize(LoginActivity.this);
 
         setContentView(R.layout.activity_login);
 
+        user = ((AvaliaBrasilApplication)getApplication()).getUser();
+
         callbackManager = CallbackManager.Factory.create();
         facebookLoginButton = (LoginButton) findViewById(R.id.login_button);
         facebookLoginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_birthday", "user_friends"));
+
         facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Profile profile = Profile.getCurrentProfile();
-                startMainActivity(null);
+                user.setName(profile.getName());
+                getUserToken(LoginActivity.this);
             }
 
             @Override
@@ -84,21 +110,19 @@ public class LoginActivity extends  AppCompatActivity {
     }
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     public void startMainActivity(View view){
-        if (!canAccessLocation()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
-            }
-        }else{
-            Intent intent_main_activity = new Intent(LoginActivity.this,MainActivity.class);
-            //intent_main_activity.putExtra(USRID, android_id);
-            startActivity(intent_main_activity);
-        }
+        getUserToken(LoginActivity.this);
     }
 
     @Override
@@ -106,7 +130,7 @@ public class LoginActivity extends  AppCompatActivity {
         switch(requestCode) {
             case LOCATION_REQUEST:
                 if (canAccessLocation()) {
-                    AvaliaBrasilAPIClient.getUserToken(LoginActivity.this);
+                    getUserToken(LoginActivity.this);
                 }
                 else {
                     Toast.makeText(LoginActivity.this,"This application need the acess location to work property",Toast.LENGTH_LONG).show();
@@ -124,6 +148,69 @@ public class LoginActivity extends  AppCompatActivity {
             return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
         }
         return true;
+    }
+
+    public void getUserToken(final Context context){
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserTokenURL(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Gson gson = new Gson();
+                        JsonParser jsonParser = new JsonParser();
+                        JsonObject jo = (JsonObject)jsonParser.parse(response);
+
+                        UserToken userToken = gson.fromJson(jo.get("data").getAsJsonObject(), UserToken.class);
+
+                        user.setToken(userToken.getToken());
+
+                        Intent intent_main_activity = new Intent(context,MainActivity.class);
+                        intent_main_activity.putExtra("userId", user.getAndroid_id());
+
+                        Account account = new Account(user.getName() == null ? "Anonimo" : user.getName(), Constant.ACCOUNT_TYPE);
+
+
+                        Bundle bundle = new Bundle();
+
+                        bundle.putString(AccountManager.KEY_ACCOUNT_TYPE,Constant.ACCOUNT_TYPE);
+                        bundle.putString(AccountManager.KEY_ACCOUNT_NAME,user.getName() == null ? "Anonimo" : user.getName());
+                        bundle.putString(AccountManager.KEY_AUTHTOKEN,user.getToken());
+
+                        accountManager.addAccountExplicitly(account,null,bundle);
+                        accountManager.setAuthToken(account,Constant.ACCOUNT_TOKEN_TYPE_USER,user.getToken());
+
+
+                        setAccountAuthenticatorResult(bundle);
+
+                        if(accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                }
+                            });
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams () {
+                String android_id = Settings.Secure.getString(context.getContentResolver(),
+                        Settings.Secure.ANDROID_ID);
+                user.setAndroid_id(android_id);
+                Map<String, String> params = new HashMap<String, String>();
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.add("userId",new JsonPrimitive(android_id));
+                return params;
+            }
+        };
+        Volley.newRequestQueue(context).add(stringRequest);
     }
 
 }
