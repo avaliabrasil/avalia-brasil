@@ -15,7 +15,7 @@
         android:orientation="vertical"
         android:layout_margin="8dp">
 
-     <LinearLayout
+        <LinearLayout
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
          android:orientation="horizontal">
@@ -111,7 +111,8 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="0dp"
                 android:id="@+id/placesInfo"></LinearLayout>
         </ScrollView>
     </LinearLayout>

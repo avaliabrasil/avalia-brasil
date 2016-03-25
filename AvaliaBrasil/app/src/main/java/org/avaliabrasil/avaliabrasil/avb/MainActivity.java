@@ -42,6 +42,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -90,7 +91,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * User location
      */
-    public static Location location;
+    public Location location;
 
     /**
      * For notify the fragment children's.
@@ -104,17 +105,13 @@ public class MainActivity extends AppCompatActivity
 
     private AccountManager manager;
 
+    private LocationManager locationManager;
 
-    GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
 
-    //Revisar parte de usuario sem internet
-    //Revisar rotação de orientação
-    //Dados não retornam
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Log.d("MainActivity", "onCreate: ");
 
         if(savedInstanceState == null){
             new Loading().execute();
@@ -131,38 +128,13 @@ public class MainActivity extends AppCompatActivity
         super.onSaveInstanceState(outState, outPersistentState);
     }
 
-    @Override
-    protected void onStart() {
-
-        Log.d("MainActivity", "onStart: ");
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        Log.d("MainActivity", "onStop: ");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("MainActivity", "onResume: ");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d("MainActivity", "onPause: ");
-    }
-
-
-
     /**
      * Method use to fetch the data from the google api every time that the activity is started.
      */
     private void fetchDataFromGoogleAPI(){
+        if(location == null){
+            return;
+        }
         GooglePlacesAPIClient.getNearlyPlaces(MainActivity.this, location);
     }
 
@@ -231,11 +203,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.main, menu);
@@ -259,11 +226,8 @@ public class MainActivity extends AppCompatActivity
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                //Buscar lista de lugar
-                Bundle bundle = new Bundle();
-                //TODO melhorar
-                bundle.putString("query","%"+query+"%");
-                getSupportLoaderManager().restartLoader(0,bundle,MainActivity.this);
+                GooglePlacesAPIClient.getPlacesByName(MainActivity.this,MainActivity.this, location,query);
+
                 return true;
             }
 
@@ -293,8 +257,17 @@ public class MainActivity extends AppCompatActivity
 
     //TODO tirar fora atualização de localização.
     @Override
-    public void onLocationChanged(Location location) {
-        this.location = location;
+    public void onLocationChanged(Location providerLocation) {
+
+        if(providerLocation != null){
+            if(isBetterLocation(providerLocation,location)){
+                location = providerLocation;
+            }
+        }
+
+        Toast.makeText(MainActivity.this,"Buscando novo local",Toast.LENGTH_LONG).show();
+
+        this.location = providerLocation;
 
         fetchDataFromGoogleAPI();
 
@@ -393,6 +366,58 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private static final int TWO_MINUTES = 1000 * 60 * 2;
+
+    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
+        if (currentBestLocation == null) {
+            // A new location is always better than no location
+            return true;
+        }
+
+        // Check whether the new location fix is newer or older
+        long timeDelta = location.getTime() - currentBestLocation.getTime();
+        boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
+        boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
+        boolean isNewer = timeDelta > 0;
+
+        // If it's been more than two minutes since the current location, use the new location
+        // because the user has likely moved
+        if (isSignificantlyNewer) {
+            return true;
+            // If the new location is more than two minutes older, it must be worse
+        } else if (isSignificantlyOlder) {
+            return false;
+        }
+
+        // Check whether the new location fix is more or less accurate
+        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+        boolean isLessAccurate = accuracyDelta > 0;
+        boolean isMoreAccurate = accuracyDelta < 0;
+        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
+
+        // Check if the old and new location are from the same provider
+        boolean isFromSameProvider = isSameProvider(location.getProvider(),
+                currentBestLocation.getProvider());
+
+        // Determine location quality using a combination of timeliness and accuracy
+        if (isMoreAccurate) {
+            return true;
+        } else if (isNewer && !isLessAccurate) {
+            return true;
+        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
+            return true;
+        }
+        return false;
+    }
+
+    /** Checks whether two providers are the same */
+    private boolean isSameProvider(String provider1, String provider2) {
+        if (provider1 == null) {
+            return provider2 == null;
+        }
+        return provider1.equals(provider2);
+    }
+
     private class Loading extends AsyncTask<String, Void, String> {
 
         @Override
@@ -455,29 +480,42 @@ public class MainActivity extends AppCompatActivity
                 // primary sections of the activity.
 
                 try {
-                    LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
                     if (!locationManager
                             .isProviderEnabled(LocationManager.GPS_PROVIDER)&&!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 
                         showGPSDisabledAlertToUser();
                     }else {
-                        if (location == null) {
 
-                            Criteria criteria = new Criteria();
-                            criteria.setAccuracy(Criteria.ACCURACY_FINE);
-                            criteria.setAltitudeRequired(false);
-                            criteria.setBearingRequired(false);
-                            criteria.setCostAllowed(true);
-                            criteria.setPowerRequirement(Criteria.POWER_MEDIUM);
-                            String provider = locationManager.getBestProvider(criteria, true);
-                            location = locationManager.getLastKnownLocation(provider == null ? "":provider);
+                        Location providerLocation;
+
+                        for(String provider : locationManager.getAllProviders()){
+                            providerLocation = locationManager.getLastKnownLocation(provider);
+
+                            if(providerLocation != null){
+                                if(isBetterLocation(providerLocation,location)){
+                                    location = providerLocation;
+                                }
+                            }
                         }
+                    }
+
+                    if(location == null){
+                        Log.e("Location", "location is null");
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,MainActivity.this);
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,MainActivity.this);
+                        locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,0,0,MainActivity.this);
+                    }else{
+                        Log.e("Location", "location isn't null");
+                        Log.e("Location", "lat: " + location.getLatitude());
+                        Log.e("Location", "long: " + location.getLongitude());
+
+
                     }
                 }catch(SecurityException e) {
                     e.printStackTrace();
                 }
-
 
                 mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
@@ -488,6 +526,8 @@ public class MainActivity extends AppCompatActivity
 
                 TabLayout tabLayout = (TabLayout) findViewById(R.id.search_tabs);
                 tabLayout.setupWithViewPager(mViewPager);
+
+                fetchDataFromGoogleAPI();
 
                 getSupportLoaderManager().initLoader(0, null, MainActivity.this);
             }

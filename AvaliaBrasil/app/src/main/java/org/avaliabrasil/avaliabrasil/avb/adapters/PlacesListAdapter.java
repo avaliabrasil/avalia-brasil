@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
 
+import java.util.Comparator;
+
 /**
  * {@link PlacesListAdapter} exposes a list of Places
  * from a {@link Cursor} to a {@link android.widget.ListView}.
@@ -72,4 +74,5 @@ public class PlacesListAdapter extends CursorAdapter {
         viewHolder.distanceView.setText((int)(location== null  ? 0 : location.distanceTo(placeLocation)) + "m");
 
     }
+
 }

@@ -1,11 +1,17 @@
 package org.avaliabrasil.avaliabrasil.rest;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -15,6 +21,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import org.avaliabrasil.avaliabrasil.avb.MainActivity;
 import org.avaliabrasil.avaliabrasil.data.AvBProvider;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
@@ -97,6 +104,54 @@ public class GooglePlacesAPIClient {
     }
 
     /**
+     * Default path to the Google Places API call to get places by their name.
+     *
+     * @see <a href="https://developers.google.com/places/web-service/">Google Places WebService </a>
+     * @since 1.0
+     * @version 1.0
+     * @param latitude
+     * @param longitude
+     * @param radius
+     * @param types
+     * @param key
+     * @param name
+     * @return {@link String} targeting the base API.
+     */
+    private static String getPlacesByNameURL(@NonNull double latitude , @NonNull double longitude, @NonNull
+    double radius, @Nullable String[] types ,
+                                             @NonNull String key, @NonNull String name){
+        StringBuilder target = new StringBuilder();
+        target.append(googleMapsApiTarget);
+        target.append("nearbysearch");
+        target.append("/json");
+        target.append("?location=");
+        target.append(latitude);
+        target.append(",");
+        target.append(longitude);
+
+        target.append("&radius=");
+        target.append(radius);
+
+        // TODO : Adicionar tipos padrão de lugares para pesquisar
+        // types = new String[]{"health"};
+
+        if(types != null && types.length > 0){
+            target.append("&types=");
+            target.append("health");
+        }
+
+        target.append("&name=");
+        target.append(name);
+
+        target.append("&key=");
+        target.append(key);
+
+        Log.d("GoogleAPI", "URL: " + target.toString());
+
+        return target.toString();
+    }
+
+    /**
      * Used for fill the {@link android.content.ContentProvider} with the nearly places values.
      * @param context
      * @param location
@@ -130,9 +185,64 @@ public class GooglePlacesAPIClient {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                Toast.makeText(context,"Não foi possível acessar os servidor do google.",Toast.LENGTH_SHORT).show();
             }
         });
         Volley.newRequestQueue(context).add(stringRequest);
+    }
+
+    /**
+     * Used for fill the {@link android.content.ContentProvider} with the nearly places values.
+     * @param activity
+     * @param location
+     * @param name
+     */
+    public static void getPlacesByName(final AppCompatActivity activity,
+                                       final LoaderManager.LoaderCallbacks<Cursor> loader, Location location,final String name){
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlacesByNameURL(location == null ? 0 : location.getLatitude(), location== null ? 0 : location.getLongitude(), 5000, null, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0",name),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Gson gson = new Gson();
+                        PlaceSearch placeSearch = gson.fromJson(response, PlaceSearch.class);
+
+                        ContentValues[] values = new ContentValues[placeSearch.getResults().size()];
+
+                        ContentValues value = null;
+
+                        for (int i = 0; i < values.length; i++) {
+                            value = new ContentValues();
+                            value.put("place_id",placeSearch.getResults().get(i).getPlaceId());
+                            value.put("name",placeSearch.getResults().get(i).getName());
+                            value.put("vicinity",placeSearch.getResults().get(i).getVicinity());
+                            value.put("latitude",placeSearch.getResults().get(i).getGeometry().getLocation().getLat());
+                            value.put("longitude",placeSearch.getResults().get(i).getGeometry().getLocation().getLng());
+                            values[i] = value;
+                        }
+
+                        activity.getContentResolver().bulkInsert(
+                                AvBProvider.PLACE_CONTENT_URI, values);
+
+                        Bundle bundle = new Bundle();
+                        //TODO melhorar
+                        bundle.putString("query","%"+name+"%");
+                        activity.getSupportLoaderManager().restartLoader(0,bundle,loader);
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                Bundle bundle = new Bundle();
+                //TODO melhorar
+                bundle.putString("query","%"+name+"%");
+                activity.getSupportLoaderManager().restartLoader(0,bundle,loader);
+
+                Toast.makeText(activity,"Não foi possível acessar os servidor do google.",Toast.LENGTH_SHORT).show();
+            }
+        });
+        Volley.newRequestQueue(activity).add(stringRequest);
+
     }
 
     /**

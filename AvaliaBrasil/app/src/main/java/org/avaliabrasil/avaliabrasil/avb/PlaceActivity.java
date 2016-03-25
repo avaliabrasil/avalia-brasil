@@ -158,6 +158,12 @@ public class PlaceActivity extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     error.printStackTrace();
+                    View view = null;
+                    view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+                    ((TextView)view.findViewById(R.id.text)).setText("Não foi possível buscar as informações deste local, verifique sua internet");
+                    ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_search_white_24dp));
+
+                    placesInfo.addView(view);
                 }
             });
 
@@ -194,7 +200,6 @@ public class PlaceActivity extends AppCompatActivity {
             }
 
             toolbarLayout.setTitle(cursor.getString(cursor.getColumnIndex("name")));
-
 
             MarkerOptions marker;
 

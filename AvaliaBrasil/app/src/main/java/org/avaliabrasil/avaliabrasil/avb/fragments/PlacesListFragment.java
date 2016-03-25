@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.MainActivity;
 import org.avaliabrasil.avaliabrasil.avb.PlaceActivity;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlacesListAdapter;
 import org.avaliabrasil.avaliabrasil.sync.Observer;
@@ -35,11 +36,9 @@ public class PlacesListFragment extends Fragment implements Observer{
 
     private  static final String SELECTED_place = "selected_place";
 
-    private Location location;
 
     public static PlacesListFragment newInstance(int sectionNumber, Location location) {
         PlacesListFragment fragment = new PlacesListFragment();
-        fragment.setLocation(location);
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
@@ -50,9 +49,6 @@ public class PlacesListFragment extends Fragment implements Observer{
 
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,7 +60,9 @@ public class PlacesListFragment extends Fragment implements Observer{
 
         mListView = (ListView) rootView.findViewById(R.id.listview_places);
 
-        mPlacesListAdapter = new PlacesListAdapter(getContext(),null,0,location);
+        final MainActivity activity = (MainActivity) getActivity();
+
+        mPlacesListAdapter = new PlacesListAdapter(getContext(),null,0,activity.location);
 
         mListView.setAdapter(mPlacesListAdapter);
 
@@ -82,7 +80,7 @@ public class PlacesListFragment extends Fragment implements Observer{
                 placeLocation.setLongitude(cur.getDouble(cur.getColumnIndex("longitude")));
 
                 intent.putExtra("placeid",cur.getString(cur.getColumnIndex("place_id")));
-                intent.putExtra("distance",(location == null ? "Não foi possível calcular a distancia": (int)location.distanceTo(placeLocation) + "m"));
+                intent.putExtra("distance",(activity.location == null ? "Não foi possível calcular a distancia": (int)activity.location.distanceTo(placeLocation) + "m"));
                 intent.putExtra("name",cur.getString(cur.getColumnIndex("name")));
 
                 startActivity(intent);

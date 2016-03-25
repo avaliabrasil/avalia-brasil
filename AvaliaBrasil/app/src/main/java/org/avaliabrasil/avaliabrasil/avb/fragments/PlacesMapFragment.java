@@ -1,13 +1,18 @@
 package org.avaliabrasil.avaliabrasil.avb.fragments;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,8 +23,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.ui.BubbleIconFactory;
+import com.google.maps.android.ui.IconGenerator;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.MainActivity;
 import org.avaliabrasil.avaliabrasil.avb.PlaceActivity;
 import org.avaliabrasil.avaliabrasil.sync.Observer;
 
@@ -27,29 +35,25 @@ import org.avaliabrasil.avaliabrasil.sync.Observer;
  * Created by Pedro on 29/02/2016.
  */
 public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerClickListener,
-        Observer{
+        Observer {
     public final String LOG_TAG = this.getClass().getSimpleName();
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private MapView mMapView;
     private GoogleMap googleMap;
-    private Location location;
+
+    private MainActivity activity;
 
     public PlacesMapFragment() {
     }
 
     public static PlacesMapFragment newInstance(int sectionNumber, Location location) {
         PlacesMapFragment fragment = new PlacesMapFragment();
-        fragment.setLocation(location);
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
     }
 
     @Override
@@ -58,6 +62,8 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         setRetainInstance(true);
 
         View rootView = inflater.inflate(R.layout.fragment_places_map, container, false);
+
+        activity = (MainActivity) getActivity();
 
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
@@ -73,16 +79,28 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         googleMap = mMapView.getMap();
 
 
-        double latitude = location == null  ? 0 : location.getLatitude();
-        double longitude = location== null  ? 0 : location.getLongitude();
+        double latitude = activity.location == null ? 0 : activity.location.getLatitude();
+        double longitude = activity.location == null ? 0 : activity.location.getLongitude();
 
         CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(latitude,longitude)).zoom(16).build();
+                .target(new LatLng(latitude, longitude)).zoom(16).build();
 
         googleMap.animateCamera(CameraUpdateFactory
                 .newCameraPosition(cameraPosition));
 
         googleMap.setOnMarkerClickListener(this);
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return new View(getContext());
+        }
+        googleMap.setMyLocationEnabled(true);
 
         return rootView;
     }
@@ -115,6 +133,15 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
     public void update(Cursor cursor) {
         googleMap.clear();
 
+        double latitude = activity.location == null ? 0 : activity.location.getLatitude();
+        double longitude = activity.location == null ? 0 : activity.location.getLongitude();
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(latitude, longitude)).zoom(16).build();
+
+        googleMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
+
         MarkerOptions marker;
 
         if(cursor == null){
@@ -125,13 +152,18 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
             cursor.moveToPosition(-1);
         }
 
+        IconGenerator iconGenerator = new IconGenerator(getContext());
+        iconGenerator.setStyle(IconGenerator.STYLE_GREEN);
         while(cursor.moveToNext()){
+
+            Bitmap image = iconGenerator.makeIcon(cursor.getString(cursor.getColumnIndex("name")));
+
             marker = new MarkerOptions().position(
                     new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("place_id"))).snippet(cursor.getString(cursor.getColumnIndex("name")));
 
             //TODO Arrumar marcador, para mostrar um nome/titulo.
             marker.icon(BitmapDescriptorFactory
-                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+                    .fromBitmap(image));
 
             googleMap.addMarker(marker);
         }
@@ -145,7 +177,7 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         placeLocation.setLongitude(marker.getPosition().longitude);
 
         intent.putExtra("placeid",marker.getTitle());
-        intent.putExtra("distance",(int)(location== null  ? 0 : location.distanceTo(placeLocation)) + "m");
+        intent.putExtra("distance",(int)(activity.location== null  ? 0 : activity.location.distanceTo(placeLocation)) + "m");
         intent.putExtra("name",marker.getSnippet());
 
         startActivity(intent);

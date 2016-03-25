@@ -51,7 +51,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     private static final int INITIAL_REQUEST=1337;
     private static final int LOCATION_REQUEST=INITIAL_REQUEST+3;
     private static final String[] INITIAL_PERMS={
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
     };
 
     private AccountManager accountManager;
@@ -95,7 +96,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             public void onSuccess(LoginResult loginResult) {
                 Profile profile = Profile.getCurrentProfile();
                 user.setName(profile.getName());
-                getUserToken(LoginActivity.this);
+                checkForPermissions();
             }
 
             @Override
@@ -122,26 +123,34 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     }
 
     public void startMainActivity(View view){
-        getUserToken(LoginActivity.this);
+
+        checkForPermissions();
+
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch(requestCode) {
-            case LOCATION_REQUEST:
-                if (canAccessLocation()) {
+            case INITIAL_REQUEST:
+                if (canAccessFineLocation()&&canAccessCoarseLocation()) {
                     getUserToken(LoginActivity.this);
                 }
                 else {
-                    Toast.makeText(LoginActivity.this,"This application need the acess location to work property",Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this,"This application need the access location to work property",Toast.LENGTH_LONG).show();
                 }
                 break;
         }
     }
 
-    private boolean canAccessLocation() {
+
+    private boolean canAccessFineLocation() {
         return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
     }
+
+    private boolean canAccessCoarseLocation() {
+        return(hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION));
+    }
+
 
     private boolean hasPermission(String perm) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -151,6 +160,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     }
 
     public void getUserToken(final Context context){
+
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserTokenURL(),
                 new Response.Listener<String>() {
@@ -183,20 +193,16 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                         setAccountAuthenticatorResult(bundle);
 
                         if(accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0){
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
                                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);
-                                }
-                            });
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                Toast.makeText(LoginActivity.this,"Não foi possível realizar o login, verifique sua internet!",Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -213,4 +219,13 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         Volley.newRequestQueue(context).add(stringRequest);
     }
 
+    public void checkForPermissions(){
+         if (!canAccessCoarseLocation()||!canAccessFineLocation()) {
+             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                 requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
+             }
+         }else{
+             getUserToken(LoginActivity.this);
+         }
+    }
 }
