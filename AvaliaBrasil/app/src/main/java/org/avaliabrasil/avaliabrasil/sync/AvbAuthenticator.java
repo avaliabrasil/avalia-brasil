@@ -74,8 +74,6 @@ public class AvbAuthenticator extends AbstractAccountAuthenticator {
             String authTokenType,
             Bundle options) throws NetworkErrorException {
 
-        Log.d("Auth", "getAuthToken: ");
-
         Intent intent = new Intent(context, LoginActivity.class);
 
         intent.putExtra(Constant.ARG_ACCOUNT_TYPE,"");

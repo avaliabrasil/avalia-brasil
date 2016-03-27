@@ -15,7 +15,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static String place_table = "place";
     public static String place_detail_table = "place_detail";
 
-    public static final int version = 1;
+    public static final int version = 2;
 
     private static final String createQueryPlaceDetails = "CREATE TABLE place_detail (" +
             "    place_id             TEXT REFERENCES place (place_id) UNIQUE," +
@@ -29,6 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "                      NOT NULL," +
             "    name      TEXT," +
             "    vicinity  TEXT," +
+            "    distance  INTEGER," +
             "    latitude  DOUBLE DEFAULT (0) " +
             "                      NOT NULL," +
             "    longitude DOUBLE DEFAULT (0) " +
@@ -46,10 +47,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " +  "place_detail");
-        db.execSQL("DROP TABLE IF EXISTS " +  "place");
-
-        onCreate(db);
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
+        switch(newVersion){
+            case 2:
+                db.execSQL("ALTER TABLE place ADD Column distance INTEGER");
+        }
     }
 }

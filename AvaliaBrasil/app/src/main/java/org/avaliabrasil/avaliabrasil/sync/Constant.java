@@ -13,4 +13,7 @@ public class Constant {
     public static final String ARG_ACCOUNT_TYPE = "ACCOUNT_TYPE";
     public static final String ARG_AUTH_TYPE = "AUTH_TYPE";
     public static final String ARG_ACCOUNT_NAME = "ACCOUNT_NAME";
+
+    public static final String ACCOUNT_EMAIL = "ACCOUNT_EMAIL";
+
 }

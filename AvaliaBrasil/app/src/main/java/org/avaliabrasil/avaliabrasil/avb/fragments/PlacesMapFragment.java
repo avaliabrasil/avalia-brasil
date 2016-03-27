@@ -9,6 +9,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +69,7 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
 
-        mMapView.onResume();// needed to get the map to display immediately
+        mMapView.onResume();
 
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
@@ -91,13 +92,6 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         googleMap.setOnMarkerClickListener(this);
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return new View(getContext());
         }
         googleMap.setMyLocationEnabled(true);
@@ -130,17 +124,8 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
     }
 
     @Override
-    public void update(Cursor cursor) {
+    public synchronized void update( Cursor cursor) {
         googleMap.clear();
-
-        double latitude = activity.location == null ? 0 : activity.location.getLatitude();
-        double longitude = activity.location == null ? 0 : activity.location.getLongitude();
-
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(latitude, longitude)).zoom(16).build();
-
-        googleMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
 
         MarkerOptions marker;
 
@@ -153,8 +138,10 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         }
 
         IconGenerator iconGenerator = new IconGenerator(getContext());
-        iconGenerator.setStyle(IconGenerator.STYLE_GREEN);
         while(cursor.moveToNext()){
+
+            Log.e("Places", "update: ");
+            iconGenerator.setStyle(getStyle());
 
             Bitmap image = iconGenerator.makeIcon(cursor.getString(cursor.getColumnIndex("name")));
 
@@ -167,6 +154,16 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
 
             googleMap.addMarker(marker);
         }
+    }
+
+
+    private static int counter=0;
+    private int getStyle(){
+        counter++;
+        if(counter > 7){
+            counter = 0;
+        }
+        return counter;
     }
 
     @Override

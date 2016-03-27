@@ -8,10 +8,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -19,11 +24,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.Profile;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.gson.Gson;
@@ -37,6 +44,8 @@ import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.User;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.UserToken;
 import org.avaliabrasil.avaliabrasil.sync.Constant;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,16 +58,21 @@ public class LoginActivity extends AccountAuthenticatorActivity {
      *  TODO refatorar para classe única
      */
     private static final int INITIAL_REQUEST=1337;
-    private static final int LOCATION_REQUEST=INITIAL_REQUEST+3;
     private static final String[] INITIAL_PERMS={
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
     };
 
+    /**
+     * The {@link AccountManager} for check the users and/or add it to the {@link Account}
+     */
     private AccountManager accountManager;
 
-
+    /**
+     * Default user class for get the email/name and photo.
+     */
     private User user;
+
     /**
      * Facebook login button
      *
@@ -72,8 +86,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
      * @see <a href="https://developers.facebook.com/docs/facebook-login/android"> Login Tutorial</a>
      */
     private CallbackManager callbackManager;
-
-    //Manter logon mesmo com usuario logado.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,14 +101,63 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
         callbackManager = CallbackManager.Factory.create();
         facebookLoginButton = (LoginButton) findViewById(R.id.login_button);
-        facebookLoginButton.setReadPermissions(Arrays.asList("public_profile", "email", "user_birthday", "user_friends"));
+        facebookLoginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
 
+        /** Prevent user to log out via the login page */
+        if(accessToken != null){
+           facebookLoginButton.setVisibility(View.GONE);
+        }
+
+        /** Callback for the facebook API to get user details */
         facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Profile profile = Profile.getCurrentProfile();
-                user.setName(profile.getName());
-                checkForPermissions();
+                GraphRequest request = GraphRequest.newMeRequest(
+                        loginResult.getAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(JSONObject object, GraphResponse response) {
+                                try {
+                                    final String email = object.getString("email");
+                                    final String name = object.getString("name");
+
+                                    user.setEmail(email);
+                                    user.setName(name);
+                                    checkForPermissions();
+                                    /* For get user photo
+
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                URL url = new URL("https://graph.facebook.com/" + userID + "/picture?type=large");
+                                                String fileName = url.getFile();
+
+                                                InputStream is = url.openStream();
+
+                                                final Bitmap bit = BitmapFactory.decodeStream(is);
+
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        ((ImageView) findViewById(R.id.avaliaBrasilLogo)).setImageBitmap(bit);
+                                                    }
+                                                });
+                                            }catch(Exception e){
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }).start();*/
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                Bundle parameters = new Bundle();
+                parameters.putString("fields", "id,name,email,picture");
+                request.setParameters(parameters);
+                request.executeAsync();
             }
 
             @Override
@@ -123,9 +184,13 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     }
 
     public void startMainActivity(View view){
-
-        checkForPermissions();
-
+        if(accountManager.getAccounts().length > 0){
+            Snackbar
+                    .make(findViewById(R.id.layout),"Já há um usuário logado!", Snackbar.LENGTH_LONG)
+                    .show();
+        }else{
+            checkForPermissions();
+        }
     }
 
     @Override
@@ -159,10 +224,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         return true;
     }
 
+    /**
+     * Get the user token and add it to the {@link Account}
+     * @param context
+     */
     public void getUserToken(final Context context){
-
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserTokenURL(),
+       StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserTokenURL(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -185,6 +252,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                         bundle.putString(AccountManager.KEY_ACCOUNT_TYPE,Constant.ACCOUNT_TYPE);
                         bundle.putString(AccountManager.KEY_ACCOUNT_NAME,user.getName() == null ? "Anonimo" : user.getName());
                         bundle.putString(AccountManager.KEY_AUTHTOKEN,user.getToken());
+                        bundle.putString(Constant.ACCOUNT_EMAIL,user.getEmail() == null ? "avaliabrasil@gmail.com":user.getEmail());
 
                         accountManager.addAccountExplicitly(account,null,bundle);
                         accountManager.setAuthToken(account,Constant.ACCOUNT_TOKEN_TYPE_USER,user.getToken());
@@ -219,6 +287,9 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         Volley.newRequestQueue(context).add(stringRequest);
     }
 
+    /**
+     * Check the user permissions to make sure the app work property in the phone
+     */
     public void checkForPermissions(){
          if (!canAccessCoarseLocation()||!canAccessFineLocation()) {
              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

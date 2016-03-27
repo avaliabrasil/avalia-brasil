@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -20,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -41,7 +41,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -79,12 +78,6 @@ public class MainActivity extends AppCompatActivity
      */
     private int userId = 0;
 
-    /**
-     * Google places id, used to fetch the places by API
-     */
-    private static final String googlePlacesId = "asdasgd8218hdddDdsSAD";
-
-    // Variáveis para o ViewPager e Tabs!
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
@@ -103,16 +96,20 @@ public class MainActivity extends AppCompatActivity
      */
     private User user;
 
+    /**
+     * The {@link AccountManager} for getting user informations.
+     */
     private AccountManager manager;
 
+    /**
+     * The {@link LocationManager} for get the user place/location or, if there is not, search for it.
+     */
     private LocationManager locationManager;
 
-    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if(savedInstanceState == null){
             new Loading().execute();
         }
@@ -177,7 +174,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -208,13 +204,11 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final SearchView searchView = (SearchView) menu.findItem(R.id.search_places).getActionView();
-        // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        searchView.setIconifiedByDefault(false);
 
         ImageView closeButton = (ImageView)searchView.findViewById(R.id.search_close_btn);
 
-        // Set on click listener
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,12 +236,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -259,13 +249,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location providerLocation) {
 
+        Toast.makeText(MainActivity.this,"Buscando novo local",Toast.LENGTH_LONG).show();
+
         if(providerLocation != null){
             if(isBetterLocation(providerLocation,location)){
                 location = providerLocation;
             }
         }
-
-        Toast.makeText(MainActivity.this,"Buscando novo local",Toast.LENGTH_LONG).show();
 
         this.location = providerLocation;
 
@@ -334,13 +324,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void startPlaceActivity (View view) {
-        Intent intent_place_activity = new Intent(MainActivity.this, PlaceActivity.class);
-        intent_place_activity.putExtra(USRID, userId);
-        intent_place_activity.putExtra(GOOGLEPLACESID, googlePlacesId);
-        startActivity(intent_place_activity);
-    }
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if(args != null){
@@ -366,8 +349,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Constant for 2 minutes.
+     */
     private static final int TWO_MINUTES = 1000 * 60 * 2;
 
+    /**
+     * Check if the last user place is better than the last one.
+     *
+     * @param location
+     * @param currentBestLocation
+     * @return if the new location is better than the older.
+     */
     protected boolean isBetterLocation(Location location, Location currentBestLocation) {
         if (currentBestLocation == null) {
             // A new location is always better than no location
@@ -418,6 +411,9 @@ public class MainActivity extends AppCompatActivity
         return provider1.equals(provider2);
     }
 
+    /**
+     * {@link AsyncTask} class to act has a splash screen
+     */
     private class Loading extends AsyncTask<String, Void, String> {
 
         @Override
@@ -491,7 +487,10 @@ public class MainActivity extends AppCompatActivity
                         Location providerLocation;
 
                         for(String provider : locationManager.getAllProviders()){
+
                             providerLocation = locationManager.getLastKnownLocation(provider);
+
+                            Log.e("Location", "location "+ provider +" in provider is " + (providerLocation == null ? "null" : "not null"));
 
                             if(providerLocation != null){
                                 if(isBetterLocation(providerLocation,location)){
@@ -510,8 +509,6 @@ public class MainActivity extends AppCompatActivity
                         Log.e("Location", "location isn't null");
                         Log.e("Location", "lat: " + location.getLatitude());
                         Log.e("Location", "long: " + location.getLongitude());
-
-
                     }
                 }catch(SecurityException e) {
                     e.printStackTrace();
@@ -535,14 +532,12 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onPreExecute() {
-
             ImageView view = new ImageView(MainActivity.this);
             view.setImageDrawable(getDrawable(R.drawable.retangular_logo));
             ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT
                     ,ViewGroup.LayoutParams.FILL_PARENT);
             view.setLayoutParams(layoutParams);
             setContentView(view);
-
         }
 
         @Override

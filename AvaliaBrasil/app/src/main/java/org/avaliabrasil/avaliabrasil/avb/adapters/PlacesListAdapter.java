@@ -71,7 +71,7 @@ public class PlacesListAdapter extends CursorAdapter {
         placeLocation.setLatitude(cursor.getDouble(cursor.getColumnIndex("latitude")));
         placeLocation.setLongitude(cursor.getDouble(cursor.getColumnIndex("longitude")));
         // Ler Place Distance
-        viewHolder.distanceView.setText((int)(location== null  ? 0 : location.distanceTo(placeLocation)) + "m");
+        viewHolder.distanceView.setText(cursor.getInt(cursor.getColumnIndex("distance")) + "m");
 
     }
 

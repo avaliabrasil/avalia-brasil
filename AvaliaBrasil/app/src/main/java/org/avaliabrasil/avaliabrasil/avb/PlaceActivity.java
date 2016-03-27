@@ -46,16 +46,14 @@ public class PlaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getIntent().getExtras().getString("placeid") == null || getIntent().getExtras().getString("distance") == null ||
-                getIntent().getExtras().getString("name") == null){
+        if(getIntent().getExtras().getString("placeid") == null || getIntent().getExtras().getString("name") == null){
             finish();
         }
 
         setContentView(R.layout.activity_place);
 
-        // Definindo o título da Toolbar
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        //TODO Passar diretamente pelo bundle o nome do lugar
+
         toolbarLayout.setTitle(getIntent().getExtras().getString("name"));
 
         // Ativando a opção voltar da Toolbar
@@ -84,7 +82,7 @@ public class PlaceActivity extends AppCompatActivity {
 
         if(cursor.getCount() <= 0){
             final String placeid = getIntent().getExtras().getString("placeid");
-            distance = getIntent().getExtras().getString("distance");
+            distance = String.valueOf(getIntent().getExtras().getInt("distance",0));
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlaceDetails(placeid,"AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
                     new Response.Listener<String>() {
@@ -215,7 +213,7 @@ public class PlaceActivity extends AppCompatActivity {
                     .target(new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")),cursor.getDouble(cursor.getColumnIndex("longitude")))).zoom(16).build();
             googleMap.animateCamera(CameraUpdateFactory
                     .newCameraPosition(cameraPosition));
-            // adding marker
+
             googleMap.addMarker(marker);
         }
     }

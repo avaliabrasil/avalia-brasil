@@ -68,16 +68,16 @@ public class AvBProvider extends ContentProvider {
                 qb.setTables(DatabaseHelper.place_table);
 
                 if(selectionArgs != null){
-                    c = qb.query(db,projection,	"name like ?", selectionArgs,null, null, sortOrder);
+                    c = qb.query(db,projection,	"name like ?", selectionArgs,null, null, "distance asc");
                 }else{
-                    c = qb.query(db,projection,	selection, selectionArgs,null, null, sortOrder);
+                    c = qb.query(db,projection,	selection, selectionArgs,null, null, "distance asc");
                 }
 
                 c.setNotificationUri(getContext().getContentResolver(), uri);
                 break;
             case PLACE_ID:
                 db = DatabaseWrapper.getDatabase(getContext());
-                c = db.rawQuery("select * from place_detail LEFT OUTER join place on place_detail.place_id = place.place_id where place_detail.place_id = ?",new String[]{ uri.getPathSegments().get(1)});
+                c = db.rawQuery("select * from place_detail LEFT OUTER join place on place_detail.place_id = place.place_id where place_detail.place_id = ? order by distance asc",new String[]{ uri.getPathSegments().get(1)});
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);

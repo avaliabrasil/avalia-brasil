@@ -9,7 +9,7 @@ import org.avaliabrasil.avaliabrasil.data.AvBContract.PlaceEntry;
 public class AvBDBHelper extends SQLiteOpenHelper {
     public final String LOG_TAG = this.getClass().getSimpleName();
 
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 2;
     static final String DATABASE_NAME = "avaliabrasil.db";
 
     public AvBDBHelper (Context context) {
@@ -40,13 +40,11 @@ public class AvBDBHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade (SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-
-        // TODO: Rever política atual de atualização da base de dados! Deste modo ele irá excluir tudo!
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + PlaceEntry.TABLE_NAME);
-
-        // Recriando a tabela!
-        onCreate(sqLiteDatabase);
+    public void onUpgrade (SQLiteDatabase db, int oldVersion, int newVersion) {
+        switch(newVersion){
+            case 2:
+                db.execSQL("ALTER TABLE place ADD Column distance INTEGER");
+        }
     }
 
 }
