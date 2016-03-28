@@ -83,11 +83,14 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         double latitude = activity.location == null ? 0 : activity.location.getLatitude();
         double longitude = activity.location == null ? 0 : activity.location.getLongitude();
 
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(latitude, longitude)).zoom(16).build();
+        if(!(latitude == 0 || longitude == 0)){
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(new LatLng(latitude, longitude)).zoom(16).build();
 
-        googleMap.animateCamera(CameraUpdateFactory
-                .newCameraPosition(cameraPosition));
+            googleMap.animateCamera(CameraUpdateFactory
+                    .newCameraPosition(cameraPosition));
+        }
+
 
         googleMap.setOnMarkerClickListener(this);
 
@@ -168,8 +171,9 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Location placeLocation = new Location("");
         Intent intent = new Intent(getContext(), PlaceActivity.class);
+
+        Location placeLocation = new Location("");
         placeLocation.setLatitude(marker.getPosition().latitude);
         placeLocation.setLongitude(marker.getPosition().longitude);
 

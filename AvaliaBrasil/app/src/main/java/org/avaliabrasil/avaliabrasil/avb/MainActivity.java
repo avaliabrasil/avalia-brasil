@@ -1,5 +1,6 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
+import android.Manifest;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
@@ -9,6 +10,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.location.Location;
@@ -16,6 +18,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
@@ -350,6 +353,62 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
+     *  TODO refatorar para classe única
+     */
+    private static final int INITIAL_REQUEST=1337;
+    private static final String[] INITIAL_PERMS={
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+    };
+
+    /**
+     * Check the user permissions to make sure the app work property in the phone
+     */
+    public void checkForPermissions(){
+        if (!canAccessCoarseLocation()||!canAccessFineLocation()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
+            }
+        }else{
+            Intent intent = new Intent(MainActivity.this,MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch(requestCode) {
+            case INITIAL_REQUEST:
+                if (canAccessFineLocation()&&canAccessCoarseLocation()) {
+                    Intent intent = new Intent(MainActivity.this,MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+                else {
+                    Toast.makeText(MainActivity.this,"This application need the access location to work property",Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
+    }
+
+    private boolean canAccessFineLocation() {
+        return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
+    }
+
+    private boolean canAccessCoarseLocation() {
+        return(hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION));
+    }
+
+
+    private boolean hasPermission(String perm) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
+        }
+        return true;
+    }
+
+    /**
      * Constant for 2 minutes.
      */
     private static final int TWO_MINUTES = 1000 * 60 * 2;
@@ -428,116 +487,121 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onPostExecute(String result) {
+            if (canAccessFineLocation()&&canAccessCoarseLocation()){
+                user = ((AvaliaBrasilApplication)getApplication()).getUser();
 
+                manager = AccountManager.get(MainActivity.this);
 
+                Log.d("MainActivity", "onCreate: manager.getAccounts().length: " + manager.getAccounts().length);
 
-            user = ((AvaliaBrasilApplication)getApplication()).getUser();
+                if(manager.getAccounts().length == 0){
+                    manager.addAccount(Constant.ACCOUNT_TYPE, Constant.ACCOUNT_TOKEN_TYPE_USER, null, null, MainActivity.this, new AccountManagerCallback<Bundle>() {
+                        @Override
+                        public void run(AccountManagerFuture<Bundle> future) {
+                            try {
+                                Bundle bundle = future.getResult();
 
-            manager = AccountManager.get(MainActivity.this);
+                            } catch (OperationCanceledException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (AuthenticatorException e) {
+                                e.printStackTrace();
+                            }
 
-            Log.d("MainActivity", "onCreate: manager.getAccounts().length: " + manager.getAccounts().length);
-
-            if(manager.getAccounts().length == 0){
-                manager.addAccount(Constant.ACCOUNT_TYPE, Constant.ACCOUNT_TOKEN_TYPE_USER, null, null, MainActivity.this, new AccountManagerCallback<Bundle>() {
-                    @Override
-                    public void run(AccountManagerFuture<Bundle> future) {
-                        try {
-                            Bundle bundle = future.getResult();
-
-                        } catch (OperationCanceledException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (AuthenticatorException e) {
-                            e.printStackTrace();
                         }
+                    }, null);
+                }else{
+                    setContentView(R.layout.activity_main);
 
-                    }
-                }, null);
-            }else{
-                setContentView(R.layout.activity_main);
+                    // Add Toolbar
+                    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+                    setSupportActionBar(toolbar);
 
-                // Add Toolbar
-                Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-                setSupportActionBar(toolbar);
+                    // Add Drawer
+                    DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                    ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                            MainActivity.this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                    drawer.setDrawerListener(toggle);
+                    toggle.syncState();
 
-                // Add Drawer
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-                ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                        MainActivity.this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-                drawer.setDrawerListener(toggle);
-                toggle.syncState();
+                    NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                    navigationView.setNavigationItemSelectedListener(MainActivity.this);
 
-                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-                navigationView.setNavigationItemSelectedListener(MainActivity.this);
+                    // Instruções para criar o Section Page!!
+                    // Create the adapter that will return a fragment for each of the three
+                    // primary sections of the activity.
 
-                // Instruções para criar o Section Page!!
-                // Create the adapter that will return a fragment for each of the three
-                // primary sections of the activity.
+                    try {
+                        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-                try {
-                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                        if (!locationManager
+                                .isProviderEnabled(LocationManager.GPS_PROVIDER)&&!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 
-                    if (!locationManager
-                            .isProviderEnabled(LocationManager.GPS_PROVIDER)&&!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                            showGPSDisabledAlertToUser();
+                        }else {
 
-                        showGPSDisabledAlertToUser();
-                    }else {
+                            Location providerLocation;
 
-                        Location providerLocation;
+                            for(String provider : locationManager.getAllProviders()){
 
-                        for(String provider : locationManager.getAllProviders()){
+                                providerLocation = locationManager.getLastKnownLocation(provider);
 
-                            providerLocation = locationManager.getLastKnownLocation(provider);
+                                Log.e("Location", "location "+ provider +" in provider is " + (providerLocation == null ? "null" : "not null"));
 
-                            Log.e("Location", "location "+ provider +" in provider is " + (providerLocation == null ? "null" : "not null"));
-
-                            if(providerLocation != null){
-                                if(isBetterLocation(providerLocation,location)){
-                                    location = providerLocation;
+                                if(providerLocation != null){
+                                    if(isBetterLocation(providerLocation,location)){
+                                        location = providerLocation;
+                                    }
                                 }
                             }
                         }
+
+                        if(location == null){
+                            Log.e("Location", "location is null");
+                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,MainActivity.this);
+                            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,MainActivity.this);
+                            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,0,0,MainActivity.this);
+                        }else{
+                            Log.e("Location", "location isn't null");
+                            Log.e("Location", "lat: " + location.getLatitude());
+                            Log.e("Location", "long: " + location.getLongitude());
+                        }
+                    }catch(SecurityException e) {
+                        e.printStackTrace();
                     }
 
-                    if(location == null){
-                        Log.e("Location", "location is null");
-                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,MainActivity.this);
-                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,MainActivity.this);
-                        locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,0,0,MainActivity.this);
-                    }else{
-                        Log.e("Location", "location isn't null");
-                        Log.e("Location", "lat: " + location.getLatitude());
-                        Log.e("Location", "long: " + location.getLongitude());
-                    }
-                }catch(SecurityException e) {
-                    e.printStackTrace();
+                    mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+
+                    // Set up the ViewPager with the sections adapter.
+                    mViewPager = (ViewPager) findViewById(R.id.view_page_container);
+                    mViewPager.setAdapter(mSectionsPagerAdapter);
+
+                    TabLayout tabLayout = (TabLayout) findViewById(R.id.search_tabs);
+                    tabLayout.setupWithViewPager(mViewPager);
+
+                    fetchDataFromGoogleAPI();
+
+                    getSupportLoaderManager().initLoader(0, null, MainActivity.this);
                 }
-
-                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-
-                // Set up the ViewPager with the sections adapter.
-                mViewPager = (ViewPager) findViewById(R.id.view_page_container);
-                mViewPager.setAdapter(mSectionsPagerAdapter);
-
-                TabLayout tabLayout = (TabLayout) findViewById(R.id.search_tabs);
-                tabLayout.setupWithViewPager(mViewPager);
-
-                fetchDataFromGoogleAPI();
-
-                getSupportLoaderManager().initLoader(0, null, MainActivity.this);
+            }else{
+                checkForPermissions();
             }
         }
 
         @Override
         protected void onPreExecute() {
-            ImageView view = new ImageView(MainActivity.this);
-            view.setImageDrawable(getDrawable(R.drawable.retangular_logo));
-            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT
-                    ,ViewGroup.LayoutParams.FILL_PARENT);
-            view.setLayoutParams(layoutParams);
-            setContentView(view);
+            try{
+                ImageView view = new ImageView(MainActivity.this);
+                view.setImageResource(R.drawable.retangular_logo);
+                ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT
+                        ,ViewGroup.LayoutParams.FILL_PARENT);
+                view.setLayoutParams(layoutParams);
+                setContentView(view);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
         }
 
         @Override

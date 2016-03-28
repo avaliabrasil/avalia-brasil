@@ -75,7 +75,7 @@ public class PlacesListFragment extends Fragment implements Observer{
                 placeLocation.setLongitude(cur.getDouble(cur.getColumnIndex("longitude")));
 
                 intent.putExtra("placeid",cur.getString(cur.getColumnIndex("place_id")));
-                intent.putExtra("distance",cur.getInt(cur.getColumnIndex("distance")));
+                intent.putExtra("distance",cur.getInt(cur.getColumnIndex("distance")) + "m");
                 intent.putExtra("name",cur.getString(cur.getColumnIndex("name")));
 
                 startActivity(intent);

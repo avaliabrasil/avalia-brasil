@@ -46,7 +46,8 @@ public class PlaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getIntent().getExtras().getString("placeid") == null || getIntent().getExtras().getString("name") == null){
+        if(getIntent().getExtras().getString("placeid") == null || getIntent().getExtras().getString("name") == null
+                || getIntent().getExtras().getString("distance") == null){
             finish();
         }
 
@@ -80,9 +81,11 @@ public class PlaceActivity extends AppCompatActivity {
         Cursor cursor = getContentResolver().query(
                 AvBProvider.getPlaceDetails(getIntent().getExtras().getString("placeid")), null,null,null,null);
 
+        distance = getIntent().getExtras().getString("distance");
+
         if(cursor.getCount() <= 0){
             final String placeid = getIntent().getExtras().getString("placeid");
-            distance = String.valueOf(getIntent().getExtras().getInt("distance",0));
+
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlaceDetails(placeid,"AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
                     new Response.Listener<String>() {

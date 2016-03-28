@@ -86,14 +86,8 @@ public class GooglePlacesAPIClient {
         target.append("&radius=");
         target.append(radius);
 
-        // TODO : Adicionar tipos padrão de lugares para pesquisar
-        // types = new String[]{"health"};
-
-        if(types != null && types.length > 0){
-            target.append("&types=");
-            target.append("health");
-            //target = target.queryParam("types",types);
-        }
+        target.append("&types=");
+        target.append("hospital");
 
         target.append("&key=");
         target.append(key);
@@ -152,7 +146,7 @@ public class GooglePlacesAPIClient {
      * @param location
      */
     public static void getNearlyPlaces(final Context context, final Location location){
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getNearlyPlacesURL(location.getLatitude(), location.getLongitude(), 500, null, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getNearlyPlacesURL(location.getLatitude(), location.getLongitude(), 5000, null, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -198,8 +192,8 @@ public class GooglePlacesAPIClient {
      * @param name
      */
     public static void getPlacesByName(final AppCompatActivity activity,
-                                       final LoaderManager.LoaderCallbacks<Cursor> loader, Location location,final String name){
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlacesByNameURL(location == null ? 0 : location.getLatitude(), location== null ? 0 : location.getLongitude(), 5000, null, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0",name),
+                                       final LoaderManager.LoaderCallbacks<Cursor> loader,final Location location,final String name){
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlacesByNameURL(location == null ? 0 : location.getLatitude(), location== null ? 0 : location.getLongitude(), 50000, null, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0",name),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -210,6 +204,8 @@ public class GooglePlacesAPIClient {
 
                         ContentValues value = null;
 
+                        Location customLocation = new Location("");
+
                         for (int i = 0; i < values.length; i++) {
                             value = new ContentValues();
                             value.put("place_id",placeSearch.getResults().get(i).getPlaceId());
@@ -217,6 +213,10 @@ public class GooglePlacesAPIClient {
                             value.put("vicinity",placeSearch.getResults().get(i).getVicinity());
                             value.put("latitude",placeSearch.getResults().get(i).getGeometry().getLocation().getLat());
                             value.put("longitude",placeSearch.getResults().get(i).getGeometry().getLocation().getLng());
+                            customLocation.setLatitude(placeSearch.getResults().get(i).getGeometry().getLocation().getLat());
+                            customLocation.setLongitude(placeSearch.getResults().get(i).getGeometry().getLocation().getLng());
+
+                            value.put("distance",(int)(location.distanceTo(customLocation)));
                             values[i] = value;
                         }
 
