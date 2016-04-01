@@ -94,14 +94,14 @@
                 />
         </LinearLayout>
 
-        <Button
+        <!--<Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="New Place!"
             android:id="@+id/new_place_button"
             android:onClick="startNewPlaceActivity"
             style="@style/SecondaryActionButton"
-            />
+            /-->
 
         <ScrollView
             android:layout_width="match_parent"

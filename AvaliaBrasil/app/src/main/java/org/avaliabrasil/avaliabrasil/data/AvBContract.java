@@ -23,6 +23,27 @@ public class AvBContract {
 
     public static final String PATH_PLACES = "places";
 
+    // Paths Headers
+    public static final String PATH_INSTRUMENT = "instruments";
+
+    public static final String PATH_INSTRUMENTS = "instruments/*";
+
+    public static final String PATH_INSTRUMENT_PLACE = "instruments_place";
+
+    public static final String PATH_GROUP = "groups";
+    public static final String PATH_GROUPS = "groups/*";
+
+    public static final String PATH_QUESTION = "questions";
+    public static final String PATH_QUESTIONS = "questions/*";
+
+    public static final int INSTRUMENT = 4;
+    public static final int INSTRUMENTS = 5;
+    public static final int INSTRUMENT_PLACE = 6;
+    public static final int GROUP_QUESTION = 7;
+    public static final int GROUP_QUESTIONS = 8;
+    public static final int QUESTION = 9;
+    public static final int QUESTIONS = 10;
+
 
     // Normalizando as datas :
 
@@ -102,5 +123,114 @@ public class AvBContract {
             return uri.getPathSegments().get(1);
         }
 
+    }
+
+    public static final class InstrumentEntry implements BaseColumns {
+
+        public static final Uri INSTRUMENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_INSTRUMENT).build();
+
+        public static final Uri INSTRUMENTS_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_INSTRUMENTS).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENT;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENTS;
+
+        // Place Table Name
+        public static final String TABLE_NAME = "instrument";
+
+        // Table Columns
+        public static final String INSTRUMENT_ID = "instrument_id";
+
+        public static final String UPDATED_AT = "updated_at";
+
+        public static Uri buildInstrumentUri (String place_id) {
+            return INSTRUMENT_URI.buildUpon().appendPath(place_id).build();
+        }
+
+        // Função para pegar a o Id do Place da Uri:
+        public static String getStringFromUri (Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
+    }
+
+    public static final class InstrumentPlaceEntry implements BaseColumns {
+
+        // Place Table Name
+        public static final String TABLE_NAME = "instrument_places";
+
+        // Table Columns
+        public static final String INSTRUMENT_ID = "instrument_id";
+
+        public static final String PLACE_ID = "place_id";
+
+        public static final Uri INSTRUMENTPLACE_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_INSTRUMENT_PLACE).build();
+
+    }
+
+    public static final class GroupQuestionEntry implements BaseColumns {
+
+        public static final Uri GROUP_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_GROUP).build();
+
+        public static final Uri GROUPS_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_GROUPS).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENT;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENTS;
+
+        // Place Table Name
+        public static final String TABLE_NAME = "group_question";
+
+        // Table Columns
+        public static final String INSTRUMENT_ID = "instrument_id";
+
+        public static final String GROUP_ID = "group_id";
+
+        public static final String ORDER_QUESTION = "order_question";
+
+
+        public static Uri buildGroupQuestionsUri (String instrument_id) {
+            return GROUP_URI.buildUpon().appendPath(instrument_id).build();
+        }
+    }
+
+    public static final class QuestionEntry implements BaseColumns {
+
+        public static final Uri QUESTION_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_QUESTION).build();
+
+        public static final Uri QUESTIONS_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_QUESTIONS).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENT;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENTS;
+
+        // Place Table Name
+        public static final String TABLE_NAME = "question";
+
+        // Table Columns
+        public static final String QUESTION_ID = "question_id";
+
+        public static final String QUESTION = "question";
+
+        public static final String QUESTION_TYPE = "questionType";
+
+        public static final String GROUP_ID = "group_id";
+
+
+        public static Uri buildQuestionsUri (String instrument_id) {
+            return QUESTION_URI.buildUpon().appendPath(instrument_id).build();
+        }
     }
 }

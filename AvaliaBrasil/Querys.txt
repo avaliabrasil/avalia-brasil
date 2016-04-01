@@ -1,0 +1,8 @@
+Find all instruments for that place:
+select instrument_id,updated_at from instrument_places left join instrument on instrument.instrument_id = instrument_places.instrument_id where place_id = ?
+
+Get a group of questions:
+
+SELECT *
+  FROM group_question left join question on question.group_id = group_question.group_id
+ WHERE group_question.instrument_id = ? and group_question.group_id = ?;

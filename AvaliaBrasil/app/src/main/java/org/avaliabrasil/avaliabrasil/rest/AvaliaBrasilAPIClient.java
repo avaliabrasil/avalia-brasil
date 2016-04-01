@@ -1,25 +1,9 @@
 package org.avaliabrasil.avaliabrasil.rest;
 
-import android.content.Context;
-import android.content.Intent;
-import android.provider.Settings;
 import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-
-import org.avaliabrasil.avaliabrasil.avb.MainActivity;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.UserToken;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>
@@ -76,5 +60,22 @@ public class AvaliaBrasilAPIClient {
         return target.toString();
     }
 
+    /**
+     * Default path to the AvaliaBrasil API call to get survey.
+     * Need to be called has GET method, and pass the user token in the body.
+     * @since 1.0
+     * @version 1.0
+     * @return {@link String} targeting the base API.
+     */
+    public static String getSurveyURL(String place_id){
+        StringBuilder target = new StringBuilder();
+        target.append(avaliabrasilApiTarget);
+        target.append("survey/");
+        target.append(place_id);
+
+        Log.d("GoogleAPI", "URL: " + target.toString());
+
+        return target.toString();
+    }
 
 }

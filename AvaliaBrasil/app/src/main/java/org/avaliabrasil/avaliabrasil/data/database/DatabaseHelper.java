@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import org.avaliabrasil.avaliabrasil.data.AvBContract;
+
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>
  * @version 1.0
@@ -36,6 +38,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "                      NOT NULL" +
             ");";
 
+    private static final String createQueryInstrument = "CREATE TABLE "+ AvBContract.InstrumentEntry.TABLE_NAME +" (" +
+            AvBContract.InstrumentEntry._ID + " INTEGER PRIMARY KEY," +
+            AvBContract.InstrumentEntry.INSTRUMENT_ID +" TEXT UNIQUE NOT NULL," +
+            AvBContract.InstrumentEntry.UPDATED_AT   +" TEXT NOT NULL" +
+            ");";
+
+    private static final String createQueryInstrumentPlaces = "CREATE TABLE instrument_places (" +
+            "    _id           INTEGER PRIMARY KEY," +
+            "    instrument_id INTEGER REFERENCES instrument (instrument_id) ON DELETE CASCADE" +
+            "                                                                ON UPDATE CASCADE" +
+            "                          NOT NULL," +
+            "    place_id      TEXT    REFERENCES place (place_id) " +
+            "                          NOT NULL" +
+            ");";
+
+    private static final String createQueryGroup_question = "CREATE TABLE group_question (" +
+            "    _id            INTEGER PRIMARY KEY" +
+            "                           NOT NULL," +
+            "    instrument_id  INTEGER REFERENCES instrument (instrument_id) ON DELETE CASCADE" +
+            "                                                                 ON UPDATE CASCADE," +
+            "    group_id       INTEGER NOT NULL" +
+            "                           UNIQUE," +
+            "    order_question INTEGER NOT NULL" +
+            ");";
+
+    private static final String createQueryQuestion = "CREATE TABLE question (" +
+            "    _id          INTEGER PRIMARY KEY" +
+            "                         NOT NULL," +
+            "    question_id  INTEGER NOT NULL," +
+            "    question     TEXT    NOT NULL," +
+            "    questionType TEXT    NOT NULL," +
+            "    group_id     INTEGER REFERENCES group_question (group_id) ON DELETE CASCADE" +
+            "                                                              ON UPDATE CASCADE" +
+            ");";
+
     DatabaseHelper(Context context){
         super(context, database, null, version);
     }
@@ -44,6 +81,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db){
         db.execSQL(createQueryPlace);
         db.execSQL(createQueryPlaceDetails);
+        db.execSQL(createQueryInstrument);
+        db.execSQL(createQueryInstrumentPlaces);
+        db.execSQL(createQueryGroup_question);
+        db.execSQL(createQueryQuestion);
     }
 
     @Override

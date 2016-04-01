@@ -12,20 +12,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".avb.EvaluationActivity"
-    tools:showIn="@layout/activity_evaluation">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:id="@+id/question"
-        android:text="1. As instalações internas e externas da Instituições são visualmente atrativas."
-        style="@style/DefaultText"
-
-        />
-
+    >
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -64,13 +51,4 @@
             android:id="@+id/option5"
             />
 </RadioGroup>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:text="Próxima Pergunta (2/17) "
-        android:layout_weight="1"
-        android:id="@+id/submit_answer"
-        style="@style/MainActionButton"/>
-
 </LinearLayout>

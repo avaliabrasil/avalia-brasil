@@ -29,8 +29,6 @@ public class AvBProvider extends ContentProvider {
 
     public static final Uri PLACE_DETAILS_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY+"/placesdetails");
 
-    public static final String PLACE_PATH = "places";
-
     static final int PLACE = 1;
     static final int PLACE_ID = 2;
     static final int PLACEDETAILS = 3;
@@ -41,10 +39,24 @@ public class AvBProvider extends ContentProvider {
         uriMatcher.addURI(CONTENT_AUTHORITY, "places", PLACE);
         uriMatcher.addURI(CONTENT_AUTHORITY, "places/*", PLACE_ID);
         uriMatcher.addURI(CONTENT_AUTHORITY, "placesdetails", PLACEDETAILS);
+        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_INSTRUMENT,AvBContract.INSTRUMENT);
+        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_INSTRUMENTS,AvBContract.INSTRUMENTS);
+        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_INSTRUMENT_PLACE,AvBContract.INSTRUMENT_PLACE);
+
+        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_GROUP,AvBContract.GROUP_QUESTION);
+        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_GROUPS,AvBContract.GROUP_QUESTIONS);
+
+        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_QUESTION,AvBContract.QUESTION);
+        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_QUESTIONS,AvBContract.QUESTIONS);
     }
 
     public static Uri getPlaceDetails(String place_id){
         Uri uri = Uri.parse("content://"+CONTENT_AUTHORITY+"/places/" + place_id);
+        return uri;
+    }
+
+    public static Uri getInstruments(String place_id){
+        Uri uri = AvBContract.InstrumentEntry.INSTRUMENTS_URI.parse(place_id);
         return uri;
     }
 
@@ -79,6 +91,18 @@ public class AvBProvider extends ContentProvider {
                 db = DatabaseWrapper.getDatabase(getContext());
                 c = db.rawQuery("select * from place_detail LEFT OUTER join place on place_detail.place_id = place.place_id where place_detail.place_id = ? order by distance asc",new String[]{ uri.getPathSegments().get(1)});
                 break;
+            case AvBContract.INSTRUMENT:
+                db = DatabaseWrapper.getDatabase(getContext());
+                c =  db.rawQuery("select instrument_id,updated_at from instrument_places left join instrument on instrument.instrument_id = instrument_places.instrument_id where place_id = ?",new String[]{ uri.getPathSegments().get(1)});
+                break;
+            case AvBContract.INSTRUMENTS:
+                db = DatabaseWrapper.getDatabase(getContext());
+                String id = uri.getPathSegments().get(1);
+
+                //TODO fix this call.
+                c =  db.rawQuery("select instrument.instrument_id,instrument.updated_at from instrument_places left join instrument on instrument.instrument_id = instrument_places.instrument_id where place_id = ?",new String[]{ uri.getPathSegments().get(1)});
+
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -91,10 +115,12 @@ public class AvBProvider extends ContentProvider {
         switch (uriMatcher.match(uri)){
             case PLACE:
                 return "vnd.android.cursor.dir/vnd."+ CONTENT_AUTHORITY + DatabaseHelper.place_table  +" ";
-
             case PLACE_ID:
                 return "vnd.android.cursor.item/vnd."+ CONTENT_AUTHORITY + DatabaseHelper.place_detail_table  +" ";
-
+            case AvBContract.INSTRUMENT:
+                return AvBContract.InstrumentEntry.CONTENT_TYPE;
+            case AvBContract.INSTRUMENTS:
+                return AvBContract.InstrumentEntry.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
@@ -132,6 +158,45 @@ public class AvBProvider extends ContentProvider {
                     return _uri;
                 }
 
+            case AvBContract.INSTRUMENT:
+                db = DatabaseWrapper.getDatabase(getContext());
+                rowID = db.insertWithOnConflict( AvBContract.InstrumentEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
+                if (rowID > 0)
+                {
+                    Uri _uri = ContentUris.withAppendedId(AvBContract.InstrumentEntry.INSTRUMENT_URI, rowID);
+                    getContext().getContentResolver().notifyChange(_uri, null);
+                    return _uri;
+                }
+
+            case AvBContract.INSTRUMENT_PLACE:
+                db = DatabaseWrapper.getDatabase(getContext());
+                rowID = db.insertWithOnConflict( AvBContract.InstrumentPlaceEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
+                if (rowID > 0)
+                {
+                    Uri _uri = ContentUris.withAppendedId(AvBContract.InstrumentEntry.INSTRUMENT_URI, rowID);
+                    getContext().getContentResolver().notifyChange(_uri, null);
+                    return _uri;
+                }
+
+            case AvBContract.GROUP_QUESTION:
+                db = DatabaseWrapper.getDatabase(getContext());
+                rowID = db.insertWithOnConflict( AvBContract.GroupQuestionEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
+                if (rowID > 0)
+                {
+                    Uri _uri = ContentUris.withAppendedId(AvBContract.GroupQuestionEntry.GROUP_URI, rowID);
+                    getContext().getContentResolver().notifyChange(_uri, null);
+                    return _uri;
+                }
+
+            case AvBContract.QUESTION:
+                db = DatabaseWrapper.getDatabase(getContext());
+                rowID = db.insertWithOnConflict( AvBContract.QuestionEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
+                if (rowID > 0)
+                {
+                    Uri _uri = ContentUris.withAppendedId(AvBContract.QuestionEntry.QUESTION_URI, rowID);
+                    getContext().getContentResolver().notifyChange(_uri, null);
+                    return _uri;
+                }
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
@@ -177,6 +242,11 @@ public class AvBProvider extends ContentProvider {
                 count = db.update( DatabaseHelper.place_table, values, "_id = " + uri.getPathSegments().get(1) +
                         (!TextUtils.isEmpty(selection) ? " AND (" +selection + ')' : ""), selectionArgs);
                 break;
+
+            case AvBContract.GROUP_QUESTION:
+                db = DatabaseWrapper.getDatabase(getContext());
+                count = db.update( AvBContract.GroupQuestionEntry.TABLE_NAME, values,selection,selectionArgs);
+               break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri );
         }
@@ -187,18 +257,85 @@ public class AvBProvider extends ContentProvider {
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
         SQLiteDatabase db = null;
+        int returnCount = 0;
 
         switch (uriMatcher.match(uri)) {
             case PLACE:
                 db = DatabaseWrapper.getDatabase(getContext());
                 db.beginTransaction();
-                int returnCount = 0;
+
                 try {
                     for (ContentValues value : values) {
                         long rowID = db.insertWithOnConflict(	DatabaseHelper.place_table, "", value,SQLiteDatabase.CONFLICT_REPLACE);
                         if(rowID == -1){
                             db.update(DatabaseHelper.place_table,value,"where place_id = ?",new String[]{value.getAsString("place_id")});
                         }
+                        if (rowID != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            case AvBContract.INSTRUMENT:
+                db = DatabaseWrapper.getDatabase(getContext());
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long rowID = db.insertWithOnConflict(AvBContract.InstrumentEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
+                        if (rowID != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            case AvBContract.INSTRUMENT_PLACE:
+                db = DatabaseWrapper.getDatabase(getContext());
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long rowID = db.insertWithOnConflict(AvBContract.InstrumentPlaceEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
+                        if (rowID != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+
+            case AvBContract.GROUP_QUESTION:
+                db = DatabaseWrapper.getDatabase(getContext());
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long rowID = db.insertWithOnConflict(AvBContract.GroupQuestionEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
+                        if (rowID != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+
+            case AvBContract.QUESTION:
+                db = DatabaseWrapper.getDatabase(getContext());
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long rowID = db.insertWithOnConflict(AvBContract.QuestionEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
                         if (rowID != -1) {
                             returnCount++;
                         }

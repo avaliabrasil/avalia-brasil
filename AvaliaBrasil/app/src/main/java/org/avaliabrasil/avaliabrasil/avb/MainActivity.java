@@ -22,7 +22,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -45,8 +44,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
-
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;

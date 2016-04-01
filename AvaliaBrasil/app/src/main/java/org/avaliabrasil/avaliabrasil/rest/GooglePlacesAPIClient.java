@@ -1,6 +1,5 @@
 package org.avaliabrasil.avaliabrasil.rest;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -21,7 +20,6 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import org.avaliabrasil.avaliabrasil.avb.MainActivity;
 import org.avaliabrasil.avaliabrasil.data.AvBProvider;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;

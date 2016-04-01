@@ -1,7 +1,9 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -28,11 +31,23 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.data.AvBContract;
 import org.avaliabrasil.avaliabrasil.data.AvBProvider;
+import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.Data;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
 
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 public class PlaceActivity extends AppCompatActivity {
 
@@ -41,6 +56,7 @@ public class PlaceActivity extends AppCompatActivity {
     private String distance;
     private MapView mMapView;
     private GoogleMap googleMap;
+    private String place_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +68,8 @@ public class PlaceActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_place);
+
+        place_id = getIntent().getExtras().getString("placeid");
 
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
 
@@ -243,5 +261,268 @@ public class PlaceActivity extends AppCompatActivity {
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
+    }
+
+    public void startEvaluationActivity(View view){
+
+        Cursor c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id),null,null,null,null);
+
+        if(c.getCount() <= 0){
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getSurveyURL(place_id),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+
+                            //TODO api still doesn't send back the info, so i'am adding it static for tests;
+
+                            Gson gson = new Gson();
+                            Holder data = gson.fromJson(response, Holder.class);
+
+                            ContentValues[] values = new ContentValues[data.getInstruments().size()];
+                            ContentValues value = null;
+
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-dd");
+
+                            Date dateAtual = new Date(System.currentTimeMillis());
+                            for (int i = 0; i < values.length; i++) {
+                                value = new ContentValues();
+                                value.put(AvBContract.InstrumentEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                                value.put(AvBContract.InstrumentEntry.UPDATED_AT, dateFormat.format(dateAtual));
+                                values[i] = value;
+                            }
+
+                            getContentResolver().bulkInsert(
+                                    AvBContract.InstrumentEntry.INSTRUMENT_URI, values);
+
+                            for (int i = 0; i < values.length; i++) {
+                                value = new ContentValues();
+                                value.put(AvBContract.InstrumentPlaceEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                                value.put(AvBContract.InstrumentPlaceEntry.PLACE_ID, place_id);
+                                values[i] = value;
+                            }
+
+                            getContentResolver().bulkInsert(
+                                    AvBContract.InstrumentPlaceEntry.INSTRUMENTPLACE_URI, values);
+
+                            for (int i = 0; i < data.getInstruments().size(); i++) {
+                                values = new ContentValues[data.getInstruments().get(i).getData().getGroups().size()];
+                                for (int j = 0; j < data.getInstruments().get(i).getData().getGroups().size(); j++) {
+                                    value = new ContentValues();
+                                    value.put(AvBContract.GroupQuestionEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                                    value.put(AvBContract.GroupQuestionEntry.GROUP_ID, data.getInstruments().get(i).getData().getGroups().get(j).getId());
+                                    value.put(AvBContract.GroupQuestionEntry.ORDER_QUESTION, data.getInstruments().get(i).getData().getGroups().get(j).getOrder());
+                                    values[j] = value;
+                                }
+
+                                getContentResolver().bulkInsert(
+                                        AvBContract.GroupQuestionEntry.GROUP_URI, values);
+                            }
+
+                            for (int k = 0; k < data.getInstruments().size(); k++) {
+                                for (int i = 0; i < data.getInstruments().get(i).getData().getGroups().size(); i++) {
+                                    values = new ContentValues[data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size()];
+
+                                    for (int j = 0; j < data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size(); j++) {
+                                        value = new ContentValues();
+                                        value.put(AvBContract.QuestionEntry.QUESTION, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getTitle());
+                                        value.put(AvBContract.QuestionEntry.GROUP_ID, data.getInstruments().get(i).getData().getGroups().get(i).getId());
+                                        value.put(AvBContract.QuestionEntry.QUESTION_ID, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getId());
+                                        value.put(AvBContract.QuestionEntry.QUESTION_TYPE, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getQuestionType());
+                                        values[j] = value;
+                                    }
+
+                                    getContentResolver().bulkInsert(
+                                            AvBContract.QuestionEntry.QUESTION_URI, values);
+                                }
+                            }
+
+
+                            Random random = new Random();
+
+                            int instrument = random.nextInt(data.getInstruments().size());
+                            int group = random.nextInt(data.getInstruments().get(instrument).getData().getGroups().size());
+
+                            Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
+                            intent.putExtra("name",getIntent().getExtras().getString("name"));
+                            List<Question> questions = new ArrayList<Question>(data.getInstruments().get(instrument)
+                            .getData().getGroups().get(group).getQuestions());
+                            intent.putExtra("questions", (Serializable) questions);
+                            startActivity(intent);
+
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                    //Toast.makeText(PlaceActivity.this,"Não foi possível acessar os servidor do avalia brasil.",Toast.LENGTH_SHORT).show();
+
+                    Gson gson = new Gson();
+                    Holder data = gson.fromJson("{ \"instruments\":[" +
+                            "        {" +
+                            "            \"id\":1," +
+                            "            \"data\":{" +
+                            "                \"groups\":[" +
+                            "                    {" +
+                            "                        \"id\":1," +
+                            "                        \"order\":1," +
+                            "                        \"questions\":[" +
+                            "                            {" +
+                            "                                \"id\":1," +
+                            "                                \"title\":\"\"," +
+                            "                                \"questionType\":\"is_comment\"" +
+                            "                            }," +
+                            "                            {" +
+                            "                                \"id\":2," +
+                            "                                \"title\":\"\"," +
+                            "                                \"questionType\":\"is_number\"" +
+                            "                            }," +
+                            "                            {" +
+                            "                                \"id\":3," +
+                            "                                \"title\":\"\"," +
+                            "                                \"questionType\":\"is_number\"" +
+                            "                            }," +
+                            "                            {" +
+                            "                                \"id\":3," +
+                            "                                \"title\":\"\"," +
+                            "                                \"questionType\":\"is_likert\"" +
+                            "                            }" +
+                            "                        ]" +
+                            "                    }," +
+                            "                    {" +
+                            "                        \"id\":2," +
+                            "                        \"order\":2," +
+                            "                        \"questions\":[" +
+                            "                            {" +
+                            "                                \"id\":1," +
+                            "                                \"title\":\"\"," +
+                            "                                \"questionType\":\"is_number\"" +
+                            "                            }," +
+                            "                            {" +
+                            "                                \"id\":2," +
+                            "                                \"title\":\"\"," +
+                            "                                \"questionType\":\"is_comment\"" +
+                            "                            }," +
+                            "                            {" +
+                            "                                \"id\":3," +
+                            "                                \"title\":\"\"," +
+                            "                                \"questionType\":\"is_likert\"" +
+                            "                            }," +
+                            "                            {" +
+                            "                                \"id\":4," +
+                            "                                \"title\":\"\"," +
+                            "                                \"questionType\":\"is_number\"" +
+                            "                            }" +
+                            "                        ]" +
+                            "                    }" +
+                            "                ]" +
+                            "            }" +
+                            "        }," +
+                            "        {" +
+                            "            \"id\":2," +
+                            "            \"data\":{" +
+                            "            }" +
+                            "        }" +
+                            "    ]" +
+                            "}", Holder.class);
+
+                    ContentValues[] values = new ContentValues[data.getInstruments().size()];
+                    ContentValues value = null;
+
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-dd");
+
+                    Date dateAtual = new Date(System.currentTimeMillis());
+                    for (int i = 0; i < values.length; i++) {
+                        value = new ContentValues();
+                        value.put(AvBContract.InstrumentEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                        value.put(AvBContract.InstrumentEntry.UPDATED_AT, dateFormat.format(dateAtual));
+                        values[i] = value;
+                    }
+
+                    getContentResolver().bulkInsert(
+                            AvBContract.InstrumentEntry.INSTRUMENT_URI, values);
+
+                    for (int i = 0; i < values.length; i++) {
+                        value = new ContentValues();
+                        value.put(AvBContract.InstrumentPlaceEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                        value.put(AvBContract.InstrumentPlaceEntry.PLACE_ID, place_id);
+                        values[i] = value;
+                    }
+
+                    getContentResolver().bulkInsert(
+                            AvBContract.InstrumentPlaceEntry.INSTRUMENTPLACE_URI, values);
+
+                    for (int i = 0; i < data.getInstruments().size(); i++) {
+                        values = new ContentValues[data.getInstruments().get(i).getData().getGroups().size()];
+                        for (int j = 0; j < data.getInstruments().get(i).getData().getGroups().size(); j++) {
+                            value = new ContentValues();
+                            value.put(AvBContract.GroupQuestionEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                            value.put(AvBContract.GroupQuestionEntry.GROUP_ID, data.getInstruments().get(i).getData().getGroups().get(j).getId());
+                            value.put(AvBContract.GroupQuestionEntry.ORDER_QUESTION, data.getInstruments().get(i).getData().getGroups().get(j).getOrder());
+                            values[j] = value;
+                        }
+
+                        getContentResolver().bulkInsert(
+                                AvBContract.GroupQuestionEntry.GROUP_URI, values);
+                    }
+
+                    for (int k = 0; k < data.getInstruments().size(); k++) {
+                        for (int i = 0; i < data.getInstruments().get(k).getData().getGroups().size(); i++) {
+                            Log.d("PlaceActivity", "onErrorResponse i: " + i);
+                            values = new ContentValues[data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size()];
+
+                            for (int j = 0; j < data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size(); j++) {
+                                value = new ContentValues();
+                                value.put(AvBContract.QuestionEntry.QUESTION, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getTitle());
+                                value.put(AvBContract.QuestionEntry.GROUP_ID, data.getInstruments().get(k).getData().getGroups().get(i).getId());
+                                value.put(AvBContract.QuestionEntry.QUESTION_ID, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getId());
+                                value.put(AvBContract.QuestionEntry.QUESTION_TYPE, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getQuestionType());
+                                values[j] = value;
+                            }
+
+                            getContentResolver().bulkInsert(
+                                    AvBContract.QuestionEntry.QUESTION_URI, values);
+                        }
+                    }
+
+
+                    Random random = new Random();
+
+                    int group = 0;
+                    int instrument = random.nextInt(data.getInstruments().size());
+                    while(data.getInstruments().get(instrument).getData().getGroups().size() == 0){
+                        instrument = random.nextInt(data.getInstruments().size());
+                    }
+                    group = random.nextInt(data.getInstruments().get(instrument).getData().getGroups().size());
+
+                    Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
+                    intent.putExtra("name",getIntent().getExtras().getString("name"));
+                    List<Question> questions = new ArrayList<Question>(data.getInstruments().get(instrument)
+                            .getData().getGroups().get(group).getQuestions());
+                    intent.putExtra("questions", (Serializable) questions);
+                    startActivity(intent);
+                }
+            });
+            Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
+        }else{
+
+            /*ArrayList<String> ids = new ArrayList<String>();
+
+            while(c.moveToNext()){
+                ids.add(c.getString(c.getColumnIndex("instrument_id")));
+            }
+
+            Random random = new Random();
+
+            c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id),null,null,null,null);*/
+
+            Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
+            intent.putExtra("name",getIntent().getExtras().getString("name"));
+            startActivity(intent);
+
+        }
+    }
+
+    public void startStatisticsActivity(View view){
+
     }
 }

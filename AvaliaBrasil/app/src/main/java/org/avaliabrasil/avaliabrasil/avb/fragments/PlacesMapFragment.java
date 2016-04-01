@@ -9,11 +9,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,7 +22,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.ui.BubbleIconFactory;
 import com.google.maps.android.ui.IconGenerator;
 
 import org.avaliabrasil.avaliabrasil.R;
@@ -142,8 +139,6 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
 
         IconGenerator iconGenerator = new IconGenerator(getContext());
         while(cursor.moveToNext()){
-
-            Log.e("Places", "update: ");
             iconGenerator.setStyle(getStyle());
 
             Bitmap image = iconGenerator.makeIcon(cursor.getString(cursor.getColumnIndex("name")));
@@ -151,7 +146,6 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
             marker = new MarkerOptions().position(
                     new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("place_id"))).snippet(cursor.getString(cursor.getColumnIndex("name")));
 
-            //TODO Arrumar marcador, para mostrar um nome/titulo.
             marker.icon(BitmapDescriptorFactory
                     .fromBitmap(image));
 
