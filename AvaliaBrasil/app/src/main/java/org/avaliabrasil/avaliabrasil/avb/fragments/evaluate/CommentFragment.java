@@ -6,9 +6,13 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.EvaluationActivity;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
 
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>
@@ -19,6 +23,7 @@ public class CommentFragment extends TransactionFragment {
 
     private EditText etComment;
 
+    private TextView tvQuestion;
 
     @Nullable
     @Override
@@ -29,6 +34,14 @@ public class CommentFragment extends TransactionFragment {
         View rootView = inflater.inflate(R.layout.fragment_comment, container, false);
 
         etComment = (EditText) rootView.findViewById(R.id.etComment);
+
+        tvQuestion = (TextView) rootView.findViewById(R.id.tvQuestion);
+
+        tvQuestion.setText(getQuestion().getTitle());
+
+        btnSubmit = (Button) rootView.findViewById(R.id.btnSubmit);
+
+        btnSubmit.setOnClickListener((EvaluationActivity)getActivity());
 
         return rootView;
     }

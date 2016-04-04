@@ -78,4 +78,22 @@ public class AvaliaBrasilAPIClient {
         return target.toString();
     }
 
+    /**
+     * Default path to the AvaliaBrasil API call post the anwser.
+     * Need to be called has POST method, and pass the user token and anwsers in the body.
+     * @since 1.0
+     * @version 1.0
+     * @return {@link String} targeting the base API.
+     */
+    public static String postAnwsers(String place_id){
+        StringBuilder target = new StringBuilder();
+        target.append(avaliabrasilApiTarget);
+        target.append("survey/");
+        target.append(place_id);
+
+        Log.d("GoogleAPI", "URL: " + target.toString());
+
+        return target.toString();
+    }
+
 }

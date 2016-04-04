@@ -3,8 +3,10 @@ package org.avaliabrasil.avaliabrasil.avb;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +31,9 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
@@ -46,7 +51,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class PlaceActivity extends AppCompatActivity {
@@ -62,180 +69,180 @@ public class PlaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getIntent().getExtras().getString("placeid") == null || getIntent().getExtras().getString("name") == null
-                || getIntent().getExtras().getString("distance") == null){
+        if((getIntent() == null)||(getIntent().getExtras()==null)||(getIntent().getExtras().getString("placeid") == null) || (getIntent().getExtras().getString("name") == null)
+                || (getIntent().getExtras().getString("distance") == null)){
             finish();
-        }
+        }else{
+            setContentView(R.layout.activity_place);
 
-        setContentView(R.layout.activity_place);
+            place_id = getIntent().getExtras().getString("placeid");
 
-        place_id = getIntent().getExtras().getString("placeid");
+            toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
 
-        toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+            toolbarLayout.setTitle(getIntent().getExtras().getString("name"));
 
-        toolbarLayout.setTitle(getIntent().getExtras().getString("name"));
+            // Ativando a opção voltar da Toolbar
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Ativando a opção voltar da Toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            mMapView = (MapView) findViewById(R.id.mapView);
+            mMapView.onCreate(savedInstanceState);
 
-        mMapView = (MapView) findViewById(R.id.mapView);
-        mMapView.onCreate(savedInstanceState);
+            mMapView.onResume();// needed to get the map to display immediately
 
-        mMapView.onResume();// needed to get the map to display immediately
+            try {
+                MapsInitializer.initialize(getApplicationContext());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        try {
-            MapsInitializer.initialize(getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            googleMap = mMapView.getMap();
 
-        googleMap = mMapView.getMap();
+            placesInfo = (LinearLayout) findViewById(R.id.placesInfo);
 
-        placesInfo = (LinearLayout) findViewById(R.id.placesInfo);
+            Cursor cursor = getContentResolver().query(
+                    AvBProvider.getPlaceDetails(getIntent().getExtras().getString("placeid")), null,null,null,null);
 
-        Cursor cursor = getContentResolver().query(
-                AvBProvider.getPlaceDetails(getIntent().getExtras().getString("placeid")), null,null,null,null);
+            distance = getIntent().getExtras().getString("distance");
 
-        distance = getIntent().getExtras().getString("distance");
-
-        if(cursor.getCount() <= 0){
-            final String placeid = getIntent().getExtras().getString("placeid");
+            if(cursor.getCount() <= 0){
+                final String placeid = getIntent().getExtras().getString("placeid");
 
 
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlaceDetails(placeid,"AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            Log.d("Teste", "onResponse: " + response);
-                            Gson gson = new Gson();
-                            PlaceDetails placeDetails = gson.fromJson(response, PlaceDetails.class);
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlaceDetails(placeid,"AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                Log.d("Teste", "onResponse: " + response);
+                                Gson gson = new Gson();
+                                PlaceDetails placeDetails = gson.fromJson(response, PlaceDetails.class);
 
-                            ArrayList<String> placeInfoList = new ArrayList<String>();
+                                ArrayList<String> placeInfoList = new ArrayList<String>();
 
-                            placeInfoList.add("Address: " + placeDetails.getResult().getVicinity());
-                            View view = null;
+                                placeInfoList.add("Address: " + placeDetails.getResult().getVicinity());
+                                View view = null;
 
-                            ContentValues value = new ContentValues();
-                            value.put("place_id",placeid);
-                            value.put("website",placeDetails.getResult().getWebsite());
-                            value.put("formattedPhoneNumber",placeDetails.getResult().getFormattedPhoneNumber());
+                                ContentValues value = new ContentValues();
+                                value.put("place_id",placeid);
+                                value.put("website",placeDetails.getResult().getWebsite());
+                                value.put("formattedPhoneNumber",placeDetails.getResult().getFormattedPhoneNumber());
 
-                            getContentResolver().insert(
-                                    AvBProvider.PLACE_DETAILS_CONTENT_URI, value);
+                                getContentResolver().insert(
+                                        AvBProvider.PLACE_DETAILS_CONTENT_URI, value);
 
-                            if(placeDetails.getResult().getVicinity() != null){
-                                View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
-                                ((TextView)place.findViewById(R.id.place_name_text_view)).setText(placeDetails.getResult().getName());
-                                ((TextView)place.findViewById(R.id.place_address_text_view)).setText(placeDetails.getResult().getVicinity());
-                                ((TextView)place.findViewById(R.id.place_distance_text_view)).setText(distance);
-                                placesInfo.addView(place);
+                                if(placeDetails.getResult().getVicinity() != null){
+                                    View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
+                                    ((TextView)place.findViewById(R.id.place_name_text_view)).setText(placeDetails.getResult().getName());
+                                    ((TextView)place.findViewById(R.id.place_address_text_view)).setText(placeDetails.getResult().getVicinity());
+                                    ((TextView)place.findViewById(R.id.place_distance_text_view)).setText(distance);
+                                    placesInfo.addView(place);
+                                }
+
+                                if(placeDetails.getResult().getFormattedPhoneNumber() != null){
+                                    view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+                                    ((TextView)view.findViewById(R.id.text)).setText(placeDetails.getResult().getFormattedPhoneNumber());
+                                    ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
+
+                                    placesInfo.addView(view);
+                                }
+
+                                if(placeDetails.getResult().getWebsite() != null){
+                                    view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+                                    ((TextView)view.findViewById(R.id.text)).setText(placeDetails.getResult().getWebsite());
+                                    ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
+
+                                    placesInfo.addView(view);
+                                }
+
+                                toolbarLayout.setTitle(placeDetails.getResult().getName());
+
+
+                                MarkerOptions marker;
+
+                                marker = new MarkerOptions().position(
+                                        new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(),placeDetails.getResult().getGeometry().getLocation().getLng())).title(placeDetails.getResult().getName());
+
+                                // Changing marker icon
+                                marker.icon(BitmapDescriptorFactory
+                                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+
+                                CameraPosition cameraPosition = new CameraPosition.Builder()
+                                        .target(new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(), placeDetails.getResult().getGeometry().getLocation().getLng())).zoom(16).build();
+                                googleMap.animateCamera(CameraUpdateFactory
+                                        .newCameraPosition(cameraPosition));
+                                // adding marker
+                                googleMap.addMarker(marker);
+
                             }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                        View view = null;
+                        view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+                        ((TextView)view.findViewById(R.id.text)).setText("Não foi possível buscar as informações deste local, verifique sua internet");
+                        ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_search_white_24dp));
 
-                            if(placeDetails.getResult().getFormattedPhoneNumber() != null){
-                                view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+                        placesInfo.addView(view);
+                    }
+                });
 
-                                ((TextView)view.findViewById(R.id.text)).setText(placeDetails.getResult().getFormattedPhoneNumber());
-                                ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
+                Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
+            }else{
+                cursor.moveToFirst();
 
-                                placesInfo.addView(view);
-                            }
+                View view = null;
 
-                            if(placeDetails.getResult().getWebsite() != null){
-                                view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+                if(cursor.getString(cursor.getColumnIndex("vicinity")) != null){
+                    View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
+                    ((TextView)place.findViewById(R.id.place_name_text_view)).setText(cursor.getString(cursor.getColumnIndex("name")));
+                    ((TextView)place.findViewById(R.id.place_address_text_view)).setText(cursor.getString(cursor.getColumnIndex("vicinity")));
+                    ((TextView)place.findViewById(R.id.place_distance_text_view)).setText(distance);
+                    placesInfo.addView(place);
+                }
 
-                                ((TextView)view.findViewById(R.id.text)).setText(placeDetails.getResult().getWebsite());
-                                ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
-
-                                placesInfo.addView(view);
-                            }
-
-                            toolbarLayout.setTitle(placeDetails.getResult().getName());
-
-
-                            MarkerOptions marker;
-
-                            marker = new MarkerOptions().position(
-                                    new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(),placeDetails.getResult().getGeometry().getLocation().getLng())).title(placeDetails.getResult().getName());
-
-                            // Changing marker icon
-                            marker.icon(BitmapDescriptorFactory
-                                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-
-
-                            CameraPosition cameraPosition = new CameraPosition.Builder()
-                                    .target(new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(), placeDetails.getResult().getGeometry().getLocation().getLng())).zoom(16).build();
-                            googleMap.animateCamera(CameraUpdateFactory
-                                    .newCameraPosition(cameraPosition));
-                            // adding marker
-                            googleMap.addMarker(marker);
-
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                    View view = null;
+                if(cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")) != null){
                     view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
-                    ((TextView)view.findViewById(R.id.text)).setText("Não foi possível buscar as informações deste local, verifique sua internet");
-                    ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_search_white_24dp));
+
+                    ((TextView)view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")));
+                    ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
 
                     placesInfo.addView(view);
                 }
-            });
 
-            Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
-        }else{
-            cursor.moveToFirst();
+                if(cursor.getString(cursor.getColumnIndex("website")) != null){
+                    view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
 
-            View view = null;
+                    ((TextView)view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("website")));
+                    ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
 
-            if(cursor.getString(cursor.getColumnIndex("vicinity")) != null){
-                View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
-                ((TextView)place.findViewById(R.id.place_name_text_view)).setText(cursor.getString(cursor.getColumnIndex("name")));
-                ((TextView)place.findViewById(R.id.place_address_text_view)).setText(cursor.getString(cursor.getColumnIndex("vicinity")));
-                ((TextView)place.findViewById(R.id.place_distance_text_view)).setText(distance);
-                placesInfo.addView(place);
+                    placesInfo.addView(view);
+                }
+
+                toolbarLayout.setTitle(cursor.getString(cursor.getColumnIndex("name")));
+
+                MarkerOptions marker;
+
+                marker = new MarkerOptions().position(
+                        new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")),cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("name")));
+
+                // Changing marker icon
+                marker.icon(BitmapDescriptorFactory
+                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")),cursor.getDouble(cursor.getColumnIndex("longitude")))).zoom(16).build();
+                googleMap.animateCamera(CameraUpdateFactory
+                        .newCameraPosition(cameraPosition));
+
+                googleMap.addMarker(marker);
             }
-
-            if(cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")) != null){
-                view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
-
-                ((TextView)view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")));
-                ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
-
-                placesInfo.addView(view);
-            }
-
-            if(cursor.getString(cursor.getColumnIndex("website")) != null){
-                view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
-
-                ((TextView)view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("website")));
-                ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
-
-                placesInfo.addView(view);
-            }
-
-            toolbarLayout.setTitle(cursor.getString(cursor.getColumnIndex("name")));
-
-            MarkerOptions marker;
-
-            marker = new MarkerOptions().position(
-                    new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")),cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("name")));
-
-            // Changing marker icon
-            marker.icon(BitmapDescriptorFactory
-                    .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-
-
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")),cursor.getDouble(cursor.getColumnIndex("longitude")))).zoom(16).build();
-            googleMap.animateCamera(CameraUpdateFactory
-                    .newCameraPosition(cameraPosition));
-
-            googleMap.addMarker(marker);
         }
     }
 
@@ -285,20 +292,24 @@ public class PlaceActivity extends AppCompatActivity {
 
                             Date dateAtual = new Date(System.currentTimeMillis());
                             for (int i = 0; i < values.length; i++) {
-                                value = new ContentValues();
-                                value.put(AvBContract.InstrumentEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
-                                value.put(AvBContract.InstrumentEntry.UPDATED_AT, dateFormat.format(dateAtual));
-                                values[i] = value;
+                                if(data.getInstruments().get(i).getData().getGroups().size() != 0){
+                                    value = new ContentValues();
+                                    value.put(AvBContract.InstrumentEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                                    value.put(AvBContract.InstrumentEntry.UPDATED_AT, dateFormat.format(dateAtual));
+                                    values[i] = value;
+                                }
                             }
 
                             getContentResolver().bulkInsert(
                                     AvBContract.InstrumentEntry.INSTRUMENT_URI, values);
 
                             for (int i = 0; i < values.length; i++) {
-                                value = new ContentValues();
-                                value.put(AvBContract.InstrumentPlaceEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
-                                value.put(AvBContract.InstrumentPlaceEntry.PLACE_ID, place_id);
-                                values[i] = value;
+                                if(data.getInstruments().get(i).getData().getGroups().size() != 0){
+                                    value = new ContentValues();
+                                    value.put(AvBContract.InstrumentPlaceEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                                    value.put(AvBContract.InstrumentPlaceEntry.PLACE_ID, place_id);
+                                    values[i] = value;
+                                }
                             }
 
                             getContentResolver().bulkInsert(
@@ -344,10 +355,12 @@ public class PlaceActivity extends AppCompatActivity {
 
                             Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
                             intent.putExtra("name",getIntent().getExtras().getString("name"));
+                            intent.putExtra("placeid",place_id);
                             List<Question> questions = new ArrayList<Question>(data.getInstruments().get(instrument)
                             .getData().getGroups().get(group).getQuestions());
                             intent.putExtra("questions", (Serializable) questions);
                             startActivity(intent);
+                            finish();
 
                         }
                     }, new Response.ErrorListener() {
@@ -368,22 +381,22 @@ public class PlaceActivity extends AppCompatActivity {
                             "                        \"questions\":[" +
                             "                            {" +
                             "                                \"id\":1," +
-                            "                                \"title\":\"\"," +
+                            "                                \"title\":\" Question 1 \"," +
                             "                                \"questionType\":\"is_comment\"" +
                             "                            }," +
                             "                            {" +
                             "                                \"id\":2," +
-                            "                                \"title\":\"\"," +
+                            "                                \"title\":\" Question 2 \"," +
                             "                                \"questionType\":\"is_number\"" +
                             "                            }," +
                             "                            {" +
                             "                                \"id\":3," +
-                            "                                \"title\":\"\"," +
+                            "                                \"title\":\" Question 3 \"," +
                             "                                \"questionType\":\"is_number\"" +
                             "                            }," +
                             "                            {" +
-                            "                                \"id\":3," +
-                            "                                \"title\":\"\"," +
+                            "                                \"id\":4," +
+                            "                                \"title\":\" Question 4 \"," +
                             "                                \"questionType\":\"is_likert\"" +
                             "                            }" +
                             "                        ]" +
@@ -394,22 +407,22 @@ public class PlaceActivity extends AppCompatActivity {
                             "                        \"questions\":[" +
                             "                            {" +
                             "                                \"id\":1," +
-                            "                                \"title\":\"\"," +
+                            "                                \"title\":\" Question 1 \"," +
                             "                                \"questionType\":\"is_number\"" +
                             "                            }," +
                             "                            {" +
                             "                                \"id\":2," +
-                            "                                \"title\":\"\"," +
+                            "                                \"title\":\" Question 2 \"," +
                             "                                \"questionType\":\"is_comment\"" +
                             "                            }," +
                             "                            {" +
                             "                                \"id\":3," +
-                            "                                \"title\":\"\"," +
+                            "                                \"title\":\" Question 3 \"," +
                             "                                \"questionType\":\"is_likert\"" +
                             "                            }," +
                             "                            {" +
                             "                                \"id\":4," +
-                            "                                \"title\":\"\"," +
+                            "                                \"title\":\" Question 4 \"," +
                             "                                \"questionType\":\"is_number\"" +
                             "                            }" +
                             "                        ]" +
@@ -432,20 +445,24 @@ public class PlaceActivity extends AppCompatActivity {
 
                     Date dateAtual = new Date(System.currentTimeMillis());
                     for (int i = 0; i < values.length; i++) {
-                        value = new ContentValues();
-                        value.put(AvBContract.InstrumentEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
-                        value.put(AvBContract.InstrumentEntry.UPDATED_AT, dateFormat.format(dateAtual));
-                        values[i] = value;
+                        if(data.getInstruments().get(i).getData().getGroups().size() != 0) {
+                            value = new ContentValues();
+                            value.put(AvBContract.InstrumentEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                            value.put(AvBContract.InstrumentEntry.UPDATED_AT, dateFormat.format(dateAtual));
+                            values[i] = value;
+                        }
                     }
 
                     getContentResolver().bulkInsert(
                             AvBContract.InstrumentEntry.INSTRUMENT_URI, values);
 
                     for (int i = 0; i < values.length; i++) {
-                        value = new ContentValues();
-                        value.put(AvBContract.InstrumentPlaceEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
-                        value.put(AvBContract.InstrumentPlaceEntry.PLACE_ID, place_id);
-                        values[i] = value;
+                        if(data.getInstruments().get(i).getData().getGroups().size() != 0) {
+                            value = new ContentValues();
+                            value.put(AvBContract.InstrumentPlaceEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                            value.put(AvBContract.InstrumentPlaceEntry.PLACE_ID, place_id);
+                            values[i] = value;
+                        }
                     }
 
                     getContentResolver().bulkInsert(
@@ -467,7 +484,7 @@ public class PlaceActivity extends AppCompatActivity {
 
                     for (int k = 0; k < data.getInstruments().size(); k++) {
                         for (int i = 0; i < data.getInstruments().get(k).getData().getGroups().size(); i++) {
-                            Log.d("PlaceActivity", "onErrorResponse i: " + i);
+
                             values = new ContentValues[data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size()];
 
                             for (int j = 0; j < data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size(); j++) {
@@ -496,28 +513,73 @@ public class PlaceActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
                     intent.putExtra("name",getIntent().getExtras().getString("name"));
+                    intent.putExtra("placeid",place_id);
                     List<Question> questions = new ArrayList<Question>(data.getInstruments().get(instrument)
                             .getData().getGroups().get(group).getQuestions());
                     intent.putExtra("questions", (Serializable) questions);
                     startActivity(intent);
+                    finish();
+
                 }
-            });
+            }) {
+                @Override
+                protected Map<String, String> getParams () {
+                    Map<String, String> params = new HashMap<String, String>();
+
+                    JsonObject jsonObject = new JsonObject();
+                    JsonArray availableInstruments = new JsonArray();
+                    Cursor c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id),null,null,null,null);
+
+                    JsonObject objs = null;
+                    while (c.moveToNext()){
+
+                        objs = new JsonObject();
+
+                        objs.addProperty("id",c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
+                        objs.addProperty("updated_at",c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.UPDATED_AT)));
+
+                        availableInstruments.add(objs);
+                    }
+                    jsonObject.add("availableInstruments",availableInstruments);
+
+                    //TODO get the user token to send into the request
+                    jsonObject.addProperty("userID","");
+
+                    params.put("",jsonObject.toString());
+                    return params;
+                }
+            };
             Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
         }else{
 
-            /*ArrayList<String> ids = new ArrayList<String>();
+            ArrayList<String> ids = new ArrayList<String>();
+
+
+            Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
 
             while(c.moveToNext()){
-                ids.add(c.getString(c.getColumnIndex("instrument_id")));
+                Log.d("PlaceActivity", "startEvaluationActivity: id: " + c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
+                ids.add(c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
             }
 
             Random random = new Random();
 
-            c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id),null,null,null,null);*/
+            c = getContentResolver().query(AvBContract.GroupQuestionEntry.buildGroupQuestionsUri(ids.get(random.nextInt(ids.size()))),null,null,null,null);
+
+            List<Question> questions = new ArrayList<Question>();
+
+            Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
+
+            while(c.moveToNext()){
+                questions.add(new Question(c));
+            }
 
             Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
+            intent.putExtra("questions", (Serializable) questions);
             intent.putExtra("name",getIntent().getExtras().getString("name"));
+            intent.putExtra("placeid",place_id);
             startActivity(intent);
+            finish();
 
         }
     }

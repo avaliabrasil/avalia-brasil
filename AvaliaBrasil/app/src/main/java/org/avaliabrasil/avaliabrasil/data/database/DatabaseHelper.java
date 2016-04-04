@@ -45,19 +45,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ");";
 
     private static final String createQueryInstrumentPlaces = "CREATE TABLE instrument_places (" +
-            "    _id           INTEGER PRIMARY KEY," +
             "    instrument_id INTEGER REFERENCES instrument (instrument_id) ON DELETE CASCADE" +
             "                                                                ON UPDATE CASCADE" +
             "                          NOT NULL," +
             "    place_id      TEXT    REFERENCES place (place_id) " +
-            "                          NOT NULL" +
+            "                          NOT NULL," +
+            "                                    PRIMARY KEY (" +
+            "                                   instrument_id," +
+            "                                   place_id" +
+            "                                    )"+
             ");";
 
     private static final String createQueryGroup_question = "CREATE TABLE group_question (" +
             "    _id            INTEGER PRIMARY KEY" +
             "                           NOT NULL," +
             "    instrument_id  INTEGER REFERENCES instrument (instrument_id) ON DELETE CASCADE" +
-            "                                                                 ON UPDATE CASCADE," +
+            "                                                                 ON UPDATE CASCADE" +
+            "                                                                 UNIQUE," +
             "    group_id       INTEGER NOT NULL" +
             "                           UNIQUE," +
             "    order_question INTEGER NOT NULL" +
@@ -66,7 +70,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String createQueryQuestion = "CREATE TABLE question (" +
             "    _id          INTEGER PRIMARY KEY" +
             "                         NOT NULL," +
-            "    question_id  INTEGER NOT NULL," +
+            "    question_id  INTEGER UNIQUE NOT NULL," +
             "    question     TEXT    NOT NULL," +
             "    questionType TEXT    NOT NULL," +
             "    group_id     INTEGER REFERENCES group_question (group_id) ON DELETE CASCADE" +

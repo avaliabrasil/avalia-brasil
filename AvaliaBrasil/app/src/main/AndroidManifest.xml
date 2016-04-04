@@ -80,7 +80,8 @@
             android:name=".avb.EvaluationActivity"
             android:label="@string/title_activity_evaluation"
             android:parentActivityName=".avb.PlaceActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".avb.PlaceActivity" />

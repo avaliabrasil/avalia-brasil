@@ -5,10 +5,12 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.EvaluationActivity;
 
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>
@@ -27,6 +29,10 @@ public class NumberFragment extends TransactionFragment {
      */
     private TextView tvLegend;
 
+    /**
+     *
+     */
+    private TextView tvQuestion;
 
     @Nullable
     @Override
@@ -41,6 +47,14 @@ public class NumberFragment extends TransactionFragment {
         tvLegend = (TextView) rootView.findViewById(R.id.tvLegend);
 
         tvLegend.setText("3");
+
+        tvQuestion = (TextView) rootView.findViewById(R.id.tvQuestion);
+
+        tvQuestion.setText(getQuestion().getTitle());
+
+        btnSubmit = (Button) rootView.findViewById(R.id.btnSubmit);
+
+        btnSubmit.setOnClickListener((EvaluationActivity)getActivity());
 
         likertScale.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

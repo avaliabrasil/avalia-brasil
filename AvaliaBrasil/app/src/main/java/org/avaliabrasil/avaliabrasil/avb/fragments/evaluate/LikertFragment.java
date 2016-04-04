@@ -5,9 +5,12 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RadioButton;
+import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.EvaluationActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +28,9 @@ public class LikertFragment extends TransactionFragment {
     private List<RadioButton> options = new ArrayList<RadioButton>();
 
 
+    private TextView tvQuestion;
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,6 +44,14 @@ public class LikertFragment extends TransactionFragment {
         options.add((RadioButton) rootView.findViewById(R.id.option3));
         options.add((RadioButton) rootView.findViewById(R.id.option4));
         options.add((RadioButton) rootView.findViewById(R.id.option5));
+
+        tvQuestion = (TextView) rootView.findViewById(R.id.tvQuestion);
+
+        tvQuestion.setText(getQuestion().getTitle());
+
+        btnSubmit = (Button) rootView.findViewById(R.id.btnSubmit);
+
+        btnSubmit.setOnClickListener((EvaluationActivity)getActivity());
 
         return rootView;
     }

@@ -24,4 +24,6 @@
         android:id="@+id/tvLegend"
         android:gravity="center"/>
 
+    <include layout="@layout/content_submit_button" ></include>
+
 </LinearLayout>

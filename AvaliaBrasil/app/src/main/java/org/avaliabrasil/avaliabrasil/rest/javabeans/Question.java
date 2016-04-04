@@ -1,7 +1,11 @@
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
+import android.database.Cursor;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import org.avaliabrasil.avaliabrasil.data.AvBContract;
 
 import java.io.Serializable;
 
@@ -21,6 +25,12 @@ public class Question implements Serializable {
     @SerializedName("questionType")
     @Expose
     private String questionType;
+
+    public Question(Cursor cursor) {
+        this.id = cursor.getString(cursor.getColumnIndex(AvBContract.QuestionEntry.QUESTION_ID));
+        this.title = cursor.getString(cursor.getColumnIndex(AvBContract.QuestionEntry.QUESTION));
+        this.questionType = cursor.getString(cursor.getColumnIndex(AvBContract.QuestionEntry.QUESTION_TYPE));
+    }
 
     public String getId() {
         return id;
@@ -47,5 +57,20 @@ public class Question implements Serializable {
     }
 
     public Question() {
+    }
+
+
+    public enum QuestionTypes{
+        IS_LIKERT("is_likert"),IS_NUMBER("is_number"),IS_COMMENT("is_comment");
+
+        private final String type;
+
+        public String getType() {
+            return type;
+        }
+
+        QuestionTypes(String type) {
+            this.type = type;
+        }
     }
 }

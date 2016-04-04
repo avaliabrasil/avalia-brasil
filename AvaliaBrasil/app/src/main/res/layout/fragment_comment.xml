@@ -9,11 +9,15 @@
 
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="185dp"
+        android:layout_height="match_parent"
         android:inputType="textMultiLine"
         android:ems="10"
         android:id="@+id/etComment"
         android:layout_gravity="center_horizontal" />
+
+    <include layout="@layout/content_submit_button" ></include>
+
+
 
 
 </LinearLayout>

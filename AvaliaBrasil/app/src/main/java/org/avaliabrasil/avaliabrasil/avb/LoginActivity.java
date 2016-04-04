@@ -277,6 +277,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 Map<String, String> params = new HashMap<String, String>();
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.add("userId",new JsonPrimitive(android_id));
+                params.put("",jsonObject.toString());
+
                 return params;
             }
         };

@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.avaliabrasil.avaliabrasil.data.database.DatabaseHelper;
 import org.avaliabrasil.avaliabrasil.data.database.DatabaseWrapper;
@@ -56,7 +57,7 @@ public class AvBProvider extends ContentProvider {
     }
 
     public static Uri getInstruments(String place_id){
-        Uri uri = AvBContract.InstrumentEntry.INSTRUMENTS_URI.parse(place_id);
+        Uri uri = Uri.parse(place_id);
         return uri;
     }
 
@@ -70,13 +71,14 @@ public class AvBProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-        SQLiteDatabase db = null;
+        SQLiteDatabase db;
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         Cursor c;
 
+        db = DatabaseWrapper.getDatabase(getContext());
+
         switch (uriMatcher.match(uri)) {
             case PLACE:
-                db = DatabaseWrapper.getDatabase(getContext());
                 qb.setTables(DatabaseHelper.place_table);
 
                 if(selectionArgs != null){
@@ -88,21 +90,25 @@ public class AvBProvider extends ContentProvider {
                 c.setNotificationUri(getContext().getContentResolver(), uri);
                 break;
             case PLACE_ID:
-                db = DatabaseWrapper.getDatabase(getContext());
                 c = db.rawQuery("select * from place_detail LEFT OUTER join place on place_detail.place_id = place.place_id where place_detail.place_id = ? order by distance asc",new String[]{ uri.getPathSegments().get(1)});
                 break;
-            case AvBContract.INSTRUMENT:
-                db = DatabaseWrapper.getDatabase(getContext());
-                c =  db.rawQuery("select instrument_id,updated_at from instrument_places left join instrument on instrument.instrument_id = instrument_places.instrument_id where place_id = ?",new String[]{ uri.getPathSegments().get(1)});
-                break;
-            case AvBContract.INSTRUMENTS:
-                db = DatabaseWrapper.getDatabase(getContext());
-                String id = uri.getPathSegments().get(1);
+           case AvBContract.INSTRUMENTS:
 
                 //TODO fix this call.
-                c =  db.rawQuery("select instrument.instrument_id,instrument.updated_at from instrument_places left join instrument on instrument.instrument_id = instrument_places.instrument_id where place_id = ?",new String[]{ uri.getPathSegments().get(1)});
+                c =  db.rawQuery("select instrument.instrument_id,instrument.updated_at from instrument_places left join instrument on instrument.instrument_id = instrument_places.instrument_id where place_id = ? ",new String[]{ uri.getPathSegments().get(1)});
+                break;
+            case AvBContract.GROUP_QUESTIONS:
+
+                Log.e("Provider","calling?");
+
+                Log.e("Provider",uri.getPathSegments().get(1));
+
+                c =  db.rawQuery("SELECT *" +
+                        "  FROM group_question left join question on question.group_id = group_question.group_id" +
+                        " WHERE group_question.instrument_id = ? ",new String[]{ uri.getPathSegments().get(1)});
 
                 break;
+
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -285,6 +291,9 @@ public class AvBProvider extends ContentProvider {
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
+                        if(value == null){
+                            continue;
+                        }
                         long rowID = db.insertWithOnConflict(AvBContract.InstrumentEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
                         if (rowID != -1) {
                             returnCount++;
@@ -301,6 +310,9 @@ public class AvBProvider extends ContentProvider {
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
+                        if(value == null){
+                            continue;
+                        }
                         long rowID = db.insertWithOnConflict(AvBContract.InstrumentPlaceEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
                         if (rowID != -1) {
                             returnCount++;

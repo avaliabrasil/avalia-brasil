@@ -9,21 +9,6 @@
 
     <include layout="@layout/content_evaluation" ></include>
 
-    <!-- SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:id="@+id/likertScale"
-        android:max="4"
-        android:progress="2"/ >
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
-        android:id="@+id/tvLegend"
-        android:gravity="center"/-->
+    <include layout="@layout/content_submit_button" ></include>
 
 </LinearLayout>
