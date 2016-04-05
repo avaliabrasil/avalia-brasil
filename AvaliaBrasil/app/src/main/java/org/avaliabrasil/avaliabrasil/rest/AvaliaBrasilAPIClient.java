@@ -1,25 +1,9 @@
 package org.avaliabrasil.avaliabrasil.rest;
 
-import android.content.Context;
-import android.content.Intent;
-import android.provider.Settings;
 import android.util.Log;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-
-import org.avaliabrasil.avaliabrasil.avb.MainActivity;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.UserToken;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>
