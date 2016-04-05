@@ -1,6 +1,5 @@
 package org.avaliabrasil.avaliabrasil.rest;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -21,7 +20,6 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import org.avaliabrasil.avaliabrasil.avb.MainActivity;
 import org.avaliabrasil.avaliabrasil.data.AvBProvider;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
@@ -87,7 +85,23 @@ public class GooglePlacesAPIClient {
         target.append(radius);
 
         target.append("&types=");
-        target.append("hospital");
+        target.append("airport|" +
+                "bus_station|" +
+                "courthouse|" +
+                "embassy|" +
+                "fire_station|" +
+                "hospital|" +
+                "health|" +
+                "library|" +
+                "museum|" +
+                "pharmacy|" +
+                "police|" +
+                "post_office|" +
+                "school|" +
+                "university|" +
+                "subway_station|" +
+                "train_station|" +
+                "zoo");
 
         target.append("&key=");
         target.append(key);
@@ -127,7 +141,23 @@ public class GooglePlacesAPIClient {
         target.append(radius);
 
         target.append("&types=");
-        target.append("hospital");
+        target.append("airport|" +
+                "bus_station|" +
+                "courthouse|" +
+                "embassy|" +
+                "fire_station|" +
+                "hospital|" +
+                "health|" +
+                "library|" +
+                "museum|" +
+                "pharmacy|" +
+                "police|" +
+                "post_office|" +
+                "school|" +
+                "university|" +
+                "subway_station|" +
+                "train_station|" +
+                "zoo");
 
         target.append("&name=");
         target.append(name.trim());
@@ -211,8 +241,8 @@ public class GooglePlacesAPIClient {
                             value.put("place_id",placeSearch.getResults().get(i).getPlaceId());
                             value.put("name",placeSearch.getResults().get(i).getName());
                             value.put("vicinity",placeSearch.getResults().get(i).getVicinity());
-                            value.put("latitude",placeSearch.getResults().get(i).getGeometry().getLocation().getLat());
-                            value.put("longitude",placeSearch.getResults().get(i).getGeometry().getLocation().getLng());
+                            value.put("latitude", placeSearch.getResults().get(i).getGeometry().getLocation().getLat());
+                            value.put("longitude", placeSearch.getResults().get(i).getGeometry().getLocation().getLng());
                             customLocation.setLatitude(placeSearch.getResults().get(i).getGeometry().getLocation().getLat());
                             customLocation.setLongitude(placeSearch.getResults().get(i).getGeometry().getLocation().getLng());
 
