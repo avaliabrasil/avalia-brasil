@@ -14,6 +14,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -44,6 +48,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -59,7 +64,9 @@ import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.User;
 import org.avaliabrasil.avaliabrasil.sync.Constant;
 import org.avaliabrasil.avaliabrasil.sync.Observer;
+import org.avaliabrasil.avaliabrasil.util.CircleTransform;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Stack;
 
@@ -497,6 +504,19 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
+    public Bitmap getImageBitmap(Context context){
+        try{
+            FileInputStream fis = context.openFileInput("profile.jpg");
+            Bitmap b = BitmapFactory.decodeStream(fis);
+            fis.close();
+            return b;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     /** Checks whether two providers are the same */
     private boolean isSameProvider(String provider1, String provider2) {
         if (provider1 == null) {
@@ -619,7 +639,17 @@ public class MainActivity extends AppCompatActivity
                     fetchDataFromGoogleAPI();
 
                     getSupportLoaderManager().initLoader(0, null, MainActivity.this);
-                }
+
+                    String name = manager.getUserData(manager.getAccountsByType(Constant.ACCOUNT_TYPE)[0],AccountManager.KEY_ACCOUNT_NAME);
+                    Bitmap photo = getImageBitmap(MainActivity.this);
+
+                    TextView tvName =(TextView) navigationView.getHeaderView(0).findViewById(R.id.tvName);
+                    ImageView ivProfilePhoto =(ImageView) navigationView.getHeaderView(0).findViewById(R.id.ivProfilePhoto);
+                    tvName.setText(name);
+                    if(photo != null){
+                        ivProfilePhoto.setImageBitmap(new CircleTransform().transform(photo));
+                    }
+            }
             }else{
                 checkForPermissions();
             }

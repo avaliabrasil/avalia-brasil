@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -44,6 +46,9 @@ import org.avaliabrasil.avaliabrasil.sync.Constant;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,11 +126,10 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                                 try {
                                     final String email = object.getString("email");
                                     final String name = object.getString("name");
+                                    final String userID = object.getString("id");
 
                                     user.setEmail(email);
                                     user.setName(name);
-                                    checkForPermissions();
-                                    /* For get user photo
 
                                     new Thread(new Runnable() {
                                         @Override
@@ -138,17 +142,21 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
                                                 final Bitmap bit = BitmapFactory.decodeStream(is);
 
-                                                runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        ((ImageView) findViewById(R.id.avaliaBrasilLogo)).setImageBitmap(bit);
-                                                    }
-                                                });
+                                                FileOutputStream out;
+                                                try {
+                                                    out = LoginActivity.this.openFileOutput("profile.jpg", Context.MODE_PRIVATE);
+                                                    bit.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                                                    out.close();
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
                                             }catch(Exception e){
                                                 e.printStackTrace();
                                             }
+
+                                            checkForPermissions();
                                         }
-                                    }).start();*/
+                                    }).start();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -246,17 +254,15 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
                         Account account = new Account(user.getName() == null ? "Anonimo" : user.getName(), Constant.ACCOUNT_TYPE);
 
-
                         Bundle bundle = new Bundle();
 
                         bundle.putString(AccountManager.KEY_ACCOUNT_TYPE,Constant.ACCOUNT_TYPE);
                         bundle.putString(AccountManager.KEY_ACCOUNT_NAME,user.getName() == null ? "Anonimo" : user.getName());
                         bundle.putString(AccountManager.KEY_AUTHTOKEN,user.getToken());
                         bundle.putString(Constant.ACCOUNT_EMAIL,user.getEmail() == null ? "avaliabrasil@gmail.com":user.getEmail());
+                        bundle.putString(Constant.ARG_ACCOUNT_TYPE,user.getName() == null ? Constant.ACCOUNT_TYPE_USER : Constant.ACCOUNT_TYPE_FACEBOOK);
 
                         accountManager.addAccountExplicitly(account,null,bundle);
-                        accountManager.setAuthToken(account,Constant.ACCOUNT_TOKEN_TYPE_USER,user.getToken());
-
 
                         setAccountAuthenticatorResult(bundle);
 

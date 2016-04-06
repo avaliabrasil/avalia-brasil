@@ -14,7 +14,7 @@
         <menu>
             <item
                 android:id="@+id/btnLogout"
-                android:title="Sair" />
+                android:title="Sair"/>
             <item
                 android:id="@+id/btnHelp"
                 android:title="Ajuda" />
