@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -89,7 +90,10 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
         accountManager =  AccountManager.get(this);
 
-        FacebookSdk.sdkInitialize(LoginActivity.this);
+
+        if(!FacebookSdk.isInitialized()) {
+            FacebookSdk.sdkInitialize(LoginActivity.this);
+        }
 
         setContentView(R.layout.activity_login);
 
@@ -259,6 +263,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                         if(accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0){
                                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    intent.putExtra("showSplash",false);
                                     startActivity(intent);
                         }
                     }
@@ -296,5 +301,12 @@ public class LoginActivity extends AccountAuthenticatorActivity {
          }else{
              getUserToken(LoginActivity.this);
          }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(LoginActivity.this,ExitActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

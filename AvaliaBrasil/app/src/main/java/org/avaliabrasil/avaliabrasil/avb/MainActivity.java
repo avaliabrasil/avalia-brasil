@@ -1,6 +1,7 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
 import android.Manifest;
+import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
@@ -44,6 +45,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
@@ -179,18 +184,50 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        switch(id){
+            case R.id.btnSearchInstitution:
 
-        } else if (id == R.id.nav_slideshow) {
+                break;
+            case R.id.btnClassification:
 
-        } else if (id == R.id.nav_manage) {
+                break;
+            case R.id.btnLogout:
 
-        } else if (id == R.id.nav_share) {
+                if(!FacebookSdk.isInitialized()){
+                    FacebookSdk.sdkInitialize(MainActivity.this);
+                }
 
-        } else if (id == R.id.nav_send) {
+                if( AccessToken.getCurrentAccessToken() != null){
+                 LoginManager.getInstance().logOut();
+                }
+                for(Account c : manager.getAccountsByType(Constant.ACCOUNT_TYPE)){
+                    manager.removeAccount(c,null,null);
+                }
 
+                manager.addAccount(Constant.ACCOUNT_TYPE, Constant.ACCOUNT_TOKEN_TYPE_USER, null, null, MainActivity.this, new AccountManagerCallback<Bundle>() {
+                    @Override
+                    public void run(AccountManagerFuture<Bundle> future) {
+                        try {
+                            Bundle bundle = future.getResult();
+
+                        } catch (OperationCanceledException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (AuthenticatorException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }, null);
+
+                break;
+            case R.id.btnHelp:
+
+                break;
+            case R.id.btnTermsOfUse:
+
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -380,6 +417,7 @@ public class MainActivity extends AppCompatActivity
                 if (canAccessFineLocation()&&canAccessCoarseLocation()) {
                     Intent intent = new Intent(MainActivity.this,MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.putExtra("showSplash",false);
                     startActivity(intent);
                 }
                 else {
@@ -475,7 +513,11 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected String doInBackground(String... params) {
             try {
-                Thread.sleep(3000);
+                if(getIntent().getExtras() != null){
+                    if(getIntent().getExtras().getBoolean("showSplash",true)){
+                        Thread.sleep(3000);
+                    }
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -486,12 +528,8 @@ public class MainActivity extends AppCompatActivity
         protected void onPostExecute(String result) {
             if (canAccessFineLocation()&&canAccessCoarseLocation()){
                 user = ((AvaliaBrasilApplication)getApplication()).getUser();
-
                 manager = AccountManager.get(MainActivity.this);
-
-                Log.d("MainActivity", "onCreate: manager.getAccounts().length: " + manager.getAccounts().length);
-
-                if(manager.getAccounts().length == 0){
+            if(manager.getAccountsByType(Constant.ACCOUNT_TYPE).length == 0){
                     manager.addAccount(Constant.ACCOUNT_TYPE, Constant.ACCOUNT_TOKEN_TYPE_USER, null, null, MainActivity.this, new AccountManagerCallback<Bundle>() {
                         @Override
                         public void run(AccountManagerFuture<Bundle> future) {
@@ -519,7 +557,7 @@ public class MainActivity extends AppCompatActivity
                     DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
                     ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                             MainActivity.this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-                    drawer.setDrawerListener(toggle);
+                    drawer.addDrawerListener(toggle);
                     toggle.syncState();
 
                     NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);

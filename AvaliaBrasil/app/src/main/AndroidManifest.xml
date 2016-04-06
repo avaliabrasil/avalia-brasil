@@ -93,7 +93,11 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avb.PlaceActivity" />
+                android:value=".avb.PlaceActivity"
+                android:theme="@style/AppTheme.NoActionBar"/>
+        </activity>
+        <activity
+            android:name=".avb.ExitActivity">
         </activity>
         <activity
             android:name=".avb.RankingActivity"

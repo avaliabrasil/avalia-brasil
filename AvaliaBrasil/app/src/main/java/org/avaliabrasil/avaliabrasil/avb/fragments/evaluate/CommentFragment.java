@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.EvaluationActivity;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
 
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>

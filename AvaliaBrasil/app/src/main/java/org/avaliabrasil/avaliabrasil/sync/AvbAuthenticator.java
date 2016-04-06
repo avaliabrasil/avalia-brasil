@@ -66,7 +66,6 @@ public class AvbAuthenticator extends AbstractAccountAuthenticator {
         return null;
     }
 
-
     @Override
     public Bundle getAuthToken(
             AccountAuthenticatorResponse r,
