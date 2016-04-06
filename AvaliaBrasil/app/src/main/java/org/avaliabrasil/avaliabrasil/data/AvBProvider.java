@@ -98,14 +98,12 @@ public class AvBProvider extends ContentProvider {
                 c =  db.rawQuery("select instrument.instrument_id,instrument.updated_at from instrument_places left join instrument on instrument.instrument_id = instrument_places.instrument_id where place_id = ? ",new String[]{ uri.getPathSegments().get(1)});
                 break;
             case AvBContract.GROUP_QUESTIONS:
-
-                Log.e("Provider","calling?");
-
-                Log.e("Provider",uri.getPathSegments().get(1));
-
-                c =  db.rawQuery("SELECT *" +
+                /*c =  db.rawQuery("SELECT *" +
                         "  FROM group_question left join question on question.group_id = group_question.group_id" +
-                        " WHERE group_question.instrument_id = ? ",new String[]{ uri.getPathSegments().get(1)});
+                        " WHERE group_question.instrument_id = ? ",new String[]{ uri.getPathSegments().get(1)});*/
+
+                c = db.rawQuery("select * from instrument left join group_question on instrument.instrument_id = group_question.instrument_id left join question on question.group_id = group_question.group_id " +
+                        "where instrument.instrument_id = ? ",new String[]{ uri.getPathSegments().get(1)});
 
                 break;
 

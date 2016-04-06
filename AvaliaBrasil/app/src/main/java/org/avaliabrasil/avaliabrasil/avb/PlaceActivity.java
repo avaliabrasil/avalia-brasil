@@ -36,7 +36,9 @@ import org.avaliabrasil.avaliabrasil.data.AvBContract;
 import org.avaliabrasil.avaliabrasil.data.AvBProvider;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.Data;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.Instrument;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
 
@@ -349,9 +351,10 @@ public class PlaceActivity extends AppCompatActivity {
                             Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
                             intent.putExtra("name",getIntent().getExtras().getString("name"));
                             intent.putExtra("placeid",place_id);
-                            List<Question> questions = new ArrayList<Question>(data.getInstruments().get(instrument)
-                            .getData().getGroups().get(group).getQuestions());
-                            intent.putExtra("questions", (Serializable) questions);
+                            //List<Question> questions = new ArrayList<Question>(data.getInstruments().get(instrument)
+                            //.getData().getGroups().get(group).getQuestions());
+                            //intent.putExtra("questions", (Serializable) questions);
+                            intent.putExtra("instruments", (Serializable) data.getInstruments());
                             startActivity(intent);
                             finish();
 
@@ -399,23 +402,23 @@ public class PlaceActivity extends AppCompatActivity {
                             "                        \"order\":2," +
                             "                        \"questions\":[" +
                             "                            {" +
-                            "                                \"id\":1," +
-                            "                                \"title\":\" Question 1 \"," +
+                            "                                \"id\":5," +
+                            "                                \"title\":\" Question 5 \"," +
                             "                                \"questionType\":\"is_number\"" +
                             "                            }," +
                             "                            {" +
-                            "                                \"id\":2," +
-                            "                                \"title\":\" Question 2 \"," +
+                            "                                \"id\":6," +
+                            "                                \"title\":\" Question 6 \"," +
                             "                                \"questionType\":\"is_comment\"" +
                             "                            }," +
                             "                            {" +
-                            "                                \"id\":3," +
-                            "                                \"title\":\" Question 3 \"," +
+                            "                                \"id\":7," +
+                            "                                \"title\":\" Question 7 \"," +
                             "                                \"questionType\":\"is_likert\"" +
                             "                            }," +
                             "                            {" +
-                            "                                \"id\":4," +
-                            "                                \"title\":\" Question 4 \"," +
+                            "                                \"id\":8," +
+                            "                                \"title\":\" Question 8 \"," +
                             "                                \"questionType\":\"is_number\"" +
                             "                            }" +
                             "                        ]" +
@@ -476,11 +479,20 @@ public class PlaceActivity extends AppCompatActivity {
                     }
 
                     for (int k = 0; k < data.getInstruments().size(); k++) {
+                        Log.d("PlaceActivity", "instrument ID: " + data.getInstruments().get(k).getId());
                         for (int i = 0; i < data.getInstruments().get(k).getData().getGroups().size(); i++) {
 
                             values = new ContentValues[data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size()];
+                            Log.d("PlaceActivity", "Group ID: " + data.getInstruments().get(k).getData().getGroups().get(i).getId());
+                            Log.d("PlaceActivity", "order: " + data.getInstruments().get(k).getData().getGroups().get(i).getOrder());
+                            Log.d("PlaceActivity", "order: " + data.getInstruments().get(k).getData().getGroups().get(i).getOrder());
 
                             for (int j = 0; j < data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size(); j++) {
+
+                                 Log.d("PlaceActivity", "Question type: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getQuestionType());
+                                Log.d("PlaceActivity", "Question: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getTitle());
+                                Log.d("PlaceActivity", "Question ID: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getId());
+
                                 value = new ContentValues();
                                 value.put(AvBContract.QuestionEntry.QUESTION, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getTitle());
                                 value.put(AvBContract.QuestionEntry.GROUP_ID, data.getInstruments().get(k).getData().getGroups().get(i).getId());
@@ -494,22 +506,14 @@ public class PlaceActivity extends AppCompatActivity {
                         }
                     }
 
-
-                    Random random = new Random();
-
-                    int group = 0;
-                    int instrument = random.nextInt(data.getInstruments().size());
-                    while(data.getInstruments().get(instrument).getData().getGroups().size() == 0){
-                        instrument = random.nextInt(data.getInstruments().size());
-                    }
-                    group = random.nextInt(data.getInstruments().get(instrument).getData().getGroups().size());
-
                     Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
                     intent.putExtra("name",getIntent().getExtras().getString("name"));
                     intent.putExtra("placeid",place_id);
-                    List<Question> questions = new ArrayList<Question>(data.getInstruments().get(instrument)
-                            .getData().getGroups().get(group).getQuestions());
-                    intent.putExtra("questions", (Serializable) questions);
+                    //List<Question> questions = new ArrayList<Question>(data.getInstruments().get(instrument)
+                    //        .getData().getGroups().get(group).getQuestions());
+                    //intent.putExtra("questions", (Serializable) questions);
+                    intent.putExtra("instruments", (Serializable) data.getInstruments());
+
                     startActivity(intent);
                     finish();
 
@@ -548,27 +552,29 @@ public class PlaceActivity extends AppCompatActivity {
             ArrayList<String> ids = new ArrayList<String>();
 
 
-            Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
+            Holder holder = new Holder();
+
+            List<Instrument> instruments = new ArrayList<Instrument>();
+
+            //Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
 
             while(c.moveToNext()){
                 Log.d("PlaceActivity", "startEvaluationActivity: id: " + c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
                 ids.add(c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
             }
 
-            Random random = new Random();
+            for(String id : ids){
+                c = getContentResolver().query(AvBContract.GroupQuestionEntry.buildGroupQuestionsUri(id),null,null,null,null);
 
-            c = getContentResolver().query(AvBContract.GroupQuestionEntry.buildGroupQuestionsUri(ids.get(random.nextInt(ids.size()))),null,null,null,null);
+                Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
 
-            List<Question> questions = new ArrayList<Question>();
-
-            Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
-
-            while(c.moveToNext()){
-                questions.add(new Question(c));
+                instruments.add(new Instrument(id,c));
             }
 
+            holder.setInstruments(instruments);
+
             Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
-            intent.putExtra("questions", (Serializable) questions);
+            intent.putExtra("instruments", (Serializable) holder.getInstruments());
             intent.putExtra("name",getIntent().getExtras().getString("name"));
             intent.putExtra("placeid",place_id);
             startActivity(intent);

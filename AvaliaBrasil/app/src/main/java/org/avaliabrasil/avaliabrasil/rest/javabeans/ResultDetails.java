@@ -74,7 +74,7 @@ public class ResultDetails {
     private String website;
 
     /**
-     * 
+     *
      * @return
      *     The addressComponents
      */
@@ -83,7 +83,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param addressComponents
      *     The address_components
      */
@@ -92,7 +92,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The adrAddress
      */
@@ -101,7 +101,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param adrAddress
      *     The adr_address
      */
@@ -110,7 +110,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The formattedAddress
      */
@@ -119,7 +119,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param formattedAddress
      *     The formatted_address
      */
@@ -128,7 +128,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The formattedPhoneNumber
      */
@@ -137,7 +137,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param formattedPhoneNumber
      *     The formatted_phone_number
      */
@@ -146,7 +146,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The geometry
      */
@@ -155,7 +155,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param geometry
      *     The geometry
      */
@@ -164,7 +164,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The icon
      */
@@ -173,7 +173,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param icon
      *     The icon
      */
@@ -182,7 +182,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The id
      */
@@ -191,7 +191,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param id
      *     The id
      */
@@ -200,7 +200,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The internationalPhoneNumber
      */
@@ -209,7 +209,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param internationalPhoneNumber
      *     The international_phone_number
      */
@@ -218,7 +218,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The name
      */
@@ -227,7 +227,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param name
      *     The name
      */
@@ -236,7 +236,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The photos
      */
@@ -245,7 +245,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param photos
      *     The photos
      */
@@ -254,7 +254,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The placeId
      */
@@ -263,7 +263,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param placeId
      *     The place_id
      */
@@ -272,7 +272,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The rating
      */
@@ -281,7 +281,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param rating
      *     The rating
      */
@@ -290,7 +290,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The reference
      */
@@ -299,7 +299,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param reference
      *     The reference
      */
@@ -308,7 +308,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The reviews
      */
@@ -317,7 +317,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param reviews
      *     The reviews
      */
@@ -326,7 +326,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The scope
      */
@@ -335,7 +335,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param scope
      *     The scope
      */
@@ -344,7 +344,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The types
      */
@@ -353,7 +353,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param types
      *     The types
      */
@@ -362,7 +362,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The url
      */
@@ -371,7 +371,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param url
      *     The url
      */
@@ -380,7 +380,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The userRatingsTotal
      */
@@ -389,7 +389,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param userRatingsTotal
      *     The user_ratings_total
      */
@@ -398,7 +398,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The utcOffset
      */
@@ -407,7 +407,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param utcOffset
      *     The utc_offset
      */
@@ -416,7 +416,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The vicinity
      */
@@ -425,7 +425,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param vicinity
      *     The vicinity
      */
@@ -434,7 +434,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @return
      *     The website
      */
@@ -443,7 +443,7 @@ public class ResultDetails {
     }
 
     /**
-     * 
+     *
      * @param website
      *     The website
      */

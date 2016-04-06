@@ -300,4 +300,29 @@ public class GooglePlacesAPIClient {
 
         return target.toString();
     }
+
+    /**
+     * Default path to the Google Places API call to get place photos by his photoreference.
+     *
+     * @see <a href="https://developers.google.com/places/web-service/">Google Places WebService </a>
+     * @since 1.0
+     * @version 1.0
+     * @param photoreference
+     * @param key
+     * @return {@link PlaceDetails} targeting the base API.
+     */
+    public static String getPlacePhoyo(@NonNull String photoreference,@NonNull String key){
+        StringBuilder target = new StringBuilder();
+        target.append("https://maps.googleapis.com/maps/api/place/photo?");
+
+        target.append("photoreference");
+        target.append(photoreference);
+        target.append("&key=");
+        target.append(key);
+        target.append("&maxheight=400");
+
+        Log.d("GoogleAPI", "URL: " + target.toString());
+
+        return target.toString();
+    }
 }

@@ -61,7 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "                           NOT NULL," +
             "    instrument_id  INTEGER REFERENCES instrument (instrument_id) ON DELETE CASCADE" +
             "                                                                 ON UPDATE CASCADE" +
-            "                                                                 UNIQUE," +
+            "                                                                 ," +
             "    group_id       INTEGER NOT NULL" +
             "                           UNIQUE," +
             "    order_question INTEGER NOT NULL" +
