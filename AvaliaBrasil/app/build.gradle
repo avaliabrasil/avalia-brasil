@@ -34,7 +34,6 @@ dependencies {
     /** For the graphs */
     compile 'com.jjoe64:graphview:4.0.1'
 
-
     compile project(':volley')
     /** Necessary for parse Json Objects. */
     compile 'com.google.code.gson:gson:2.6.2'

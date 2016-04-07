@@ -96,4 +96,22 @@ public class AvaliaBrasilAPIClient {
         return target.toString();
     }
 
+    /**
+     * Default path to the AvaliaBrasil API call to get place ranking.
+     * Need to be called has GET method, and pass the user token and place id in the body.
+     * @since 1.0
+     * @version 1.0
+     * @return {@link String} targeting the base API.
+     */
+    public static String getPlaceRanking(String place_id){
+        StringBuilder target = new StringBuilder();
+        target.append(avaliabrasilApiTarget);
+        target.append("ranking/");
+        target.append(place_id);
+
+        Log.d("GoogleAPI", "URL: " + target.toString());
+
+        return target.toString();
+    }
+
 }

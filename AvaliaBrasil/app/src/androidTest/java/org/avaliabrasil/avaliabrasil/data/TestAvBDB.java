@@ -11,7 +11,7 @@ import java.util.HashSet;
  * Created by Pedro on 22/02/2016.
  */
 public class TestAvBDB extends AndroidTestCase {
-    public static final String LOG_TAG = TestAvBDB.class.getSimpleName();
+    /*public static final String LOG_TAG = TestAvBDB.class.getSimpleName();
 
     void deleteTheDatabase(){
         mContext.deleteDatabase(AvBDBHelper.DATABASE_NAME);
@@ -127,6 +127,6 @@ public class TestAvBDB extends AndroidTestCase {
         cursor.close();
         db.close();
         return locationRowId;
-    }
+    }*/
 
 }

@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.btnClassification:
-
+                startActivity(new Intent(MainActivity.this,RankingActivity.class));
                 break;
             case R.id.btnLogout:
 

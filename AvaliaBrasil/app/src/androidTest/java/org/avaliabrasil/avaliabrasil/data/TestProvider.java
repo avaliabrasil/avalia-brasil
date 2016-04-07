@@ -18,7 +18,7 @@ import java.util.UUID;
  */
 public class TestProvider extends AndroidTestCase {
 
-    public static final String LOG_TAG = TestProvider.class.getSimpleName();
+    /*public static final String LOG_TAG = TestProvider.class.getSimpleName();
 
     /*
        This helper function deletes all records from both database tables using the ContentProvider.
@@ -29,7 +29,7 @@ public class TestProvider extends AndroidTestCase {
        Students: Replace the calls to deleteAllRecordsFromDB with this one after you have written
        the delete functionality in the ContentProvider.
      */
-    public void deleteAllRecordsFromProvider() {
+   /* public void deleteAllRecordsFromProvider() {
         mContext.getContentResolver().delete(
                 PlaceEntry.CONTENT_URI,
                 null,
@@ -52,7 +52,7 @@ public class TestProvider extends AndroidTestCase {
        functions only.  This is designed to be used to reset the state of the database until the
        delete functionality is available in the ContentProvider.
      */
-    public void deleteAllRecordsFromDB() {
+   /* public void deleteAllRecordsFromDB() {
         AvBDBHelper dbHelper = new AvBDBHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -64,7 +64,7 @@ public class TestProvider extends AndroidTestCase {
         Student: Refactor this function to use the deleteAllRecordsFromProvider functionality once
         you have implemented delete functionality there.
      */
-    public void deleteAllRecords() {
+   /* public void deleteAllRecords() {
         deleteAllRecordsFromDB();
     }
 
@@ -81,7 +81,7 @@ public class TestProvider extends AndroidTestCase {
         Students: Uncomment this test to make sure you've correctly registered the WeatherProvider.
      */
 
-    public void testProviderRegistry() {
+   /* public void testProviderRegistry() {
         PackageManager pm = mContext.getPackageManager();
 
         // We define the component name based on the package name from the context and the
@@ -111,7 +111,7 @@ public class TestProvider extends AndroidTestCase {
             functioning correctly.
          */
 
-    public void testGetType() {
+    /*public void testGetType() {
         // content://com.example.android.sunshine.app/weather/
         String type = mContext.getContentResolver().getType(PlaceEntry.CONTENT_URI);
         // vnd.android.cursor.dir/com.example.android.sunshine.app/weather
@@ -133,7 +133,7 @@ public class TestProvider extends AndroidTestCase {
         read out the data.  Uncomment this test to see if the basic weather query functionality
         given in the ContentProvider is working correctly.
      */
-    public void testPlaceQuery() {
+  /*  public void testPlaceQuery() {
         // insert our test records into the database
         AvBDBHelper dbHelper = new AvBDBHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -160,7 +160,7 @@ public class TestProvider extends AndroidTestCase {
         This test uses the provider to insert and then update the data. Uncomment this test to
         see if your update location is functioning correctly.
      */
-    public void testUpdatePlace() {
+    /*public void testUpdatePlace() {
         // Create a new map of values, where column names are the keys
         ContentValues values = TestUtilities.createPlaceValues();
 
@@ -339,6 +339,6 @@ public class TestProvider extends AndroidTestCase {
                     cursor, bulkInsertContentValues[i]);
         }
         cursor.close();
-    }
+    }*/
 }
 
