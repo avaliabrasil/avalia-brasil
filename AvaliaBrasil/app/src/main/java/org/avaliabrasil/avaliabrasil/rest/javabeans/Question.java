@@ -59,6 +59,12 @@ public class Question implements Serializable {
     public Question() {
     }
 
+    public Question(String title){
+        this.title = title;
+        this.id = "newPlace";
+        this.questionType = "newPlace";
+    }
+
 
     public enum QuestionTypes{
         IS_LIKERT("is_likert"),IS_NUMBER("is_number"),IS_COMMENT("is_comment");

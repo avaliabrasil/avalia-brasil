@@ -265,258 +265,189 @@ public class PlaceActivity extends AppCompatActivity {
         mMapView.onLowMemory();
     }
 
+    public void fetchData(String response){
+        Gson gson = new Gson();
+        Holder data = gson.fromJson("{ \"instruments\":[ " +
+                "                                    { " +
+                "                                      \"id\":1, " +
+                "                                        \"data\":{ " +
+                "                                           \"groups\":[ " +
+                "                                               { " +
+                "                                                    \"id\":1, " +
+                "                                                    \"order\":1, " +
+                "                                                    \"questions\":[ " +
+                "                                                        { " +
+                "                                                            \"id\":1, " +
+                "                                                            \"title\":\"Question 1 \", " +
+                "                                                            \"questionType\":\"is_comment\" " +
+                "                                                        }, " +
+                "                                                        { " +
+                "                                                            \"id\":2, " +
+                "                                                            \"title\":\"Question 2 \"," +
+                "                                                            \"questionType\":\"is_number\" " +
+                "                                                        }, " +
+                "                                                        { " +
+                "                                                            \"id\":3," +
+                "                                                            \"title\":\"Question 3\", " +
+                "                                                            \"questionType\":\"is_number\" " +
+                "                                                        }, " +
+                "                                                        { " +
+                "                                                            \"id\":4, " +
+                "                                                            \"title\":\"Question 4 \"," +
+                "                                                            \"questionType\":\"is_likert\"" +
+                "                                                        } " +
+                "                                                    ] " +
+                "                                                }, " +
+                "                                                { " +
+                "                                                    \"id\":2, " +
+                "                                                    \"order\":2," +
+                "                                                    \"questions\":[ " +
+                "                                                        { " +
+                "                                                            \"id\":5," +
+                "                                                            \"title\":\" Question 5 \"," +
+                "                                                            \"questionType\":\"is_number\" " +
+                "                                                        }, " +
+                "                                                        { " +
+                "                                                            \"id\":6," +
+                "                                                            \"title\":\" Question 6 \", " +
+                "                                                            \"questionType\":\"is_comment\" " +
+                "                                                        }, " +
+                "                                                        { " +
+                "                                                            \"id\":7," +
+                "                                                            \"title\":\" Question 7 \", " +
+                "                                                            \"questionType\":\"is_likert\" " +
+                "                                                        }, " +
+                "                                                        { " +
+                "                                                            \"id\":8," +
+                "                                                            \"title\":\" Question 8 \"," +
+                "                                                            \"questionType\":\"is_number\" " +
+                "                                                        } " +
+                "                                                    ] " +
+                "                                                } " +
+                "                                            ] " +
+                "                                        } " +
+                "                                    }, " +
+                "                                    { " +
+                "                                        \"id\":2, " +
+                "                                        \"data\":{ " +
+                "                                        } " +
+                "                                    } " +
+                "                                ], " +
+                "                            \"newPlace\": true, " +
+                "                            \"categories\": [ " +
+                "                            { \"id\":1, \"name\": \"cat1\" }, " +
+                "                            { \"id\":2, \"name\": \"cat2\" }, " +
+                "                            { \"id\":3, \"name\": \"cat3\" }, " +
+                "                            { \"id\":4, \"name\": \"cat4\" } " +
+                "                            ]," +
+                "                            \"placeTypes\": [" +
+                "                            {" +
+                "                            \"id_category\": 1, " +
+                "                            \"name\": \"TIPO1\" " +
+                "                            }," +
+                "                            {" +
+                "                            \"id_category\": 2, " +
+                "                            \"name\": \"TIPO2\" " +
+                "                            }, " +
+                "                            { " +
+                "                            \"id_category\": 3," +
+                "                            \"name\": \"TIPO3\" " +
+                "                            }, " +
+                "                            {" +
+                "                            \"id_category\": 4," +
+                "                            \"name\": \"TIPO4\" " +
+                "                            } " +
+                "                            ] " +
+                "                            }", Holder.class);
+
+        ContentValues[] values = new ContentValues[data.getInstruments().size()];
+        ContentValues value = null;
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-dd");
+
+        Date dateAtual = new Date(System.currentTimeMillis());
+        for (int i = 0; i < values.length; i++) {
+            if(data.getInstruments().get(i).getData().getGroups().size() != 0) {
+                value = new ContentValues();
+                value.put(AvBContract.InstrumentEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                value.put(AvBContract.InstrumentEntry.UPDATED_AT, dateFormat.format(dateAtual));
+                values[i] = value;
+            }
+        }
+
+        getContentResolver().bulkInsert(
+                AvBContract.InstrumentEntry.INSTRUMENT_URI, values);
+
+        for (int i = 0; i < values.length; i++) {
+            if(data.getInstruments().get(i).getData().getGroups().size() != 0) {
+                value = new ContentValues();
+                value.put(AvBContract.InstrumentPlaceEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                value.put(AvBContract.InstrumentPlaceEntry.PLACE_ID, place_id);
+                values[i] = value;
+            }
+        }
+
+        getContentResolver().bulkInsert(
+                AvBContract.InstrumentPlaceEntry.INSTRUMENTPLACE_URI, values);
+
+        for (int i = 0; i < data.getInstruments().size(); i++) {
+            values = new ContentValues[data.getInstruments().get(i).getData().getGroups().size()];
+            for (int j = 0; j < data.getInstruments().get(i).getData().getGroups().size(); j++) {
+                value = new ContentValues();
+                value.put(AvBContract.GroupQuestionEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
+                value.put(AvBContract.GroupQuestionEntry.GROUP_ID, data.getInstruments().get(i).getData().getGroups().get(j).getId());
+                value.put(AvBContract.GroupQuestionEntry.ORDER_QUESTION, data.getInstruments().get(i).getData().getGroups().get(j).getOrder());
+                values[j] = value;
+            }
+
+            getContentResolver().bulkInsert(
+                    AvBContract.GroupQuestionEntry.GROUP_URI, values);
+        }
+
+        for (int k = 0; k < data.getInstruments().size(); k++) {
+            Log.d("PlaceActivity", "instrument ID: " + data.getInstruments().get(k).getId());
+            for (int i = 0; i < data.getInstruments().get(k).getData().getGroups().size(); i++) {
+
+                values = new ContentValues[data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size()];
+                Log.d("PlaceActivity", "Group ID: " + data.getInstruments().get(k).getData().getGroups().get(i).getId());
+                Log.d("PlaceActivity", "order: " + data.getInstruments().get(k).getData().getGroups().get(i).getOrder());
+                Log.d("PlaceActivity", "order: " + data.getInstruments().get(k).getData().getGroups().get(i).getOrder());
+
+                for (int j = 0; j < data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size(); j++) {
+
+                    Log.d("PlaceActivity", "Question type: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getQuestionType());
+                    Log.d("PlaceActivity", "Question: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getTitle());
+                    Log.d("PlaceActivity", "Question ID: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getId());
+
+                    value = new ContentValues();
+                    value.put(AvBContract.QuestionEntry.QUESTION, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getTitle());
+                    value.put(AvBContract.QuestionEntry.GROUP_ID, data.getInstruments().get(k).getData().getGroups().get(i).getId());
+                    value.put(AvBContract.QuestionEntry.QUESTION_ID, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getId());
+                    value.put(AvBContract.QuestionEntry.QUESTION_TYPE, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getQuestionType());
+                    values[j] = value;
+                }
+
+                getContentResolver().bulkInsert(
+                        AvBContract.QuestionEntry.QUESTION_URI, values);
+            }
+        }
+
+        prepareHolder(data);
+    }
+
     public void startEvaluationActivity(View view){
 
-        Cursor c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id),null,null,null,null);
-
-        if(c.getCount() <= 0){
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getSurveyURL(place_id),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getSurveyURL(place_id),
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-
-                            //TODO api still doesn't send back the info, so i'am adding it static for tests;
-
-                            Gson gson = new Gson();
-                            Holder data = gson.fromJson(response, Holder.class);
-
-                            ContentValues[] values = new ContentValues[data.getInstruments().size()];
-                            ContentValues value = null;
-
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-dd");
-
-                            Date dateAtual = new Date(System.currentTimeMillis());
-                            for (int i = 0; i < values.length; i++) {
-                                if(data.getInstruments().get(i).getData().getGroups().size() != 0){
-                                    value = new ContentValues();
-                                    value.put(AvBContract.InstrumentEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
-                                    value.put(AvBContract.InstrumentEntry.UPDATED_AT, dateFormat.format(dateAtual));
-                                    values[i] = value;
-                                }
-                            }
-
-                            getContentResolver().bulkInsert(
-                                    AvBContract.InstrumentEntry.INSTRUMENT_URI, values);
-
-                            for (int i = 0; i < values.length; i++) {
-                                if(data.getInstruments().get(i).getData().getGroups().size() != 0){
-                                    value = new ContentValues();
-                                    value.put(AvBContract.InstrumentPlaceEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
-                                    value.put(AvBContract.InstrumentPlaceEntry.PLACE_ID, place_id);
-                                    values[i] = value;
-                                }
-                            }
-
-                            getContentResolver().bulkInsert(
-                                    AvBContract.InstrumentPlaceEntry.INSTRUMENTPLACE_URI, values);
-
-                            for (int i = 0; i < data.getInstruments().size(); i++) {
-                                values = new ContentValues[data.getInstruments().get(i).getData().getGroups().size()];
-                                for (int j = 0; j < data.getInstruments().get(i).getData().getGroups().size(); j++) {
-                                    value = new ContentValues();
-                                    value.put(AvBContract.GroupQuestionEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
-                                    value.put(AvBContract.GroupQuestionEntry.GROUP_ID, data.getInstruments().get(i).getData().getGroups().get(j).getId());
-                                    value.put(AvBContract.GroupQuestionEntry.ORDER_QUESTION, data.getInstruments().get(i).getData().getGroups().get(j).getOrder());
-                                    values[j] = value;
-                                }
-
-                                getContentResolver().bulkInsert(
-                                        AvBContract.GroupQuestionEntry.GROUP_URI, values);
-                            }
-
-                            for (int k = 0; k < data.getInstruments().size(); k++) {
-                                for (int i = 0; i < data.getInstruments().get(i).getData().getGroups().size(); i++) {
-                                    values = new ContentValues[data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size()];
-
-                                    for (int j = 0; j < data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size(); j++) {
-                                        value = new ContentValues();
-                                        value.put(AvBContract.QuestionEntry.QUESTION, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getTitle());
-                                        value.put(AvBContract.QuestionEntry.GROUP_ID, data.getInstruments().get(i).getData().getGroups().get(i).getId());
-                                        value.put(AvBContract.QuestionEntry.QUESTION_ID, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getId());
-                                        value.put(AvBContract.QuestionEntry.QUESTION_TYPE, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getQuestionType());
-                                        values[j] = value;
-                                    }
-
-                                    getContentResolver().bulkInsert(
-                                            AvBContract.QuestionEntry.QUESTION_URI, values);
-                                }
-                            }
-
-
-                            Random random = new Random();
-
-                            int instrument = random.nextInt(data.getInstruments().size());
-                            int group = random.nextInt(data.getInstruments().get(instrument).getData().getGroups().size());
-
-                            Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
-                            intent.putExtra("name",getIntent().getExtras().getString("name"));
-                            intent.putExtra("placeid",place_id);
-                            //List<Question> questions = new ArrayList<Question>(data.getInstruments().get(instrument)
-                            //.getData().getGroups().get(group).getQuestions());
-                            //intent.putExtra("questions", (Serializable) questions);
-                            intent.putExtra("instruments", (Serializable) data.getInstruments());
-                            startActivity(intent);
-                            finish();
-
+                            fetchData(response);
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     error.printStackTrace();
-                    //Toast.makeText(PlaceActivity.this,"Não foi possível acessar os servidor do avalia brasil.",Toast.LENGTH_SHORT).show();
-
-                    Gson gson = new Gson();
-                    Holder data = gson.fromJson("{ \"instruments\":[" +
-                            "        {" +
-                            "            \"id\":1," +
-                            "            \"data\":{" +
-                            "                \"groups\":[" +
-                            "                    {" +
-                            "                        \"id\":1," +
-                            "                        \"order\":1," +
-                            "                        \"questions\":[" +
-                            "                            {" +
-                            "                                \"id\":1," +
-                            "                                \"title\":\" Question 1 \"," +
-                            "                                \"questionType\":\"is_comment\"" +
-                            "                            }," +
-                            "                            {" +
-                            "                                \"id\":2," +
-                            "                                \"title\":\" Question 2 \"," +
-                            "                                \"questionType\":\"is_number\"" +
-                            "                            }," +
-                            "                            {" +
-                            "                                \"id\":3," +
-                            "                                \"title\":\" Question 3 \"," +
-                            "                                \"questionType\":\"is_number\"" +
-                            "                            }," +
-                            "                            {" +
-                            "                                \"id\":4," +
-                            "                                \"title\":\" Question 4 \"," +
-                            "                                \"questionType\":\"is_likert\"" +
-                            "                            }" +
-                            "                        ]" +
-                            "                    }," +
-                            "                    {" +
-                            "                        \"id\":2," +
-                            "                        \"order\":2," +
-                            "                        \"questions\":[" +
-                            "                            {" +
-                            "                                \"id\":5," +
-                            "                                \"title\":\" Question 5 \"," +
-                            "                                \"questionType\":\"is_number\"" +
-                            "                            }," +
-                            "                            {" +
-                            "                                \"id\":6," +
-                            "                                \"title\":\" Question 6 \"," +
-                            "                                \"questionType\":\"is_comment\"" +
-                            "                            }," +
-                            "                            {" +
-                            "                                \"id\":7," +
-                            "                                \"title\":\" Question 7 \"," +
-                            "                                \"questionType\":\"is_likert\"" +
-                            "                            }," +
-                            "                            {" +
-                            "                                \"id\":8," +
-                            "                                \"title\":\" Question 8 \"," +
-                            "                                \"questionType\":\"is_number\"" +
-                            "                            }" +
-                            "                        ]" +
-                            "                    }" +
-                            "                ]" +
-                            "            }" +
-                            "        }," +
-                            "        {" +
-                            "            \"id\":2," +
-                            "            \"data\":{" +
-                            "            }" +
-                            "        }" +
-                            "    ]" +
-                            "}", Holder.class);
-
-                    ContentValues[] values = new ContentValues[data.getInstruments().size()];
-                    ContentValues value = null;
-
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-dd");
-
-                    Date dateAtual = new Date(System.currentTimeMillis());
-                    for (int i = 0; i < values.length; i++) {
-                        if(data.getInstruments().get(i).getData().getGroups().size() != 0) {
-                            value = new ContentValues();
-                            value.put(AvBContract.InstrumentEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
-                            value.put(AvBContract.InstrumentEntry.UPDATED_AT, dateFormat.format(dateAtual));
-                            values[i] = value;
-                        }
-                    }
-
-                    getContentResolver().bulkInsert(
-                            AvBContract.InstrumentEntry.INSTRUMENT_URI, values);
-
-                    for (int i = 0; i < values.length; i++) {
-                        if(data.getInstruments().get(i).getData().getGroups().size() != 0) {
-                            value = new ContentValues();
-                            value.put(AvBContract.InstrumentPlaceEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
-                            value.put(AvBContract.InstrumentPlaceEntry.PLACE_ID, place_id);
-                            values[i] = value;
-                        }
-                    }
-
-                    getContentResolver().bulkInsert(
-                            AvBContract.InstrumentPlaceEntry.INSTRUMENTPLACE_URI, values);
-
-                    for (int i = 0; i < data.getInstruments().size(); i++) {
-                        values = new ContentValues[data.getInstruments().get(i).getData().getGroups().size()];
-                        for (int j = 0; j < data.getInstruments().get(i).getData().getGroups().size(); j++) {
-                            value = new ContentValues();
-                            value.put(AvBContract.GroupQuestionEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
-                            value.put(AvBContract.GroupQuestionEntry.GROUP_ID, data.getInstruments().get(i).getData().getGroups().get(j).getId());
-                            value.put(AvBContract.GroupQuestionEntry.ORDER_QUESTION, data.getInstruments().get(i).getData().getGroups().get(j).getOrder());
-                            values[j] = value;
-                        }
-
-                        getContentResolver().bulkInsert(
-                                AvBContract.GroupQuestionEntry.GROUP_URI, values);
-                    }
-
-                    for (int k = 0; k < data.getInstruments().size(); k++) {
-                        Log.d("PlaceActivity", "instrument ID: " + data.getInstruments().get(k).getId());
-                        for (int i = 0; i < data.getInstruments().get(k).getData().getGroups().size(); i++) {
-
-                            values = new ContentValues[data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size()];
-                            Log.d("PlaceActivity", "Group ID: " + data.getInstruments().get(k).getData().getGroups().get(i).getId());
-                            Log.d("PlaceActivity", "order: " + data.getInstruments().get(k).getData().getGroups().get(i).getOrder());
-                            Log.d("PlaceActivity", "order: " + data.getInstruments().get(k).getData().getGroups().get(i).getOrder());
-
-                            for (int j = 0; j < data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size(); j++) {
-
-                                 Log.d("PlaceActivity", "Question type: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getQuestionType());
-                                Log.d("PlaceActivity", "Question: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getTitle());
-                                Log.d("PlaceActivity", "Question ID: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getId());
-
-                                value = new ContentValues();
-                                value.put(AvBContract.QuestionEntry.QUESTION, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getTitle());
-                                value.put(AvBContract.QuestionEntry.GROUP_ID, data.getInstruments().get(k).getData().getGroups().get(i).getId());
-                                value.put(AvBContract.QuestionEntry.QUESTION_ID, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getId());
-                                value.put(AvBContract.QuestionEntry.QUESTION_TYPE, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getQuestionType());
-                                values[j] = value;
-                            }
-
-                            getContentResolver().bulkInsert(
-                                    AvBContract.QuestionEntry.QUESTION_URI, values);
-                        }
-                    }
-
-                    Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
-                    intent.putExtra("name",getIntent().getExtras().getString("name"));
-                    intent.putExtra("placeid",place_id);
-                    //List<Question> questions = new ArrayList<Question>(data.getInstruments().get(instrument)
-                    //        .getData().getGroups().get(group).getQuestions());
-                    //intent.putExtra("questions", (Serializable) questions);
-                    intent.putExtra("instruments", (Serializable) data.getInstruments());
-
-                    startActivity(intent);
-                    finish();
-
+                    fetchData("");
                 }
             }) {
                 @Override
@@ -547,12 +478,18 @@ public class PlaceActivity extends AppCompatActivity {
                 }
             };
             Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
-        }else{
+
+    }
+
+
+    private void prepareHolder(Holder holder){
+
+        if(holder == null){
+            holder = new Holder();
 
             ArrayList<String> ids = new ArrayList<String>();
 
-
-            Holder holder = new Holder();
+            Cursor c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id),null,null,null,null);
 
             List<Instrument> instruments = new ArrayList<Instrument>();
 
@@ -572,15 +509,15 @@ public class PlaceActivity extends AppCompatActivity {
             }
 
             holder.setInstruments(instruments);
-
-            Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
-            intent.putExtra("instruments", (Serializable) holder.getInstruments());
-            intent.putExtra("name",getIntent().getExtras().getString("name"));
-            intent.putExtra("placeid",place_id);
-            startActivity(intent);
-            finish();
-
         }
+
+
+        Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
+        intent.putExtra("holder", (Serializable) holder);
+        intent.putExtra("name",getIntent().getExtras().getString("name"));
+        intent.putExtra("placeid",place_id);
+        startActivity(intent);
+        finish();
     }
 
     public void startStatisticsActivity(View view){

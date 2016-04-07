@@ -22,14 +22,17 @@ import com.squareup.picasso.Picasso;
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.CommentFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.LikertFragment;
+import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.NewPlaceFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.NumberFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.ShareEvaluateFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.TransactionFragment;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Anwser;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Instrument;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +59,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
     /**
      *
      */
-    private List<Instrument> instruments = new ArrayList<Instrument>();
+    private Holder holder;
 
     /**
      *
@@ -93,6 +96,11 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
      */
     private ImageView ivPlace;
 
+    /**
+     *
+     */
+    private JsonObject response = new JsonObject();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,11 +123,20 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
         getSupportActionBar().setTitle(getIntent().getExtras().getString("name"));
 
         if (savedInstanceState == null) {
-            instruments = (List<Instrument>) getIntent().getSerializableExtra("instruments");
+            holder = (Holder) getIntent().getSerializableExtra("holder");
 
             place_id = getIntent().getExtras().getString("placeid");
 
-            newFragment = getNextQuestionFragment();
+            if(holder.isNewPlace()){
+                newFragment = new NewPlaceFragment();
+                args.putSerializable("question", new Question("Você é o primeiro a avaliar este local, por favor nos de algumas informações adicionais"));
+                args.putSerializable("categoriess",(Serializable) holder.getCategories());
+                args.putSerializable("types", (Serializable) holder.getPlaceTypes());
+
+                newFragment.setArguments(args);
+            }else{
+                newFragment = getNextQuestionFragment();
+            }
 
             ft = getFragmentManager().beginTransaction();
 
@@ -139,11 +156,13 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
             case R.id.btnSubmit:
                 if (newFragment.isAnwser()) {
                     if (newFragment instanceof LikertFragment) {
-                        anwsers.add(new Anwser("0", newFragment.getAnwser(), null, null));
+                        anwsers.add(new Anwser("0", (String)newFragment.getAnwser(), null, null));
                     } else if (newFragment instanceof CommentFragment) {
-                        anwsers.add(new Anwser("0", null, newFragment.getAnwser(), null));
+                        anwsers.add(new Anwser("0", null, (String)newFragment.getAnwser(), null));
                     } else if (newFragment instanceof NumberFragment) {
-                        anwsers.add(new Anwser("0", null, null, newFragment.getAnwser()));
+                        anwsers.add(new Anwser("0", null, null, (String)newFragment.getAnwser()));
+                    } else if (newFragment instanceof NewPlaceFragment) {
+                        response.add("newPlace",(JsonObject)newFragment.getAnwser());
                     }
 
                     newFragment = getNextQuestionFragment();
@@ -185,9 +204,6 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-
-                JsonObject response = new JsonObject();
-
                 //TODO ADD THE USER TOKEN
                 response.addProperty("userID", "");
 
@@ -220,13 +236,13 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
     public TransactionFragment getNextQuestionFragment() {
         TransactionFragment nextFragment = null;
 
-        Log.d(TAG, "instruments size: " + instruments.size());
+        Log.d(TAG, "holder.getInstruments() size: " + holder.getInstruments().size());
 
-        if (instruments.size() > instrumentCursor) {
-            if (instruments.get(instrumentCursor).getData().getGroups().size() > groupCursor) {
-                Log.d(TAG, "group size: " + instruments.get(instrumentCursor).getData().getGroups().size());
-                if (instruments.get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().size() > questionCursor) {
-                    String type = instruments.get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().get(questionCursor).getQuestionType();
+        if (holder.getInstruments().size() > instrumentCursor) {
+            if (holder.getInstruments().get(instrumentCursor).getData().getGroups().size() > groupCursor) {
+                Log.d(TAG, "group size: " + holder.getInstruments().get(instrumentCursor).getData().getGroups().size());
+                if (holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().size() > questionCursor) {
+                    String type = holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().get(questionCursor).getQuestionType();
 
                     if (type.contentEquals(Question.QuestionTypes.IS_COMMENT.getType())) {
                         nextFragment = new CommentFragment();
@@ -235,7 +251,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                     } else if (type.contentEquals(Question.QuestionTypes.IS_NUMBER.getType())) {
                         nextFragment = new NumberFragment();
                     }
-                    args.putSerializable("question", instruments.get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().get(questionCursor));
+                    args.putSerializable("question", holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().get(questionCursor));
 
                     nextFragment.setArguments(args);
 

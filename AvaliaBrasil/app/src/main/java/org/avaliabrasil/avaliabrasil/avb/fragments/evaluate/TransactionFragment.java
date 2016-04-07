@@ -20,7 +20,7 @@ public abstract class TransactionFragment extends Fragment {
 
     public abstract boolean isAnwser();
 
-    public abstract String getAnwser();
+    public abstract Object getAnwser();
 
     public Question getQuestion() {
         return question;
