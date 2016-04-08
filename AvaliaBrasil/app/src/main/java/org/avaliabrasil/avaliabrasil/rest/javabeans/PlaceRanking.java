@@ -1,63 +1,40 @@
 
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class PlaceRanking {
 
-    @SerializedName("id")
+    @SerializedName("rankingPosition")
     @Expose
-    private Integer id;
+    private Integer rankingPosition;
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("city")
+    @SerializedName("address")
     @Expose
-    private String city;
-    @SerializedName("state")
-    @Expose
-    private String state;
-    @SerializedName("category")
-    @Expose
-    private String category;
-    @SerializedName("type")
-    @Expose
-    private String type;
+    private String address;
     @SerializedName("qualityIndex")
     @Expose
-    private List<Double> qualityIndex = new ArrayList<Double>();
-    @SerializedName("rankingPosition")
-    @Expose
-    private RankingPosition rankingPosition;
-    @SerializedName("rankingStatus")
-    @Expose
-    private RankingStatus rankingStatus;
-    @SerializedName("lastWeekSurveys")
-    @Expose
-    private Integer lastWeekSurveys;
-    @SerializedName("comments")
-    @Expose
-    private List<Comment> comments = new ArrayList<Comment>();
+    private Double qualityIndex;
 
     /**
      * 
      * @return
-     *     The id
+     *     The rankingPosition
      */
-    public Integer getId() {
-        return id;
+    public Integer getRankingPosition() {
+        return rankingPosition;
     }
 
     /**
      * 
-     * @param id
-     *     The id
+     * @param rankingPosition
+     *     The rankingPosition
      */
-    public void setId(Integer id) {
-        this.id = id;
+    public void setRankingPosition(Integer rankingPosition) {
+        this.rankingPosition = rankingPosition;
     }
 
     /**
@@ -81,73 +58,19 @@ public class PlaceRanking {
     /**
      * 
      * @return
-     *     The city
+     *     The address
      */
-    public String getCity() {
-        return city;
+    public String getAddress() {
+        return address;
     }
 
     /**
      * 
-     * @param city
-     *     The city
+     * @param address
+     *     The address
      */
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    /**
-     * 
-     * @return
-     *     The state
-     */
-    public String getState() {
-        return state;
-    }
-
-    /**
-     * 
-     * @param state
-     *     The state
-     */
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    /**
-     * 
-     * @return
-     *     The category
-     */
-    public String getCategory() {
-        return category;
-    }
-
-    /**
-     * 
-     * @param category
-     *     The category
-     */
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    /**
-     * 
-     * @return
-     *     The type
-     */
-    public String getType() {
-        return type;
-    }
-
-    /**
-     * 
-     * @param type
-     *     The type
-     */
-    public void setType(String type) {
-        this.type = type;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     /**
@@ -155,7 +78,7 @@ public class PlaceRanking {
      * @return
      *     The qualityIndex
      */
-    public List<Double> getQualityIndex() {
+    public Double getQualityIndex() {
         return qualityIndex;
     }
 
@@ -164,80 +87,8 @@ public class PlaceRanking {
      * @param qualityIndex
      *     The qualityIndex
      */
-    public void setQualityIndex(List<Double> qualityIndex) {
+    public void setQualityIndex(Double qualityIndex) {
         this.qualityIndex = qualityIndex;
-    }
-
-    /**
-     * 
-     * @return
-     *     The rankingPosition
-     */
-    public RankingPosition getRankingPosition() {
-        return rankingPosition;
-    }
-
-    /**
-     * 
-     * @param rankingPosition
-     *     The rankingPosition
-     */
-    public void setRankingPosition(RankingPosition rankingPosition) {
-        this.rankingPosition = rankingPosition;
-    }
-
-    /**
-     * 
-     * @return
-     *     The rankingStatus
-     */
-    public RankingStatus getRankingStatus() {
-        return rankingStatus;
-    }
-
-    /**
-     * 
-     * @param rankingStatus
-     *     The rankingStatus
-     */
-    public void setRankingStatus(RankingStatus rankingStatus) {
-        this.rankingStatus = rankingStatus;
-    }
-
-    /**
-     * 
-     * @return
-     *     The lastWeekSurveys
-     */
-    public Integer getLastWeekSurveys() {
-        return lastWeekSurveys;
-    }
-
-    /**
-     * 
-     * @param lastWeekSurveys
-     *     The lastWeekSurveys
-     */
-    public void setLastWeekSurveys(Integer lastWeekSurveys) {
-        this.lastWeekSurveys = lastWeekSurveys;
-    }
-
-    /**
-     * 
-     * @return
-     *     The comments
-     */
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    /**
-     * 
-     * @param comments
-     *     The comments
-     */
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
     }
 
 }

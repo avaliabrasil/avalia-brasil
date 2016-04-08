@@ -90,7 +90,8 @@
             android:name=".avb.PlaceStatisticsActivity"
             android:label="@string/title_activity_place_statistics"
             android:parentActivityName=".avb.PlaceActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".avb.PlaceActivity"
@@ -103,7 +104,8 @@
             android:name=".avb.RankingActivity"
             android:label="@string/title_activity_ranking"
             android:parentActivityName=".avb.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".avb.MainActivity" />

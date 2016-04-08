@@ -10,76 +10,101 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".avb.PlaceStatisticsActivity"
-    tools:showIn="@layout/activity_place_statistics">
+    tools:showIn="@layout/activity_ranking">
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/local"
-                style="@style/DefaultText"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Porto Alegre, RS"
-                android:id="@+id/local"
-                android:layout_marginLeft="8dp"
-                style="@style/DefaultText"/>
-        </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
 
-            <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Local"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:id="@+id/textView5"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Nome local"
+                    android:layout_marginLeft="10dp"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/etPlace"
+                    android:layout_toRightOf="@+id/textView5"
+                    android:layout_toEndOf="@+id/textView5"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentBottom="true" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Categoria"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:id="@+id/textView6"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spCategory"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/textView6"
+                    android:layout_toEndOf="@+id/textView6" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo de\nInstituição"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:id="@+id/textView7"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+                <Spinner
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/spPlaceType"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/textView7"
+                    android:layout_toEndOf="@+id/textView7" />
+
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/category"
-                    style="@style/DefaultText"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Saúde"
-                    android:id="@+id/category"
-                    android:layout_marginLeft="8dp"
-                    style="@style/DefaultText"/>
-            </LinearLayout>
+                android:id="@+id/rvRankingList"></android.support.v7.widget.RecyclerView>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/place_type"
-                    style="@style/DefaultText"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Unidade de Pronto Atendimento"
-                    android:id="@+id/place_type"
-                    android:layout_marginLeft="8dp"
-                    style="@style/DefaultText"/>
-            </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/large_text"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </RelativeLayout>

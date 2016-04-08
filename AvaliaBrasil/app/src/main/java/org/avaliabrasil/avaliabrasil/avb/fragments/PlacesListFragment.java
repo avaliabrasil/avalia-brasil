@@ -14,6 +14,7 @@ import android.widget.ListView;
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.MainActivity;
 import org.avaliabrasil.avaliabrasil.avb.PlaceActivity;
+import org.avaliabrasil.avaliabrasil.avb.adapters.PlaceRankingAdapter;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlacesListAdapter;
 import org.avaliabrasil.avaliabrasil.sync.Observer;
 

@@ -23,6 +23,7 @@ import com.google.gson.JsonObject;
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.EvaluationActivity;
 import org.avaliabrasil.avaliabrasil.avb.adapters.CategoryAdapter;
+import org.avaliabrasil.avaliabrasil.avb.adapters.DividerItemDecoration;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlaceTypeAdapter;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.AvaliaBrasilCategory;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.AvaliaBrasilPlaceType;
@@ -111,7 +112,8 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
         lvCategory.setItemAnimator(new DefaultItemAnimator());
         lvCategory.setAdapter(new CategoryAdapter(getContext(),category,this));
         lvCategory.setHasFixedSize(true);
-
+        lvCategory.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.abc_list_divider_mtrl_alpha)));
+        lvType.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.abc_list_divider_mtrl_alpha)));
         lvType.setItemAnimator(new DefaultItemAnimator());
 
         return rootView;
@@ -123,16 +125,14 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
     }
 
     @Override
-    public JsonObject getAnwser() {
+    public Integer[] getAnwser() {
         if(!isAnwser()){
             return null;
         }
-        JsonObject innerObj = new JsonObject();
 
-        innerObj.addProperty("category",category.get(category_pos).getIdCategory());
-        innerObj.addProperty("type",category.get(category_pos).getCategory());
+        Integer[] response = new Integer[]{Integer.valueOf(category.get(category_pos).getIdCategory()),Integer.valueOf(types.get(type_pos).getIdCategory())};
 
-        return innerObj;
+         return response;
     }
 
     boolean isCategorySelected= false;

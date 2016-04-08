@@ -72,5 +72,4 @@ public class PlacesListAdapter extends CursorAdapter {
         viewHolder.distanceView.setText(cursor.getInt(cursor.getColumnIndex("distance")) + "m");
 
     }
-
 }

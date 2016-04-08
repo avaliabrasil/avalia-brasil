@@ -1,6 +1,7 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -152,6 +153,8 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View v) {
+            Intent intent = new Intent(EvaluationActivity.this,PlaceStatisticsActivity.class);
+
         switch (v.getId()) {
             case R.id.btnSubmit:
                 if (newFragment.isAnwser()) {
@@ -162,7 +165,11 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                     } else if (newFragment instanceof NumberFragment) {
                         anwsers.add(new Anwser("0", null, null, (String)newFragment.getAnwser()));
                     } else if (newFragment instanceof NewPlaceFragment) {
-                        response.add("newPlace",(JsonObject)newFragment.getAnwser());
+
+                        Integer[] responses =(Integer[]) newFragment.getAnwser();
+
+                        response.addProperty("categoryId",responses[0]);
+                        response.addProperty("placeTypeId",responses[1]);
                     }
 
                     newFragment = getNextQuestionFragment();
@@ -179,10 +186,12 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 }
                 break;
             case R.id.btnShare:
-                finish();
+                intent.putExtra("placeid",place_id);
+                startActivity(intent);
                 break;
             case R.id.tvSkip:
-                finish();
+                intent.putExtra("placeid",place_id);
+                startActivity(intent);
                 break;
         }
     }
