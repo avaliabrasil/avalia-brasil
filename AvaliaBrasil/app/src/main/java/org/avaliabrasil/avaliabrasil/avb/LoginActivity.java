@@ -192,7 +192,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     }
 
     public void startMainActivity(View view){
-        if(accountManager.getAccounts().length > 0){
+        if(accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0){
             Snackbar
                     .make(findViewById(R.id.layout),"Já há um usuário logado!", Snackbar.LENGTH_LONG)
                     .show();

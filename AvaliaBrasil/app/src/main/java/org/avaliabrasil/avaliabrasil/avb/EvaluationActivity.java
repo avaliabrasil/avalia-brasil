@@ -16,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.CallbackManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
@@ -102,6 +103,11 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
      */
     private JsonObject response = new JsonObject();
 
+    /**
+     *
+     */
+    private CallbackManager callbackManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +116,8 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
         if (getIntent().getExtras() == null || getIntent().getExtras().getString("name") == null) {
             finish();
         }
+
+        callbackManager = CallbackManager.Factory.create();
 
         // Definindo a Toolbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -151,9 +159,12 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+    public CallbackManager getCallbackManager() {
+        return callbackManager;
+    }
+
     @Override
     public void onClick(View v) {
-            Intent intent = new Intent(EvaluationActivity.this,PlaceStatisticsActivity.class);
 
         switch (v.getId()) {
             case R.id.btnSubmit:
@@ -178,18 +189,14 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.fragment_container, newFragment).commit();
                     } else {
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, new ShareEvaluateFragment()).commit();
+                        sendAnwserBack();
                     }
                 } else {
                     Toast.makeText(EvaluationActivity.this, "Você não respondeu a questão", Toast.LENGTH_LONG).show();
                 }
                 break;
-            case R.id.btnShare:
-                intent.putExtra("placeid",place_id);
-                startActivity(intent);
-                break;
             case R.id.tvSkip:
+                Intent intent = new Intent(EvaluationActivity.this,PlaceStatisticsActivity.class);
                 intent.putExtra("placeid",place_id);
                 startActivity(intent);
                 break;
@@ -202,12 +209,30 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        ShareEvaluateFragment share = new ShareEvaluateFragment();
 
+                        args.putString("shareString","blablabla");
+
+
+                        share.setArguments(args);
+
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container, share).commit();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                //TODO show a screen if there is no internet
+
+                ShareEvaluateFragment share = new ShareEvaluateFragment();
+
+                args.putString("shareString","blablabla");
+
+                share.setArguments(args);
+
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, share).commit();
             }
         }) {
             @Override
@@ -242,14 +267,17 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
         Volley.newRequestQueue(EvaluationActivity.this).add(stringRequest);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
     public TransactionFragment getNextQuestionFragment() {
         TransactionFragment nextFragment = null;
 
-        Log.d(TAG, "holder.getInstruments() size: " + holder.getInstruments().size());
-
         if (holder.getInstruments().size() > instrumentCursor) {
             if (holder.getInstruments().get(instrumentCursor).getData().getGroups().size() > groupCursor) {
-                Log.d(TAG, "group size: " + holder.getInstruments().get(instrumentCursor).getData().getGroups().size());
                 if (holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().size() > questionCursor) {
                     String type = holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().get(questionCursor).getQuestionType();
 

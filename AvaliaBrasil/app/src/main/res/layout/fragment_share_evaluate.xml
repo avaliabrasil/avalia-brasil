@@ -37,7 +37,7 @@
             android:layout_alignRight="@+id/textView3"
             android:layout_alignEnd="@+id/textView3" />
 
-        <Button
+        <com.facebook.share.widget.ShareButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Compartilhar esta avaliação"
