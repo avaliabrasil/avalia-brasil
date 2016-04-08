@@ -1,11 +1,15 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -100,73 +104,11 @@ public class PlaceStatisticsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_place_statistics);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         placeId = getIntent().getExtras().getString("placeid","");
 
-        rvNacional = (RankingView) findViewById(R.id.rvNacional);
+        new Loading().execute();
 
-        rvRegional = (RankingView) findViewById(R.id.rvRegional);
-
-        rvEstadual = (RankingView) findViewById(R.id.rvEstadual);
-
-        rvMunicipal = (RankingView) findViewById(R.id.rvMunicipal);
-
-        tvNumberOfAvaliation = (TextView) findViewById(R.id.tvNumberOfAvaliation);
-
-        tvQualityIndice = (TextView) findViewById(R.id.tvQualityIndice);
-
-        tvPlaceType = (TextView) findViewById(R.id.tvPlaceType);
-
-        tvCategory = (TextView) findViewById(R.id.tvCategory);
-
-        tvPlace = (TextView) findViewById(R.id.tvPlace);
-
-        graph = (GraphView) findViewById(R.id.graph);
-
-        graph.getGridLabelRenderer().setGridStyle( GridLabelRenderer.GridStyle.NONE );
-
-        rvComments = (RecyclerView) findViewById(R.id.rvComments);
-
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(PlaceStatisticsActivity.this,LinearLayoutManager.HORIZONTAL, false);
-        rvComments.setLayoutManager(mLayoutManager);
-        rvComments.setItemAnimator(new DefaultItemAnimator());
-
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
-                new DataPoint(0, 0),
-                new DataPoint(1, 0),
-                new DataPoint(2, 0),
-                new DataPoint(3, 0),
-                new DataPoint(4, 0)
-        });
-        graph.addSeries(series);
-
-        /* -------------------------------------------------------------------------------------------------------------- */
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getPlaceStatistics(placeId),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        fetchData(response);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                fetchData("");
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams () {
-                Map<String, String> params = new HashMap<String, String>();
-
-                return params;
-            }
-        };
-        Volley.newRequestQueue(PlaceStatisticsActivity.this).add(stringRequest);
     }
 
     private void fetchData(String response){
@@ -199,6 +141,36 @@ public class PlaceStatisticsActivity extends AppCompatActivity {
                 " ]" +
                 "}", PlaceStatistics.class);
 
+        setContentView(R.layout.activity_place_statistics);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        rvNacional = (RankingView) findViewById(R.id.rvNacional);
+
+        rvRegional = (RankingView) findViewById(R.id.rvRegional);
+
+        rvEstadual = (RankingView) findViewById(R.id.rvEstadual);
+
+        rvMunicipal = (RankingView) findViewById(R.id.rvMunicipal);
+
+        tvNumberOfAvaliation = (TextView) findViewById(R.id.tvNumberOfAvaliation);
+
+        tvQualityIndice = (TextView) findViewById(R.id.tvQualityIndice);
+
+        tvPlaceType = (TextView) findViewById(R.id.tvPlaceType);
+
+        tvCategory = (TextView) findViewById(R.id.tvCategory);
+
+        tvPlace = (TextView) findViewById(R.id.tvPlace);
+
+        graph = (GraphView) findViewById(R.id.graph);
+
+        graph.getGridLabelRenderer().setGridStyle( GridLabelRenderer.GridStyle.NONE );
+
+        rvComments = (RecyclerView) findViewById(R.id.rvComments);
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(PlaceStatisticsActivity.this,LinearLayoutManager.HORIZONTAL, false);
+        rvComments.setLayoutManager(mLayoutManager);
+        rvComments.setItemAnimator(new DefaultItemAnimator());
 
         toolbar.setTitle(placeRanking.getName());
 
@@ -235,6 +207,51 @@ public class PlaceStatisticsActivity extends AppCompatActivity {
         rvComments.setAdapter(new CommentAdapter(PlaceStatisticsActivity.this,placeRanking.getComments()));
 
         rvComments.setHasFixedSize(true);
+    }
+
+
+    private class Loading extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            try{
+                TextView view = new TextView(PlaceStatisticsActivity.this);
+                view.setText("Aguarde enquanto buscamos os dados...");
+                view.setGravity(Gravity.CENTER);
+                view.setWidth(ViewGroup.LayoutParams.FILL_PARENT);
+                view.setHeight(ViewGroup.LayoutParams.FILL_PARENT);
+                setContentView(view);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getPlaceStatistics(placeId),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            fetchData(response);
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                    fetchData("");
+                }
+            }) {
+                @Override
+                protected Map<String, String> getParams () {
+                    Map<String, String> params = new HashMap<String, String>();
+
+                    return params;
+                }
+            };
+            Volley.newRequestQueue(PlaceStatisticsActivity.this).add(stringRequest);
+            return "Executed";
+        }
+
+
     }
 
 }

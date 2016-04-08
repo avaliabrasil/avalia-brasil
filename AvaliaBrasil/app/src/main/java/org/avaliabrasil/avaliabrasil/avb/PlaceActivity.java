@@ -40,6 +40,7 @@ import org.avaliabrasil.avaliabrasil.rest.javabeans.Data;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Instrument;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceRanking;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
 
 import java.io.Serializable;
@@ -244,19 +245,26 @@ public class PlaceActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        mMapView.onResume();
+
+        if(mMapView != null) {
+            mMapView.onResume();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mMapView.onPause();
+        if(mMapView != null) {
+            mMapView.onPause();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mMapView.onDestroy();
+        if(mMapView != null){
+            mMapView.onDestroy();
+        }
     }
 
     @Override
@@ -521,6 +529,8 @@ public class PlaceActivity extends AppCompatActivity {
     }
 
     public void startStatisticsActivity(View view){
-
+        Intent intent = new Intent(PlaceActivity.this,PlaceStatisticsActivity.class);
+        intent.putExtra("placeid",place_id);
+        startActivity(intent);
     }
 }

@@ -71,7 +71,7 @@ import java.io.IOException;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,LoaderManager.LoaderCallbacks<Cursor>, LocationListener{
+        implements NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor>, LocationListener {
 
     static final String URI = "URI";
 
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(savedInstanceState == null){
+        if (savedInstanceState == null) {
             new Loading().execute();
         }
     }
@@ -140,8 +140,8 @@ public class MainActivity extends AppCompatActivity
     /**
      * Method use to fetch the data from the google api every time that the activity is started.
      */
-    private void fetchDataFromGoogleAPI(){
-        if(location == null){
+    private void fetchDataFromGoogleAPI() {
+        if (location == null) {
             return;
         }
         GooglePlacesAPIClient.getNearlyPlaces(MainActivity.this, location);
@@ -191,24 +191,21 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        switch(id){
-            case R.id.btnSearchInstitution:
-
-                break;
+        switch (id) {
             case R.id.btnClassification:
-                startActivity(new Intent(MainActivity.this,RankingActivity.class));
+                startActivity(new Intent(MainActivity.this, RankingActivity.class));
                 break;
             case R.id.btnLogout:
 
-                if(!FacebookSdk.isInitialized()){
+                if (!FacebookSdk.isInitialized()) {
                     FacebookSdk.sdkInitialize(MainActivity.this);
                 }
 
-                if( AccessToken.getCurrentAccessToken() != null){
-                 LoginManager.getInstance().logOut();
+                if (AccessToken.getCurrentAccessToken() != null) {
+                    LoginManager.getInstance().logOut();
                 }
-                for(Account c : manager.getAccountsByType(Constant.ACCOUNT_TYPE)){
-                    manager.removeAccount(c,null,null);
+                for (Account c : manager.getAccountsByType(Constant.ACCOUNT_TYPE)) {
+                    manager.removeAccount(c, null, null);
                 }
 
                 manager.addAccount(Constant.ACCOUNT_TYPE, Constant.ACCOUNT_TOKEN_TYPE_USER, null, null, MainActivity.this, new AccountManagerCallback<Bundle>() {
@@ -251,20 +248,20 @@ public class MainActivity extends AppCompatActivity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setIconifiedByDefault(false);
 
-        ImageView closeButton = (ImageView)searchView.findViewById(R.id.search_close_btn);
+        ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
 
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchView.setQuery("",false);
-                getSupportLoaderManager().restartLoader(0,null,MainActivity.this);
+                searchView.setQuery("", false);
+                getSupportLoaderManager().restartLoader(0, null, MainActivity.this);
             }
         });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                GooglePlacesAPIClient.getPlacesByName(MainActivity.this,MainActivity.this, location,query);
+                GooglePlacesAPIClient.getPlacesByName(MainActivity.this, MainActivity.this, location, query);
 
                 return true;
             }
@@ -293,19 +290,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location providerLocation) {
 
-        Toast.makeText(MainActivity.this,"Buscando novo local",Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, "Buscando novo local", Toast.LENGTH_LONG).show();
 
-        if(providerLocation != null){
-            if(isBetterLocation(providerLocation,location)){
+        if (providerLocation != null) {
+            if (isBetterLocation(providerLocation, location)) {
                 location = providerLocation;
+
+                this.location = providerLocation;
+
+                fetchDataFromGoogleAPI();
+
+                getSupportLoaderManager().restartLoader(0, null, MainActivity.this);
             }
         }
-
-        this.location = providerLocation;
-
-        fetchDataFromGoogleAPI();
-
-        getSupportLoaderManager().restartLoader(0,null,MainActivity.this);
     }
 
     @Override
@@ -334,7 +331,7 @@ public class MainActivity extends AppCompatActivity
 
             switch (position) {
                 case 0:
-                    PlacesListFragment placesListFragmentWithProvider = PlacesListFragment.newInstance(position + 1,location);
+                    PlacesListFragment placesListFragmentWithProvider = PlacesListFragment.newInstance(position + 1, location);
 
                     observerStack.add(placesListFragmentWithProvider);
 
@@ -342,7 +339,7 @@ public class MainActivity extends AppCompatActivity
 
                 case 1:
 
-                    PlacesMapFragment placesMapFragmentWithProvider = PlacesMapFragment.newInstance(position + 1,location);
+                    PlacesMapFragment placesMapFragmentWithProvider = PlacesMapFragment.newInstance(position + 1, location);
 
                     observerStack.add(placesMapFragmentWithProvider);
 
@@ -370,10 +367,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if(args != null){
+        if (args != null) {
             Uri uri = AvBProvider.PLACE_CONTENT_URI;
-            return new CursorLoader(MainActivity.this, uri, null, null, new String[]{args.getString("query","")}, null);
-        }else {
+            return new CursorLoader(MainActivity.this, uri, null, null, new String[]{args.getString("query", "")}, null);
+        } else {
             Uri uri = AvBProvider.PLACE_CONTENT_URI;
             return new CursorLoader(MainActivity.this, uri, null, null, null, null);
         }
@@ -381,23 +378,23 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        for(Observer ob : observerStack){
+        for (Observer ob : observerStack) {
             ob.update(data);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        for(Observer ob : observerStack){
+        for (Observer ob : observerStack) {
             ob.update(null);
         }
     }
 
     /**
-     *  TODO refatorar para classe única
+     * TODO refatorar para classe única
      */
-    private static final int INITIAL_REQUEST=1337;
-    private static final String[] INITIAL_PERMS={
+    private static final int INITIAL_REQUEST = 1337;
+    private static final String[] INITIAL_PERMS = {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
     };
@@ -405,13 +402,13 @@ public class MainActivity extends AppCompatActivity
     /**
      * Check the user permissions to make sure the app work property in the phone
      */
-    public void checkForPermissions(){
-        if (!canAccessCoarseLocation()||!canAccessFineLocation()) {
+    public void checkForPermissions() {
+        if (!canAccessCoarseLocation() || !canAccessFineLocation()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
             }
-        }else{
-            Intent intent = new Intent(MainActivity.this,MainActivity.class);
+        } else {
+            Intent intent = new Intent(MainActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
@@ -419,33 +416,32 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch(requestCode) {
+        switch (requestCode) {
             case INITIAL_REQUEST:
-                if (canAccessFineLocation()&&canAccessCoarseLocation()) {
-                    Intent intent = new Intent(MainActivity.this,MainActivity.class);
+                if (canAccessFineLocation() && canAccessCoarseLocation()) {
+                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    intent.putExtra("showSplash",false);
+                    intent.putExtra("showSplash", false);
                     startActivity(intent);
-                }
-                else {
-                    Toast.makeText(MainActivity.this,"This application need the access location to work property",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "This application need the access location to work property", Toast.LENGTH_LONG).show();
                 }
                 break;
         }
     }
 
     private boolean canAccessFineLocation() {
-        return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
+        return (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
     }
 
     private boolean canAccessCoarseLocation() {
-        return(hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION));
+        return (hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION));
     }
 
 
     private boolean hasPermission(String perm) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
+            return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
         }
         return true;
     }
@@ -504,20 +500,21 @@ public class MainActivity extends AppCompatActivity
         return false;
     }
 
-    public Bitmap getImageBitmap(Context context){
-        try{
+    public Bitmap getImageBitmap(Context context) {
+        try {
             FileInputStream fis = context.openFileInput("profile.jpg");
             Bitmap b = BitmapFactory.decodeStream(fis);
             fis.close();
             return b;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    /** Checks whether two providers are the same */
+    /**
+     * Checks whether two providers are the same
+     */
     private boolean isSameProvider(String provider1, String provider2) {
         if (provider1 == null) {
             return provider2 == null;
@@ -533,8 +530,8 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected String doInBackground(String... params) {
             try {
-                if(getIntent().getExtras() != null){
-                    if(getIntent().getExtras().getBoolean("showSplash",true)){
+                if (getIntent().getExtras() != null) {
+                    if (getIntent().getExtras().getBoolean("showSplash", true)) {
                         Thread.sleep(3000);
                     }
                 }
@@ -546,10 +543,11 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onPostExecute(String result) {
-            if (canAccessFineLocation()&&canAccessCoarseLocation()){
-                user = ((AvaliaBrasilApplication)getApplication()).getUser();
+            if (canAccessFineLocation() && canAccessCoarseLocation()) {
+                user = ((AvaliaBrasilApplication) getApplication()).getUser();
                 manager = AccountManager.get(MainActivity.this);
-            if(manager.getAccountsByType(Constant.ACCOUNT_TYPE).length == 0){
+
+                if (manager.getAccountsByType(Constant.ACCOUNT_TYPE).length == 0) {
                     manager.addAccount(Constant.ACCOUNT_TYPE, Constant.ACCOUNT_TOKEN_TYPE_USER, null, null, MainActivity.this, new AccountManagerCallback<Bundle>() {
                         @Override
                         public void run(AccountManagerFuture<Bundle> future) {
@@ -566,7 +564,7 @@ public class MainActivity extends AppCompatActivity
 
                         }
                     }, null);
-                }else{
+                } else {
                     setContentView(R.layout.activity_main);
 
                     // Add Toolbar
@@ -591,38 +589,38 @@ public class MainActivity extends AppCompatActivity
                         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
                         if (!locationManager
-                                .isProviderEnabled(LocationManager.GPS_PROVIDER)&&!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                                .isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 
                             showGPSDisabledAlertToUser();
-                        }else {
+                        } else {
 
                             Location providerLocation;
 
-                            for(String provider : locationManager.getAllProviders()){
+                            for (String provider : locationManager.getAllProviders()) {
 
                                 providerLocation = locationManager.getLastKnownLocation(provider);
 
-                                Log.e("Location", "location "+ provider +" in provider is " + (providerLocation == null ? "null" : "not null"));
+                                Log.e("Location", "location " + provider + " in provider is " + (providerLocation == null ? "null" : "not null"));
 
-                                if(providerLocation != null){
-                                    if(isBetterLocation(providerLocation,location)){
+                                if (providerLocation != null) {
+                                    if (isBetterLocation(providerLocation, location)) {
                                         location = providerLocation;
                                     }
                                 }
                             }
                         }
 
-                        if(location == null){
+                        if (location == null) {
                             Log.e("Location", "location is null");
-                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,MainActivity.this);
-                            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,0,0,MainActivity.this);
-                            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER,0,0,MainActivity.this);
-                        }else{
+                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, MainActivity.this);
+                            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, MainActivity.this);
+                            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, MainActivity.this);
+                        } else {
                             Log.e("Location", "location isn't null");
                             Log.e("Location", "lat: " + location.getLatitude());
                             Log.e("Location", "long: " + location.getLongitude());
                         }
-                    }catch(SecurityException e) {
+                    } catch (SecurityException e) {
                         e.printStackTrace();
                     }
 
@@ -640,36 +638,33 @@ public class MainActivity extends AppCompatActivity
 
                     getSupportLoaderManager().initLoader(0, null, MainActivity.this);
 
-                    String name = manager.getUserData(manager.getAccountsByType(Constant.ACCOUNT_TYPE)[0],AccountManager.KEY_ACCOUNT_NAME);
+                    String name = manager.getUserData(manager.getAccountsByType(Constant.ACCOUNT_TYPE)[0], AccountManager.KEY_ACCOUNT_NAME);
                     Bitmap photo = getImageBitmap(MainActivity.this);
 
-                    TextView tvName =(TextView) navigationView.getHeaderView(0).findViewById(R.id.tvName);
-                    ImageView ivProfilePhoto =(ImageView) navigationView.getHeaderView(0).findViewById(R.id.ivProfilePhoto);
+                    TextView tvName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tvName);
+                    ImageView ivProfilePhoto = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.ivProfilePhoto);
                     tvName.setText(name);
-                    if(photo != null){
+                    if (photo != null) {
                         ivProfilePhoto.setImageBitmap(new CircleTransform().transform(photo));
                     }
-            }
-            }else{
+                }
+            } else {
                 checkForPermissions();
             }
         }
 
         @Override
         protected void onPreExecute() {
-            try{
+            try {
                 ImageView view = new ImageView(MainActivity.this);
                 view.setImageResource(R.drawable.retangular_logo);
                 ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT
-                        ,ViewGroup.LayoutParams.FILL_PARENT);
+                        , ViewGroup.LayoutParams.FILL_PARENT);
                 view.setLayoutParams(layoutParams);
                 setContentView(view);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {}
     }
 }

@@ -65,6 +65,10 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
                 this.items.add(placeType);
             }
         }
+
+        items.clear();
+        items.addAll(this.items);
+
         this.context = context;
         this.onItemSelectedListener = onItemSelectedListener;
     }
