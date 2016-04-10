@@ -11,9 +11,9 @@ public class Anwser {
 
     private String question_id;
 
-    private String likert = "1";
+    private String likert = "";
     private String comment = "";
-    private String number = "1";
+    private String number = "";
 
     public Anwser(String question_id, String likert, String comment, String number) {
         this.question_id = question_id;

@@ -36,6 +36,10 @@ public class AvBContract {
     public static final String PATH_QUESTION = "questions";
     public static final String PATH_QUESTIONS = "questions/*";
 
+    public static final String PATH_SURVEY = "survey";
+
+    public static final String PATH_NEW_PLACE = "newPlace";
+
     public static final int INSTRUMENT = 4;
     public static final int INSTRUMENTS = 5;
     public static final int INSTRUMENT_PLACE = 6;
@@ -43,6 +47,8 @@ public class AvBContract {
     public static final int GROUP_QUESTIONS = 8;
     public static final int QUESTION = 9;
     public static final int QUESTIONS = 10;
+    public static final int SURVEY = 11;
+    public static final int NEWPLACE = 12;
 
 
     // Normalizando as datas :
@@ -232,5 +238,52 @@ public class AvBContract {
         public static Uri buildQuestionsUri (String instrument_id) {
             return QUESTION_URI.buildUpon().appendPath(instrument_id).build();
         }
+    }
+
+    public static final class SurveyEntry implements BaseColumns {
+
+        public static final Uri SURVEY_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_SURVEY).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENT;
+
+        // Place Table Name
+        public static final String TABLE_NAME = "survey";
+
+        // Table Columns
+        public static final String INSTRUMENT_ID = "instrument_id";
+
+        public static final String GROUP_ID = "group_id";
+
+        public static final String QUESTION_ID = "question_id";
+
+        public static final String QUESTION_TYPE = "question_type";
+
+        public static final String PLACE_ID = "place_id";
+
+        public static final String ANWSER = "anwser";
+
+        public static final String SURVEY_FINISHED = "survey_finished";
+
+    }
+
+    public static final class NewPlaceEntry implements BaseColumns {
+
+        public static final Uri NEWPLACE_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_NEW_PLACE).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENT;
+
+        // Place Table Name
+        public static final String TABLE_NAME = "newPlace";
+
+        public static final String PLACE_ID = "place_id";
+
+        public static final String CATEGORY_ID = "category_id";
+
+        public static final String PLACE_TYPE_ID = "place_type_id";
+
     }
 }

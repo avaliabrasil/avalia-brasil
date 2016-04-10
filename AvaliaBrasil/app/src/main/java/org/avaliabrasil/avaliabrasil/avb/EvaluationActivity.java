@@ -1,7 +1,9 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
 import android.app.FragmentTransaction;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +30,7 @@ import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.NewPlaceFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.NumberFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.ShareEvaluateFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.TransactionFragment;
+import org.avaliabrasil.avaliabrasil.data.AvBContract;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Anwser;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
@@ -136,14 +139,19 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
             place_id = getIntent().getExtras().getString("placeid");
 
-            if(holder.isNewPlace()){
+            if (getIntent().getExtras().getBoolean("pendingSurvey", false)) {
+
+                preparePendingSurvey();
+
+                newFragment = getNextQuestionFragment();
+            } else if (holder.isNewPlace()) {
                 newFragment = new NewPlaceFragment();
                 args.putSerializable("question", new Question("Você é o primeiro a avaliar este local, por favor nos de algumas informações adicionais"));
-                args.putSerializable("categoriess",(Serializable) holder.getCategories());
+                args.putSerializable("categoriess", (Serializable) holder.getCategories());
                 args.putSerializable("types", (Serializable) holder.getPlaceTypes());
 
                 newFragment.setArguments(args);
-            }else{
+            } else {
                 newFragment = getNextQuestionFragment();
             }
 
@@ -159,28 +167,87 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+
+    private void preparePendingSurvey() {
+        Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,null,AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?",new String[]{"false"},"_id desc");
+
+        c.moveToNext();
+
+        String lastInstrument_id = c.getString(c.getColumnIndex("instrument_id"));
+        String lastGroup_id = c.getString(c.getColumnIndex("group_id"));
+        String lastQuestion_id = c.getString(c.getColumnIndex("question_id"));
+
+        for (int i = 0; i < holder.getInstruments().size(); i++, instrumentCursor++) {
+            if (holder.getInstruments().get(i).getId().contains(lastInstrument_id)) {
+                break;
+            }
+        }
+
+        for (int i = 0; i < holder.getInstruments().get(instrumentCursor).getData().getGroups().size(); i++, groupCursor++) {
+            if (holder.getInstruments().get(instrumentCursor).getData().getGroups().get(i).getId().contains(lastGroup_id)) {
+                break;
+            }
+        }
+
+        for (int i = 0; i < holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().size() ; i++, questionCursor++) {
+            if (holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().get(i).getId().contains(lastQuestion_id)) {
+                questionCursor++;
+                break;
+            }
+        }
+    }
+
     public CallbackManager getCallbackManager() {
         return callbackManager;
     }
 
+    private void insertAnwser(Anwser awn) {
+
+        ContentValues cv = new ContentValues();
+
+        cv.put(AvBContract.SurveyEntry.PLACE_ID, place_id);
+        cv.put(AvBContract.SurveyEntry.INSTRUMENT_ID, holder.getInstruments().get(instrumentCursor).getId());
+        cv.put(AvBContract.SurveyEntry.GROUP_ID, holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getId());
+
+        cv.put(AvBContract.SurveyEntry.QUESTION_ID, holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().get(questionCursor-1).getId());
+        cv.put(AvBContract.SurveyEntry.QUESTION_TYPE, !awn.getNumber().isEmpty() ? "number" : !awn.getComment().isEmpty() ? "comment" : "likert");
+        cv.put(AvBContract.SurveyEntry.ANWSER, !awn.getNumber().isEmpty() ? awn.getNumber() : !awn.getComment().isEmpty() ? awn.getComment() : awn.getLikert());
+
+        getContentResolver().insert(AvBContract.SurveyEntry.SURVEY_URI, cv);
+    }
+
     @Override
     public void onClick(View v) {
-
         switch (v.getId()) {
             case R.id.btnSubmit:
                 if (newFragment.isAnwser()) {
+                    Anwser anw;
                     if (newFragment instanceof LikertFragment) {
-                        anwsers.add(new Anwser("0", (String)newFragment.getAnwser(), null, null));
+                        anw =new Anwser("0", (String) newFragment.getAnwser(), null, null);
+                        anwsers.add(anw);
+                        insertAnwser(anw);
                     } else if (newFragment instanceof CommentFragment) {
-                        anwsers.add(new Anwser("0", null, (String)newFragment.getAnwser(), null));
+                        anw = new Anwser("0", null, (String) newFragment.getAnwser(), null);
+                        anwsers.add(anw);
+                        insertAnwser(anw);
                     } else if (newFragment instanceof NumberFragment) {
-                        anwsers.add(new Anwser("0", null, null, (String)newFragment.getAnwser()));
+                        anw = new Anwser("0", null, null, (String) newFragment.getAnwser());
+                        anwsers.add(anw);
+                        insertAnwser(anw);
                     } else if (newFragment instanceof NewPlaceFragment) {
 
-                        Integer[] responses =(Integer[]) newFragment.getAnwser();
+                        Integer[] responses = (Integer[]) newFragment.getAnwser();
 
-                        response.addProperty("categoryId",responses[0]);
-                        response.addProperty("placeTypeId",responses[1]);
+                        response.addProperty("categoryId", responses[0]);
+                        response.addProperty("placeTypeId", responses[1]);
+
+                        ContentValues cv = new ContentValues();
+
+                        cv.put(AvBContract.NewPlaceEntry.PLACE_ID, place_id);
+                        cv.put(AvBContract.NewPlaceEntry.CATEGORY_ID, responses[0]);
+                        cv.put(AvBContract.NewPlaceEntry.PLACE_TYPE_ID, responses[1]);
+
+                        getContentResolver().insert(AvBContract.NewPlaceEntry.NEWPLACE_URI, cv);
                     }
 
                     newFragment = getNextQuestionFragment();
@@ -196,11 +263,20 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 }
                 break;
             case R.id.tvSkip:
-                Intent intent = new Intent(EvaluationActivity.this,PlaceStatisticsActivity.class);
-                intent.putExtra("placeid",place_id);
+                Intent intent = new Intent(EvaluationActivity.this, PlaceStatisticsActivity.class);
+                intent.putExtra("placeid", place_id);
                 startActivity(intent);
+                finish();
                 break;
         }
+    }
+
+    private void setSurveyAsCompleted(){
+        ContentValues cv = new ContentValues();
+
+        cv.put(AvBContract.SurveyEntry.SURVEY_FINISHED, true);
+
+        getContentResolver().update(AvBContract.SurveyEntry.SURVEY_URI, cv,AvBContract.SurveyEntry.SURVEY_FINISHED + " = ? " ,new String[]{"false"});
     }
 
     //TODO Still need to be test with the API
@@ -211,10 +287,12 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                     public void onResponse(String response) {
                         ShareEvaluateFragment share = new ShareEvaluateFragment();
 
-                        args.putString("shareString","blablabla");
-
+                        args.putString("shareString", "blablabla");
 
                         share.setArguments(args);
+
+                        getContentResolver().delete(AvBContract.NewPlaceEntry.NEWPLACE_URI, AvBContract.NewPlaceEntry.PLACE_ID + " = ?", new String[]{place_id});
+                        getContentResolver().delete(AvBContract.SurveyEntry.SURVEY_URI, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?",new String[]{"false"});
 
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.fragment_container, share).commit();
@@ -222,12 +300,14 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                setSurveyAsCompleted();
+
                 error.printStackTrace();
                 //TODO show a screen if there is no internet
 
                 ShareEvaluateFragment share = new ShareEvaluateFragment();
 
-                args.putString("shareString","blablabla");
+                args.putString("shareString", "blablabla");
 
                 share.setArguments(args);
 
@@ -243,23 +323,65 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
                 JsonArray anwserArray = new JsonArray();
 
-                for (Anwser awn : anwsers) {
-                    JsonObject obj = new JsonObject();
+                if(getIntent().getExtras().getBoolean("pendingSurvey", false)){
+                    for (Anwser awn : anwsers) {
+                        JsonObject obj = new JsonObject();
 
-                    obj.addProperty("question_id", awn.getQuestion_id());
+                        obj.addProperty("question_id", awn.getQuestion_id());
 
-                    JsonArray anwser = new JsonArray();
+                        JsonArray anwsers = new JsonArray();
 
-                    anwser.add(awn.getNumber());
-                    anwser.add(awn.getComment());
-                    anwser.add(awn.getLikert());
+                        JsonObject anwser = new JsonObject();
 
-                    obj.add("answer", anwser);
+                        anwser.addProperty("number",awn.getNumber().isEmpty() ? "": awn.getNumber());
+                        anwser.addProperty("likert",awn.getComment().isEmpty() ? "": awn.getComment());
+                        anwser.addProperty("comment",awn.getLikert().isEmpty() ? "": awn.getLikert());
 
-                    anwserArray.add(obj);
+                        anwsers.add(anwser);
+
+                        obj.add("answer", anwsers);
+
+                        anwserArray.add(obj);
+                    }
+
+                    response.add("answers", anwserArray);
+                }else{
+                    Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,null,AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?",new String[]{"false"},"_id asc");
+
+                    while(c.moveToNext()){
+                        JsonObject obj = new JsonObject();
+
+                        obj.addProperty("question_id", c.getString(c.getColumnIndex(AvBContract.SurveyEntry.QUESTION_ID)));
+
+                        JsonArray anwsers = new JsonArray();
+
+                        String type = c.getString(c.getColumnIndex(AvBContract.SurveyEntry.QUESTION_TYPE));
+
+                        JsonObject anwser = new JsonObject();
+                        
+                        if(type.contains("number")){
+                            anwser.addProperty("number",c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
+                            anwser.addProperty("likert","");
+                            anwser.addProperty("comment","");
+
+                        }else if(type.contains("comment")){
+                            anwser.addProperty("comment",c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
+                            anwser.addProperty("likert","");
+                            anwser.addProperty("number","");
+
+                        }else if(type.contains("likert")){
+                            anwser.addProperty("likert",c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
+                            anwser.addProperty("number","");
+                            anwser.addProperty("comment","");
+                        }
+
+                        anwsers.add(anwser);
+                        
+                        obj.add("answer", anwsers);
+
+                        anwserArray.add(obj);
+                    }
                 }
-
-                response.add("answers", anwserArray);
 
                 return params;
             }
@@ -293,14 +415,13 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                     nextFragment.setArguments(args);
 
                     questionCursor++;
-
                     return nextFragment;
-                }else{
+                } else {
                     questionCursor = 0;
                     groupCursor++;
                     return getNextQuestionFragment();
                 }
-            }else{
+            } else {
                 questionCursor = 0;
                 groupCursor = 0;
                 instrumentCursor++;

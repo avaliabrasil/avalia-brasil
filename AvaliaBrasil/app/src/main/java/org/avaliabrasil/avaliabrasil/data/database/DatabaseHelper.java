@@ -17,7 +17,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static String place_table = "place";
     public static String place_detail_table = "place_detail";
 
-    public static final int version = 2;
+    public static final int version = 3;
 
     private static final String createQueryPlaceDetails = "CREATE TABLE place_detail (" +
             "    place_id             TEXT REFERENCES place (place_id) UNIQUE," +
@@ -44,7 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             AvBContract.InstrumentEntry.UPDATED_AT   +" TEXT NOT NULL" +
             ");";
 
-    private static final String createQueryInstrumentPlaces = "CREATE TABLE instrument_places (" +
+    private static final String createQueryInstrumentPlaces = "CREATE TABLE "+AvBContract.InstrumentPlaceEntry.TABLE_NAME +" (" +
             "    instrument_id INTEGER REFERENCES instrument (instrument_id) ON DELETE CASCADE" +
             "                                                                ON UPDATE CASCADE" +
             "                          NOT NULL," +
@@ -77,6 +77,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "                                                              ON UPDATE CASCADE" +
             ");";
 
+    private static final String createSurvey = " CREATE TABLE survey (" +
+            "    _id             INTEGER PRIMARY KEY" +
+            "                            NOT NULL," +
+            "    instrument_id   INTEGER REFERENCES instrument (instrument_id)," +
+            "    group_id        INTEGER REFERENCES group_question (group_id)," +
+            "    question_id     INTEGER REFERENCES question (question_id)," +
+            "    question_type   TEXT," +
+            "    place_id        INTEGER REFERENCES place (place_id)," +
+            "    anwser          TEXT    NOT NULL," +
+            "    survey_finished BOOLEAN DEFAULT false" +
+            ");";
+
+    private static final String createNewPlace = " CREATE TABLE newPlace (" +
+            "            _id           INTEGER PRIMARY KEY" +
+            "            NOT NULL," +
+            "            place_id      INTEGER REFERENCES place (place_id)," +
+            "    category_id   INTEGER," +
+            "    place_type_id INTEGER" +
+            "    );";
+
+    
+
+
     DatabaseHelper(Context context){
         super(context, database, null, version);
     }
@@ -89,6 +112,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createQueryInstrumentPlaces);
         db.execSQL(createQueryGroup_question);
         db.execSQL(createQueryQuestion);
+        db.execSQL(createSurvey);
+        db.execSQL(createNewPlace);
     }
 
     @Override
@@ -96,6 +121,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         switch(newVersion){
             case 2:
                 db.execSQL("ALTER TABLE place ADD Column distance INTEGER");
+            case 3:
+                db.execSQL(createSurvey);
+                db.execSQL(createNewPlace);
         }
     }
 }
