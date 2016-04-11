@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Instrument;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceRanking;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceStatistics;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
 
 import java.io.Serializable;
@@ -60,6 +62,9 @@ public class PlaceActivity extends AppCompatActivity {
     private MapView mMapView;
     private GoogleMap googleMap;
     private String place_id;
+    private Button quality_index;
+    private Button ranking_position;
+    private ImageView ivRankingStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +87,10 @@ public class PlaceActivity extends AppCompatActivity {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            quality_index = (Button) findViewById(R.id.quality_index);
+            ranking_position = (Button) findViewById(R.id.ranking_position);
+            ivRankingStatus = (ImageView) findViewById(R.id.ivRankingStatus);
 
             mMapView = (MapView) findViewById(R.id.mapView);
             mMapView.onCreate(savedInstanceState);
@@ -239,6 +248,52 @@ public class PlaceActivity extends AppCompatActivity {
 
                 googleMap.addMarker(marker);
             }
+
+            Gson gson = new Gson();
+            PlaceStatistics placeRanking = gson.fromJson("{" +
+                    " \"id\":3," +
+                    " \"name\":\"UPA Outra\"," +
+                    " \"city\":\"Porto Alegre\"," +
+                    " \"state\":\"RS\"," +
+                    " \"category\":\"Saude\"," +
+                    " \"type\":\"Pronto Atendimento\"," +
+                    " \"qualityIndex\":[3.8, 3.8, 3.8, 2.5]," +
+                    " \"rankingPosition\":{" +
+                    "  \"national\":2," +
+                    "  \"regional\":2," +
+                    "  \"state\":2," +
+                    "  \"municipal\":2" +
+                    " }," +
+                    " \"rankingStatus\":{" +
+                    "  \"national\":\"up\"," +
+                    "  \"regional\":\"up\"," +
+                    "  \"state\":\"down\"," +
+                    "  \"municipal\":\"none\"" +
+                    " }," +
+                    " \"lastWeekSurveys\":212," +
+                    " \"comments\":[" +
+                    "  {\"uid\":1,\"description\":\"1 - teste de comentario\"}," +
+                    "  {\"uid\":2,\"description\":\"2 - teste de comentario\"}," +
+                    "  {\"uid\":3,\"description\":\"3 - teste de comentario\"}" +
+                    " ]" +
+                    "}", PlaceStatistics.class);
+
+            ranking_position.setText(String.valueOf(placeRanking.getRankingPosition().getNational()) + "º");
+
+            quality_index.setText(String.valueOf(placeRanking.getQualityIndex().get(placeRanking.getQualityIndex().size() -1)));
+
+            switch(placeRanking.getRankingStatus().getNational()){
+                case "up":
+                    ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+                    break;
+                case "down":
+                    ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                    break;
+                case "none":
+                    ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
+                    break;
+            }
+
         }
     }
 
@@ -371,6 +426,8 @@ public class PlaceActivity extends AppCompatActivity {
         ContentValues[] values = new ContentValues[data.getInstruments().size()];
         ContentValues value = null;
 
+
+        //TODO MUDAR PARA ADICIONAR A HORA TAMBÉM
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-dd");
 
         Date dateAtual = new Date(System.currentTimeMillis());

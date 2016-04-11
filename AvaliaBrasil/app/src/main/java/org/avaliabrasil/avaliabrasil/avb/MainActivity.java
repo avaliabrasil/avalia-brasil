@@ -212,7 +212,13 @@ public class MainActivity extends AppCompatActivity
 
         switch (id) {
             case R.id.btnClassification:
-                startActivity(new Intent(MainActivity.this, RankingActivity.class));
+
+                Intent rankingIntent = new Intent(MainActivity.this, RankingActivity.class);
+                rankingIntent.putExtra("latitude",location != null ? location.getLatitude() : 0);
+                rankingIntent.putExtra("longitude",location != null ? location.getLongitude() : 0);
+
+
+                startActivity(rankingIntent);
                 break;
             case R.id.btnLogout:
 
@@ -246,10 +252,10 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.btnHelp:
-
+                startActivity(new Intent(MainActivity.this,HelpActivity.class));
                 break;
             case R.id.btnTermsOfUse:
-
+                startActivity(new Intent(MainActivity.this,TermsOfUseActivity.class));
                 break;
         }
 
@@ -765,7 +771,6 @@ public class MainActivity extends AppCompatActivity
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Cursor c;
-
                                 switch (which){
                                     case DialogInterface.BUTTON_POSITIVE:
 

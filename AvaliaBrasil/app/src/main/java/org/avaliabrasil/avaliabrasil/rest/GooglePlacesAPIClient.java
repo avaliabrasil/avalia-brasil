@@ -311,7 +311,7 @@ public class GooglePlacesAPIClient {
      * @param key
      * @return {@link PlaceDetails} targeting the base API.
      */
-    public static String getPlacePhoyo(@NonNull String photoreference,@NonNull String key){
+    public static String getPlacePhoto(@NonNull String photoreference,@NonNull String key){
         StringBuilder target = new StringBuilder();
         target.append("https://maps.googleapis.com/maps/api/place/photo?");
 
@@ -320,6 +320,30 @@ public class GooglePlacesAPIClient {
         target.append("&key=");
         target.append(key);
         target.append("&maxheight=400");
+
+        Log.d("GoogleAPI", "URL: " + target.toString());
+
+        return target.toString();
+    }
+
+    /**
+     * Default path to the Google Places API call to get place state by his place_id.
+     *
+     * @see <a href="https://developers.google.com/maps/documentation/geocoding/intro">Google Places WebService </a>
+     * @since 1.0
+     * @version 1.0
+     * @param place_id
+     * @param key
+     * @return {@link PlaceDetails} targeting the base API.
+     */
+    public static String getPlaceByPlaceID(@NonNull String place_id,@NonNull String key){
+        StringBuilder target = new StringBuilder();
+        target.append("https://maps.googleapis.com/maps/api/geocode/json?");
+
+        target.append("place_id");
+        target.append(place_id);
+        target.append("&key=");
+        target.append(key);
 
         Log.d("GoogleAPI", "URL: " + target.toString());
 

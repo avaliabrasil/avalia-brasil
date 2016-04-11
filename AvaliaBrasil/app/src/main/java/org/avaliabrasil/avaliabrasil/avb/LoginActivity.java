@@ -4,6 +4,7 @@ import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -38,6 +39,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.data.AvBContract;
 import org.avaliabrasil.avaliabrasil.data.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.User;
@@ -265,6 +267,56 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                         accountManager.addAccountExplicitly(account,null,bundle);
 
                         setAccountAuthenticatorResult(bundle);
+
+                        //TODO DYNAMIC GET THE CATEGORY AND THE PLACE TYPE
+
+
+                        ContentValues[] values = new ContentValues[2];
+
+                        for(int i = 0 ; i < values.length ; i++){
+                            values[i] = new ContentValues();
+                        }
+
+                        values[0].put(AvBContract.PlaceCategoryEntry.CATEGORY_ID,1);
+                        values[0].put(AvBContract.PlaceCategoryEntry.NAME,"Saúde");
+
+                        values[1].put(AvBContract.PlaceCategoryEntry.CATEGORY_ID,2);
+                        values[1].put(AvBContract.PlaceCategoryEntry.NAME,"Educação");
+
+                        getContentResolver().bulkInsert(AvBContract.PlaceCategoryEntry.PLACE_CATEGORY_URI,values);
+
+                        values = new ContentValues[8];
+
+                        for(int i = 0 ; i < values.length ; i++){
+                            values[i] = new ContentValues();
+                        }
+
+                        values[0].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
+                        values[0].put(AvBContract.PlaceTypeEntry.NAME,"Posto de Saúde");
+
+                        values[1].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
+                        values[1].put(AvBContract.PlaceTypeEntry.NAME,"Unidade Básica de Saude");
+
+                        values[2].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
+                        values[2].put(AvBContract.PlaceTypeEntry.NAME,"Policlínica");
+
+                        values[3].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
+                        values[3].put(AvBContract.PlaceTypeEntry.NAME,"Hospital");
+
+                        values[4].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
+                        values[4].put(AvBContract.PlaceTypeEntry.NAME,"Unidade Mista");
+
+                        values[5].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
+                        values[5].put(AvBContract.PlaceTypeEntry.NAME,"Pronto Socorro");
+
+                        values[6].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,2);
+                        values[6].put(AvBContract.PlaceTypeEntry.NAME,"Escola");
+
+                        values[7].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,2);
+                        values[7].put(AvBContract.PlaceTypeEntry.NAME,"Universidade");
+
+                        getContentResolver().bulkInsert(AvBContract.PlaceTypeEntry.PLACE_TYPE_URI,values);
+
 
                         if(accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0){
                                     Intent intent = new Intent(LoginActivity.this,MainActivity.class);

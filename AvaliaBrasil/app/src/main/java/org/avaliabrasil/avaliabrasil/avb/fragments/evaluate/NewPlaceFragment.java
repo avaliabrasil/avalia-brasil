@@ -99,10 +99,13 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
         rcCategory.setLayoutManager(mLayoutManager);
         rcCategory.setItemAnimator(new DefaultItemAnimator());
         rcCategory.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.abc_list_divider_mtrl_alpha)));
+
         rcCategory.setAdapter(new CategoryAdapter(getContext(),category,this));
         rcCategory.setHasFixedSize(true);
-        rcType.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.abc_list_divider_mtrl_alpha)));
+
         rcType.setItemAnimator(new DefaultItemAnimator());
+        rcType.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.abc_list_divider_mtrl_alpha)));
+
 
         return rootView;
     }

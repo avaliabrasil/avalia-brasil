@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.AvaliaBrasilCategory;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.AvaliaBrasilPlaceType;
 
@@ -20,48 +21,48 @@ import java.util.List;
  */
 public class PlaceTypeAdapter extends RecyclerView.Adapter<PlaceTypeAdapter.MyViewHolder> {
 
-        List<AvaliaBrasilPlaceType> items = new ArrayList<>();
-        Context context;
+    List<AvaliaBrasilPlaceType> items = new ArrayList<>();
+    Context context;
 
-@Override
-public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    @Override
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-        .inflate(android.R.layout.simple_list_item_1, null);
+                .inflate(R.layout.content_comment_card_view, null);
 
         return new MyViewHolder(itemView);
-        }
-
-@Override
-public void onBindViewHolder(MyViewHolder holder, int position) {
-    AvaliaBrasilPlaceType category = items.get(position);
-        holder.title.setText(category.getCategory());
-        }
-
-@Override
-public int getItemCount() {
-        return items.size();
-        }
-
-public class MyViewHolder extends RecyclerView.ViewHolder {
-    public TextView title;
-
-    public MyViewHolder(View view) {
-        super(view);
-        title = (TextView) view.findViewById(android.R.id.text1);
-        title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onItemSelectedListener.onItemSelected(null,v,getPosition(),2);
-            }
-        });
     }
-}
+
+    @Override
+    public void onBindViewHolder(MyViewHolder holder, int position) {
+        AvaliaBrasilPlaceType category = items.get(position);
+        holder.title.setText(category.getCategory());
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+        public TextView title;
+
+        public MyViewHolder(View view) {
+            super(view);
+            title = (TextView) view.findViewById(R.id.tvComment);
+            title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemSelectedListener.onItemSelected(null, v, getPosition(), 2);
+                }
+            });
+        }
+    }
 
     public PlaceTypeAdapter(Context context, List<AvaliaBrasilPlaceType> items, AdapterView.OnItemSelectedListener onItemSelectedListener, String idCategory) {
         //this.items = items;
 
-        for(AvaliaBrasilPlaceType placeType : items){
-            if(placeType.getIdCategory().contains(idCategory)){
+        for (AvaliaBrasilPlaceType placeType : items) {
+            if (placeType.getIdCategory().contains(idCategory)) {
                 this.items.add(placeType);
             }
         }

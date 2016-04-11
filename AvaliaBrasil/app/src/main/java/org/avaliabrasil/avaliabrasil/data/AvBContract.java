@@ -40,6 +40,12 @@ public class AvBContract {
 
     public static final String PATH_NEW_PLACE = "newPlace";
 
+    public static final String PATH_PLACE_CATEGORY = "place_category";
+
+    public static final String PATH_PLACE_TYPE = "place_types";
+
+    public static final String PATH_PLACE_TYPES = "place_types/*";
+
     public static final int INSTRUMENT = 4;
     public static final int INSTRUMENTS = 5;
     public static final int INSTRUMENT_PLACE = 6;
@@ -49,6 +55,9 @@ public class AvBContract {
     public static final int QUESTIONS = 10;
     public static final int SURVEY = 11;
     public static final int NEWPLACE = 12;
+    public static final int PLACE_CATEGORY = 13;
+    public static final int PLACE_TYPE = 14;
+    public static final int PLACE_TYPES = 15;
 
 
     // Normalizando as datas :
@@ -285,5 +294,48 @@ public class AvBContract {
 
         public static final String PLACE_TYPE_ID = "place_type_id";
 
+    }
+
+    public static final class PlaceCategoryEntry implements BaseColumns {
+
+        public static final Uri PLACE_CATEGORY_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLACE_CATEGORY).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PLACE_CATEGORY;
+
+
+        // Place Table Name
+        public static final String TABLE_NAME = "place_category";
+
+        // Table Columns
+        public static final String CATEGORY_ID = "category_id";
+
+        public static final String NAME = "name";
+    }
+
+    public static final class PlaceTypeEntry implements BaseColumns {
+
+        public static final Uri PLACE_TYPE_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLACE_TYPE).build();
+
+        public static final Uri PLACE_TYPES_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLACE_TYPES).build();
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PLACE_TYPE;
+
+
+        // Place Table Name
+        public static final String TABLE_NAME = "place_type";
+
+        // Table Columns
+        public static final String CATEGORY_ID = "category_id";
+
+        public static final String NAME = "name";
+
+        public static Uri buildPlaceTypeUri (String category_id) {
+            return PLACE_TYPE_URI.buildUpon().appendPath(category_id).build();
+        }
     }
 }

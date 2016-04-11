@@ -62,10 +62,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.MyViewHo
         public MyViewHolder(View view) {
             super(view);
 
-            WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-            int width = windowManager.getDefaultDisplay().getWidth();
-            view.setLayoutParams(new RecyclerView.LayoutParams(width, RecyclerView.LayoutParams.MATCH_PARENT));
-
             comment = (TextView) view.findViewById(R.id.tvComment);
         }
     }

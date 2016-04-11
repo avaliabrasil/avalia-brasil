@@ -1,5 +1,6 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,8 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -25,6 +26,7 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.adapters.CommentAdapter;
+import org.avaliabrasil.avaliabrasil.avb.adapters.DividerItemDecoration;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceStatistics;
 import org.avaliabrasil.avaliabrasil.view.RankingView;
@@ -32,7 +34,7 @@ import org.avaliabrasil.avaliabrasil.view.RankingView;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PlaceStatisticsActivity extends AppCompatActivity {
+public class PlaceStatisticsActivity extends AppCompatActivity implements View.OnClickListener{
     public final String LOG_TAG = this.getClass().getSimpleName();
 
     /**
@@ -101,6 +103,11 @@ public class PlaceStatisticsActivity extends AppCompatActivity {
      */
     private String placeId;
 
+    /**
+     *
+     */
+    private PlaceStatistics placeRanking;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,13 +120,13 @@ public class PlaceStatisticsActivity extends AppCompatActivity {
 
     private void fetchData(String response){
         Gson gson = new Gson();
-        PlaceStatistics placeRanking = gson.fromJson("{" +
+        placeRanking = gson.fromJson("{" +
                 " \"id\":3," +
                 " \"name\":\"UPA Outra\"," +
                 " \"city\":\"Porto Alegre\"," +
                 " \"state\":\"RS\"," +
-                " \"category\":\"Saude\"," +
-                " \"type\":\"Pronto Atendimento\"," +
+                " \"category\":\"Educação\"," +
+                " \"type\":\"Escola\"," +
                 " \"qualityIndex\":[3.8, 3.8, 3.8, 2.5]," +
                 " \"rankingPosition\":{" +
                 "  \"national\":2," +
@@ -168,9 +175,10 @@ public class PlaceStatisticsActivity extends AppCompatActivity {
 
         rvComments = (RecyclerView) findViewById(R.id.rvComments);
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(PlaceStatisticsActivity.this,LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(PlaceStatisticsActivity.this);
         rvComments.setLayoutManager(mLayoutManager);
         rvComments.setItemAnimator(new DefaultItemAnimator());
+        rvComments.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.abc_list_divider_mtrl_alpha)));
 
         toolbar.setTitle(placeRanking.getName());
 
@@ -184,11 +192,19 @@ public class PlaceStatisticsActivity extends AppCompatActivity {
 
         rvNacional.setUpView("Nacional",placeRanking.getRankingPosition().getNational(),placeRanking.getRankingStatus().getNational());
 
+        rvNacional.setOnClickListener(this);
+
         rvRegional.setUpView("Regional",placeRanking.getRankingPosition().getRegional(),placeRanking.getRankingStatus().getRegional());
+
+        rvRegional.setOnClickListener(this);
 
         rvEstadual.setUpView("Estadual",placeRanking.getRankingPosition().getState(),placeRanking.getRankingStatus().getState());
 
+        rvEstadual.setOnClickListener(this);
+
         rvMunicipal.setUpView("Municipal",placeRanking.getRankingPosition().getMunicipal(),placeRanking.getRankingStatus().getMunicipal());
+
+        rvMunicipal.setOnClickListener(this);
 
         tvNumberOfAvaliation.setText(String.valueOf(placeRanking.getLastWeekSurveys()));
 
@@ -209,6 +225,42 @@ public class PlaceStatisticsActivity extends AppCompatActivity {
         rvComments.setHasFixedSize(true);
     }
 
+    @Override
+    public void onClick(View v) {
+
+        Intent rankingIntent = new Intent(PlaceStatisticsActivity.this,RankingActivity.class);
+
+        if(placeRanking != null){
+            rankingIntent.putExtra("name",placeRanking.getName());
+            rankingIntent.putExtra("city",placeRanking.getCity());
+            rankingIntent.putExtra("state",placeRanking.getState());
+            rankingIntent.putExtra("category",placeRanking.getCategory());
+            rankingIntent.putExtra("type",placeRanking.getType());
+        }
+
+        switch(v.getId()){
+
+            case R.id.rvNacional:
+                rankingIntent.putExtra("rankingType","nacional");
+
+                break;
+            case R.id.rvRegional:
+                rankingIntent.putExtra("rankingType","regional");
+
+                break;
+            case R.id.rvEstadual:
+                rankingIntent.putExtra("rankingType","estadual");
+
+                break;
+            case R.id.rvMunicipal:
+                rankingIntent.putExtra("rankingType","municipal");
+
+                break;
+
+        }
+
+        startActivity(rankingIntent);
+    }
 
     private class Loading extends AsyncTask<String, Void, String> {
         @Override
@@ -250,8 +302,6 @@ public class PlaceStatisticsActivity extends AppCompatActivity {
             Volley.newRequestQueue(PlaceStatisticsActivity.this).add(stringRequest);
             return "Executed";
         }
-
-
     }
 
 }

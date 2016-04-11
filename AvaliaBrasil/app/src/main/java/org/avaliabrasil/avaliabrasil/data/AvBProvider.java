@@ -53,6 +53,11 @@ public class AvBProvider extends ContentProvider {
         uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_SURVEY,AvBContract.SURVEY);
 
         uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_NEW_PLACE,AvBContract.NEWPLACE);
+
+        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_PLACE_CATEGORY,AvBContract.PLACE_CATEGORY);
+
+        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_PLACE_TYPE,AvBContract.PLACE_TYPE);
+        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_PLACE_TYPES,AvBContract.PLACE_TYPES);
     }
 
     public static Uri getPlaceDetails(String place_id){
@@ -117,6 +122,13 @@ public class AvBProvider extends ContentProvider {
 
             case AvBContract.NEWPLACE:
                 c = db.rawQuery("select * from newPlace",null);
+                break;
+
+            case AvBContract.PLACE_CATEGORY:
+                c = db.rawQuery("select * from place_category",null);
+                break;
+            case AvBContract.PLACE_TYPES:
+                c = db.rawQuery("select * from place_type where category_id = ? ",new String[]{ uri.getPathSegments().get(1)});
                 break;
 
             default:
@@ -227,6 +239,25 @@ public class AvBProvider extends ContentProvider {
             case AvBContract.NEWPLACE:
                 db = DatabaseWrapper.getDatabase(getContext());
                 rowID = db.insertWithOnConflict( AvBContract.NewPlaceEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
+                if (rowID > 0)
+                {
+                    Uri _uri = ContentUris.withAppendedId(AvBContract.NewPlaceEntry.NEWPLACE_URI, rowID);
+                    getContext().getContentResolver().notifyChange(_uri, null);
+                    return _uri;
+                }
+            case AvBContract.PLACE_CATEGORY:
+                db = DatabaseWrapper.getDatabase(getContext());
+                rowID = db.insertWithOnConflict( AvBContract.PlaceCategoryEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
+                if (rowID > 0)
+                {
+                    Uri _uri = ContentUris.withAppendedId(AvBContract.NewPlaceEntry.NEWPLACE_URI, rowID);
+                    getContext().getContentResolver().notifyChange(_uri, null);
+                    return _uri;
+                }
+
+            case AvBContract.PLACE_TYPE:
+                db = DatabaseWrapper.getDatabase(getContext());
+                rowID = db.insertWithOnConflict( AvBContract.PlaceTypeEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
                 if (rowID > 0)
                 {
                     Uri _uri = ContentUris.withAppendedId(AvBContract.NewPlaceEntry.NEWPLACE_URI, rowID);
@@ -426,6 +457,40 @@ public class AvBProvider extends ContentProvider {
                 try {
                     for (ContentValues value : values) {
                         long rowID = db.insertWithOnConflict(AvBContract.NewPlaceEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
+                        if (rowID != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+
+            case AvBContract.PLACE_CATEGORY:
+                db = DatabaseWrapper.getDatabase(getContext());
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long rowID = db.insertWithOnConflict(AvBContract.PlaceCategoryEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
+                        if (rowID != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+
+            case AvBContract.PLACE_TYPE:
+                db = DatabaseWrapper.getDatabase(getContext());
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        long rowID = db.insertWithOnConflict(AvBContract.PlaceTypeEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
                         if (rowID != -1) {
                             returnCount++;
                         }

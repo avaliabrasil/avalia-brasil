@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.AvaliaBrasilCategory;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(android.R.layout.simple_list_item_1, null);
+                .inflate(R.layout.content_comment_card_view, null);
 
         return new MyViewHolder(itemView);
     }
@@ -47,7 +48,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
 
         public MyViewHolder(View view) {
             super(view);
-            title = (TextView) view.findViewById(android.R.id.text1);
+            title = (TextView) view.findViewById(R.id.tvComment);
             title.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

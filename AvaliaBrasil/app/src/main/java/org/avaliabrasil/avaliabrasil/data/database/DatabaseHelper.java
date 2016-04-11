@@ -17,7 +17,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static String place_table = "place";
     public static String place_detail_table = "place_detail";
 
-    public static final int version = 3;
+    public static final int version = 4;
 
     private static final String createQueryPlaceDetails = "CREATE TABLE place_detail (" +
             "    place_id             TEXT REFERENCES place (place_id) UNIQUE," +
@@ -96,6 +96,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "    category_id   INTEGER," +
             "    place_type_id INTEGER" +
             "    );";
+    
+    private static final String createPlaceCategory = "CREATE TABLE place_category (" +
+            "    _id         INTEGER PRIMARY KEY" +
+            "                        NOT NULL," +
+            "    category_id INTEGER NOT NULL," +
+            "    name        TEXT    NOT NULL" +
+            ");";
+
+    private static final String createPlaceType = "CREATE TABLE place_type (" +
+            "    _id         INTEGER PRIMARY KEY" +
+            "                        NOT NULL," +
+            "    category_id INTEGER REFERENCES place_category (category_id) " +
+            "                        NOT NULL," +
+            "    name        TEXT    NOT NULL" +
+            ");";
 
     
 
@@ -114,6 +129,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(createQueryQuestion);
         db.execSQL(createSurvey);
         db.execSQL(createNewPlace);
+        db.execSQL(createPlaceCategory);
+        db.execSQL(createPlaceType);
     }
 
     @Override
@@ -124,6 +141,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             case 3:
                 db.execSQL(createSurvey);
                 db.execSQL(createNewPlace);
+            case 4:
+                db.execSQL(createPlaceCategory);
+                db.execSQL(createPlaceType);
         }
     }
 }

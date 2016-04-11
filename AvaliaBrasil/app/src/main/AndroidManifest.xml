@@ -111,6 +111,25 @@
                 android:value=".avb.MainActivity" />
         </activity>
 
+        <activity
+            android:name=".avb.HelpActivity"
+            android:parentActivityName=".avb.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".avb.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".avb.TermsOfUseActivity"
+            android:parentActivityName=".avb.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".avb.MainActivity" />
+        </activity>
+
+
         <!-- Need for facebook dev kit -->
         <activity android:name="com.facebook.FacebookActivity"
             android:configChanges=
