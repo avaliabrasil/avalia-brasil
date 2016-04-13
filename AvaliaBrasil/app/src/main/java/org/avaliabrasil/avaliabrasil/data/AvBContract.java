@@ -19,9 +19,11 @@ public class AvBContract {
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     // Paths Headers
-    public static final String PATH_PLACE = "place";
+    public static final String PATH_PLACE = "places";
 
-    public static final String PATH_PLACES = "places";
+    public static final String PATH_PLACES = "places/*";
+
+    public static final String PATH_PLACES_DETAILS = "placesdetails";
 
     // Paths Headers
     public static final String PATH_INSTRUMENT = "instruments";
@@ -46,6 +48,10 @@ public class AvBContract {
 
     public static final String PATH_PLACE_TYPES = "place_types/*";
 
+
+    public static final int PLACE = 1;
+    public static final int PLACE_ID = 2;
+    public static final int PLACEDETAILS = 3;
     public static final int INSTRUMENT = 4;
     public static final int INSTRUMENTS = 5;
     public static final int INSTRUMENT_PLACE = 6;
@@ -59,84 +65,58 @@ public class AvBContract {
     public static final int PLACE_TYPE = 14;
     public static final int PLACE_TYPES = 15;
 
-
-    // Normalizando as datas :
-
-    // To make it easy to query for the exact date, we normalize all dates that go into
-    // the database to the start of the the Julian day at UTC.
-    public static long normalizeDate(long startDate) {
-        // normalize the start date to the beginning of the (UTC) day
-        Time time = new Time();
-        time.set(startDate);
-        int julianDay = Time.getJulianDay(startDate, time.gmtoff);
-        return time.setJulianDay(julianDay);
-    }
-
-    /* Definindo a Tabela Place
-       Cada classe tem strings que definem a tabela e seus campos
-        */
     public static final class PlaceEntry implements BaseColumns {
-        public static final Uri PLACE_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLACE).build();
 
-        public static final Uri PLACES_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLACES).build();
+        public static final Uri PLACE_URI = Uri.parse("content://"+CONTENT_AUTHORITY+"/places");
 
         public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PLACES;
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENT;
 
         public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PLACE;
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENTS;
 
         // Place Table Name
         public static final String TABLE_NAME = "place";
 
-        // Table Columns
-        // Colunas que estarão no Mysql:
-        public static final String COLUMN_PLACE_ID = "place_id";
-        public static final String COLUMN_NAME = "name";
+        public static final String PLACE_ID = "place_id";
 
-        // Colunas que não estarão no Mysql, e virão do Google:
-        public static final String COLUMN_ADRESS = "adress";
-        public static final String COLUMN_PHONE = "phone";
-        public static final String COLUMN_EMAIL = "email";
-        public static final String COLUMN_OPEN_HOURS = "openhours";
+        public static final String NAME = "name";
+
+        public static final String VICINITY = "vicinity";
+
+        public static final String DISTANCE = "distance";
+
+        public static final String LATITUDE = "latitude";
+
+        public static final String LONGITUDE = "longitude";
 
 
-//        // Colunas de cadastro necessárias para outras funções, e que incluem
-//        "city";
-//        "state";
-//        "category";
-//        "type";
-//
-//
-//        // Colunas com Dados Temporários:
-//        "national_rankingPosition";
-//        "regional_rankingPosition";
-//        "state_rankingPosition";
-//        "municipal_rankingPosition";
-//
-//
-//        "national_rankingStatus";
-//        "regional_rankingStatus";
-//        "state_rankingStatus";
-//        "municipal_rankingStatus";
-//
-//        "lastWeekSurveys";
-
-        // Tabela de Histórico de Índice de Qualidade, para mostrar
-
-        //
-
-        // Construindo a URI do Place
-        public static Uri buildGooglePlaceUri (String googlePlaceId) {
-            return PLACE_URI.buildUpon().appendPath(googlePlaceId).build();
+        public static Uri getPlaceDetails(String place_id){
+            Uri uri = Uri.parse("content://"+CONTENT_AUTHORITY+"/places/" + place_id);
+            return uri;
         }
+    }
 
-        // Função para pegar a o Id do Place da Uri:
-        public static String getStringFromUri (Uri uri) {
-            return uri.getPathSegments().get(1);
-        }
+    public static final class PlaceDetailsEntry implements BaseColumns {
+
+        public static final Uri PLACE_DETAILS_URI = Uri.parse("content://"+CONTENT_AUTHORITY+"/placesdetails");
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENT;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENTS;
+
+        // Place Table Name
+        public static final String TABLE_NAME = "place_detail";
+
+        public static final String PLACE_ID = "place_id";
+
+        public static final String WEBSITE = "website";
+
+        public static final String FORMATTED_PHONE_NUMBER = "formattedPhoneNumber";
+
+        public static final String PHOTO_REFERENCE = "photo_reference";
 
     }
 
@@ -164,11 +144,6 @@ public class AvBContract {
 
         public static Uri buildInstrumentUri (String place_id) {
             return INSTRUMENT_URI.buildUpon().appendPath(place_id).build();
-        }
-
-        // Função para pegar a o Id do Place da Uri:
-        public static String getStringFromUri (Uri uri) {
-            return uri.getPathSegments().get(1);
         }
     }
 

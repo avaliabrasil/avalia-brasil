@@ -3,13 +3,17 @@ package org.avaliabrasil.avaliabrasil.rest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -17,9 +21,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.places.PlacePhotoMetadata;
+import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
+import com.google.android.gms.location.places.PlacePhotoMetadataResult;
+import com.google.android.gms.location.places.Places;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import org.avaliabrasil.avaliabrasil.data.AvBContract;
 import org.avaliabrasil.avaliabrasil.data.AvBProvider;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
@@ -203,7 +212,7 @@ public class GooglePlacesAPIClient {
                         }
 
                         context.getContentResolver().bulkInsert(
-                                AvBProvider.PLACE_CONTENT_URI, values);
+                                AvBContract.PlaceEntry.PLACE_URI, values);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -251,7 +260,7 @@ public class GooglePlacesAPIClient {
                         }
 
                         activity.getContentResolver().bulkInsert(
-                                AvBProvider.PLACE_CONTENT_URI, values);
+                                AvBContract.PlaceEntry.PLACE_URI, values);
 
                         Bundle bundle = new Bundle();
                         //TODO melhorar
@@ -315,7 +324,7 @@ public class GooglePlacesAPIClient {
         StringBuilder target = new StringBuilder();
         target.append("https://maps.googleapis.com/maps/api/place/photo?");
 
-        target.append("photoreference");
+        target.append("photoreference=");
         target.append(photoreference);
         target.append("&key=");
         target.append(key);

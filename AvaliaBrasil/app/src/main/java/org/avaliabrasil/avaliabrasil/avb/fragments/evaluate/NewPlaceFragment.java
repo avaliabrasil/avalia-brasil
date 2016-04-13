@@ -106,7 +106,6 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
         rcType.setItemAnimator(new DefaultItemAnimator());
         rcType.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.abc_list_divider_mtrl_alpha)));
 
-
         return rootView;
     }
 

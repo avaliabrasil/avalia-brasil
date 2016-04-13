@@ -70,10 +70,10 @@ public class PlaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if((getIntent() == null)||(getIntent().getExtras()==null)||(getIntent().getExtras().getString("placeid") == null) || (getIntent().getExtras().getString("name") == null)
-                || (getIntent().getExtras().getString("distance") == null)){
+        if ((getIntent() == null) || (getIntent().getExtras() == null) || (getIntent().getExtras().getString("placeid") == null) || (getIntent().getExtras().getString("name") == null)
+                || (getIntent().getExtras().getString("distance") == null)) {
             finish();
-        }else{
+        } else {
             setContentView(R.layout.activity_place);
 
             place_id = getIntent().getExtras().getString("placeid");
@@ -108,15 +108,15 @@ public class PlaceActivity extends AppCompatActivity {
             placesInfo = (LinearLayout) findViewById(R.id.placesInfo);
 
             Cursor cursor = getContentResolver().query(
-                    AvBProvider.getPlaceDetails(getIntent().getExtras().getString("placeid")), null,null,null,null);
+                    AvBContract.PlaceEntry.getPlaceDetails(getIntent().getExtras().getString("placeid")), null, null, null, null);
 
             distance = getIntent().getExtras().getString("distance");
 
-            if(cursor.getCount() <= 0){
+            if (cursor.getCount() <= 0) {
                 final String placeid = getIntent().getExtras().getString("placeid");
 
 
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlaceDetails(placeid,"AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlaceDetails(placeid, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
@@ -130,35 +130,36 @@ public class PlaceActivity extends AppCompatActivity {
                                 View view = null;
 
                                 ContentValues value = new ContentValues();
-                                value.put("place_id",placeid);
-                                value.put("website",placeDetails.getResult().getWebsite());
-                                value.put("formattedPhoneNumber",placeDetails.getResult().getFormattedPhoneNumber());
+                                value.put("place_id", placeid);
+                                value.put("website", placeDetails.getResult().getWebsite());
+                                value.put("formattedPhoneNumber", placeDetails.getResult().getFormattedPhoneNumber());
+                                value.put("photo_reference", placeDetails.getResult().getPhotos().size() > 0 ? placeDetails.getResult().getPhotos().get(0).getPhotoReference() : "");
 
                                 getContentResolver().insert(
-                                        AvBProvider.PLACE_DETAILS_CONTENT_URI, value);
+                                        AvBContract.PlaceDetailsEntry.PLACE_DETAILS_URI, value);
 
-                                if(placeDetails.getResult().getVicinity() != null){
+                                if (placeDetails.getResult().getVicinity() != null) {
                                     View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
-                                    ((TextView)place.findViewById(R.id.place_name_text_view)).setText(placeDetails.getResult().getName());
-                                    ((TextView)place.findViewById(R.id.place_address_text_view)).setText(placeDetails.getResult().getVicinity());
-                                    ((TextView)place.findViewById(R.id.place_distance_text_view)).setText(distance);
+                                    ((TextView) place.findViewById(R.id.place_name_text_view)).setText(placeDetails.getResult().getName());
+                                    ((TextView) place.findViewById(R.id.place_address_text_view)).setText(placeDetails.getResult().getVicinity());
+                                    ((TextView) place.findViewById(R.id.place_distance_text_view)).setText(distance);
                                     placesInfo.addView(place);
                                 }
 
-                                if(placeDetails.getResult().getFormattedPhoneNumber() != null){
-                                    view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+                                if (placeDetails.getResult().getFormattedPhoneNumber() != null) {
+                                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
 
-                                    ((TextView)view.findViewById(R.id.text)).setText(placeDetails.getResult().getFormattedPhoneNumber());
-                                    ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
+                                    ((TextView) view.findViewById(R.id.text)).setText(placeDetails.getResult().getFormattedPhoneNumber());
+                                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
 
                                     placesInfo.addView(view);
                                 }
 
-                                if(placeDetails.getResult().getWebsite() != null){
-                                    view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+                                if (placeDetails.getResult().getWebsite() != null) {
+                                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
 
-                                    ((TextView)view.findViewById(R.id.text)).setText(placeDetails.getResult().getWebsite());
-                                    ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
+                                    ((TextView) view.findViewById(R.id.text)).setText(placeDetails.getResult().getWebsite());
+                                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
 
                                     placesInfo.addView(view);
                                 }
@@ -169,7 +170,7 @@ public class PlaceActivity extends AppCompatActivity {
                                 MarkerOptions marker;
 
                                 marker = new MarkerOptions().position(
-                                        new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(),placeDetails.getResult().getGeometry().getLocation().getLng())).title(placeDetails.getResult().getName());
+                                        new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(), placeDetails.getResult().getGeometry().getLocation().getLng())).title(placeDetails.getResult().getName());
 
                                 // Changing marker icon
                                 marker.icon(BitmapDescriptorFactory
@@ -189,42 +190,42 @@ public class PlaceActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
                         View view = null;
-                        view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
-                        ((TextView)view.findViewById(R.id.text)).setText("Não foi possível buscar as informações deste local, verifique sua internet");
-                        ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_search_white_24dp));
+                        view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+                        ((TextView) view.findViewById(R.id.text)).setText("Não foi possível buscar as informações deste local, verifique sua internet");
+                        ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_search_white_24dp));
 
                         placesInfo.addView(view);
                     }
                 });
 
                 Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
-            }else{
+            } else {
                 cursor.moveToFirst();
 
                 View view = null;
 
-                if(cursor.getString(cursor.getColumnIndex("vicinity")) != null){
+                if (cursor.getString(cursor.getColumnIndex("vicinity")) != null) {
                     View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
-                    ((TextView)place.findViewById(R.id.place_name_text_view)).setText(cursor.getString(cursor.getColumnIndex("name")));
-                    ((TextView)place.findViewById(R.id.place_address_text_view)).setText(cursor.getString(cursor.getColumnIndex("vicinity")));
-                    ((TextView)place.findViewById(R.id.place_distance_text_view)).setText(distance);
+                    ((TextView) place.findViewById(R.id.place_name_text_view)).setText(cursor.getString(cursor.getColumnIndex("name")));
+                    ((TextView) place.findViewById(R.id.place_address_text_view)).setText(cursor.getString(cursor.getColumnIndex("vicinity")));
+                    ((TextView) place.findViewById(R.id.place_distance_text_view)).setText(distance);
                     placesInfo.addView(place);
                 }
 
-                if(cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")) != null){
-                    view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+                if (cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")) != null) {
+                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
 
-                    ((TextView)view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")));
-                    ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
+                    ((TextView) view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")));
+                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
 
                     placesInfo.addView(view);
                 }
 
-                if(cursor.getString(cursor.getColumnIndex("website")) != null){
-                    view =  getLayoutInflater().inflate(R.layout.image_and_text, null);
+                if (cursor.getString(cursor.getColumnIndex("website")) != null) {
+                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
 
-                    ((TextView)view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("website")));
-                    ((ImageView)view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
+                    ((TextView) view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("website")));
+                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
 
                     placesInfo.addView(view);
                 }
@@ -234,7 +235,7 @@ public class PlaceActivity extends AppCompatActivity {
                 MarkerOptions marker;
 
                 marker = new MarkerOptions().position(
-                        new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")),cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("name")));
+                        new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("name")));
 
                 // Changing marker icon
                 marker.icon(BitmapDescriptorFactory
@@ -242,7 +243,7 @@ public class PlaceActivity extends AppCompatActivity {
 
 
                 CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")),cursor.getDouble(cursor.getColumnIndex("longitude")))).zoom(16).build();
+                        .target(new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).zoom(16).build();
                 googleMap.animateCamera(CameraUpdateFactory
                         .newCameraPosition(cameraPosition));
 
@@ -280,9 +281,9 @@ public class PlaceActivity extends AppCompatActivity {
 
             ranking_position.setText(String.valueOf(placeRanking.getRankingPosition().getNational()) + "º");
 
-            quality_index.setText(String.valueOf(placeRanking.getQualityIndex().get(placeRanking.getQualityIndex().size() -1)));
+            quality_index.setText(String.valueOf(placeRanking.getQualityIndex().get(placeRanking.getQualityIndex().size() - 1)));
 
-            switch(placeRanking.getRankingStatus().getNational()){
+            switch (placeRanking.getRankingStatus().getNational()) {
                 case "up":
                     ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
                     break;
@@ -301,7 +302,7 @@ public class PlaceActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        if(mMapView != null) {
+        if (mMapView != null) {
             mMapView.onResume();
         }
     }
@@ -309,7 +310,7 @@ public class PlaceActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        if(mMapView != null) {
+        if (mMapView != null) {
             mMapView.onPause();
         }
     }
@@ -317,7 +318,7 @@ public class PlaceActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mMapView != null){
+        if (mMapView != null) {
             mMapView.onDestroy();
         }
     }
@@ -328,7 +329,7 @@ public class PlaceActivity extends AppCompatActivity {
         mMapView.onLowMemory();
     }
 
-    public void fetchData(String response){
+    public void fetchData(String response) {
         Gson gson = new Gson();
         Holder data = gson.fromJson("{ \"instruments\":[ " +
                 "                                    { " +
@@ -432,7 +433,7 @@ public class PlaceActivity extends AppCompatActivity {
 
         Date dateAtual = new Date(System.currentTimeMillis());
         for (int i = 0; i < values.length; i++) {
-            if(data.getInstruments().get(i).getData().getGroups().size() != 0) {
+            if (data.getInstruments().get(i).getData().getGroups().size() != 0) {
                 value = new ContentValues();
                 value.put(AvBContract.InstrumentEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
                 value.put(AvBContract.InstrumentEntry.UPDATED_AT, dateFormat.format(dateAtual));
@@ -444,7 +445,7 @@ public class PlaceActivity extends AppCompatActivity {
                 AvBContract.InstrumentEntry.INSTRUMENT_URI, values);
 
         for (int i = 0; i < values.length; i++) {
-            if(data.getInstruments().get(i).getData().getGroups().size() != 0) {
+            if (data.getInstruments().get(i).getData().getGroups().size() != 0) {
                 value = new ContentValues();
                 value.put(AvBContract.InstrumentPlaceEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
                 value.put(AvBContract.InstrumentPlaceEntry.PLACE_ID, place_id);
@@ -500,94 +501,103 @@ public class PlaceActivity extends AppCompatActivity {
         prepareHolder(data);
     }
 
-    public void startEvaluationActivity(View view){
+    public void startEvaluationActivity(View view) {
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getSurveyURL(place_id),
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            fetchData(response);
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                    fetchData("");
-                }
-            }) {
-                @Override
-                protected Map<String, String> getParams () {
-                    Map<String, String> params = new HashMap<String, String>();
-
-                    JsonObject jsonObject = new JsonObject();
-                    JsonArray availableInstruments = new JsonArray();
-                    Cursor c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id),null,null,null,null);
-
-                    JsonObject objs = null;
-                    while (c.moveToNext()){
-
-                        objs = new JsonObject();
-
-                        objs.addProperty("id",c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
-                        objs.addProperty("updated_at",c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.UPDATED_AT)));
-
-                        availableInstruments.add(objs);
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        fetchData(response);
                     }
-                    jsonObject.add("availableInstruments",availableInstruments);
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                fetchData("");
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
 
-                    //TODO get the user token to send into the request
-                    jsonObject.addProperty("userID","");
+                JsonObject jsonObject = new JsonObject();
+                JsonArray availableInstruments = new JsonArray();
+                Cursor c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id), null, null, null, null);
 
-                    params.put("",jsonObject.toString());
-                    return params;
+                JsonObject objs = null;
+                while (c.moveToNext()) {
+
+                    objs = new JsonObject();
+
+                    objs.addProperty("id", c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
+                    objs.addProperty("updated_at", c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.UPDATED_AT)));
+
+                    availableInstruments.add(objs);
                 }
-            };
-            Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
+                jsonObject.add("availableInstruments", availableInstruments);
+
+                //TODO get the user token to send into the request
+                jsonObject.addProperty("userID", "");
+
+                params.put("", jsonObject.toString());
+                return params;
+            }
+        };
+        Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
 
     }
 
 
-    private void prepareHolder(Holder holder){
+    private void prepareHolder(Holder holder) {
 
-        if(holder == null){
-            holder = new Holder();
 
-            ArrayList<String> ids = new ArrayList<String>();
+        Cursor c = getContentResolver().query(
+                AvBContract.PlaceEntry.getPlaceDetails(getIntent().getExtras().getString("placeid")), null, null, null, null);
 
-            Cursor c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id),null,null,null,null);
+        if (c.moveToNext()) {
+            String photo_reference = c.getString(c.getColumnIndex(AvBContract.PlaceDetailsEntry.PHOTO_REFERENCE));
 
-            List<Instrument> instruments = new ArrayList<Instrument>();
+            if (holder == null) {
+                holder = new Holder();
 
-            //Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
+                ArrayList<String> ids = new ArrayList<String>();
 
-            while(c.moveToNext()){
-                Log.d("PlaceActivity", "startEvaluationActivity: id: " + c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
-                ids.add(c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
+                c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id), null, null, null, null);
+
+                List<Instrument> instruments = new ArrayList<Instrument>();
+
+                //Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
+
+                while (c.moveToNext()) {
+                    Log.d("PlaceActivity", "startEvaluationActivity: id: " + c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
+                    ids.add(c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
+                }
+
+                for (String id : ids) {
+                    c = getContentResolver().query(AvBContract.GroupQuestionEntry.buildGroupQuestionsUri(id), null, null, null, null);
+
+                    Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
+
+                    instruments.add(new Instrument(id, c));
+                }
+
+                holder.setInstruments(instruments);
             }
 
-            for(String id : ids){
-                c = getContentResolver().query(AvBContract.GroupQuestionEntry.buildGroupQuestionsUri(id),null,null,null,null);
 
-                Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
-
-                instruments.add(new Instrument(id,c));
-            }
-
-            holder.setInstruments(instruments);
+            Intent intent = new Intent(PlaceActivity.this, EvaluationActivity.class);
+            intent.putExtra("holder", (Serializable) holder);
+            intent.putExtra("name", getIntent().getExtras().getString("name"));
+            intent.putExtra("placeid", place_id);
+            intent.putExtra("photo_reference", photo_reference);
+            startActivity(intent);
+            finish();
         }
-
-
-        Intent intent = new Intent(PlaceActivity.this,EvaluationActivity.class);
-        intent.putExtra("holder", (Serializable) holder);
-        intent.putExtra("name",getIntent().getExtras().getString("name"));
-        intent.putExtra("placeid",place_id);
-        startActivity(intent);
-        finish();
     }
 
-    public void startStatisticsActivity(View view){
-        Intent intent = new Intent(PlaceActivity.this,PlaceStatisticsActivity.class);
-        intent.putExtra("placeid",place_id);
+    public void startStatisticsActivity(View view) {
+        Intent intent = new Intent(PlaceActivity.this, PlaceStatisticsActivity.class);
+        intent.putExtra("placeid", place_id);
         startActivity(intent);
     }
 }

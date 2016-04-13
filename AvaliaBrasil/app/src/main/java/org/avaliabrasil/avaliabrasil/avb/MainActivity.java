@@ -12,13 +12,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -26,7 +21,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -64,23 +58,21 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesListFragment;
-import org.avaliabrasil.avaliabrasil.avb.fragments.PlacesMapFragment;
-import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.ShareEvaluateFragment;
+import org.avaliabrasil.avaliabrasil.avb.fragments.main.PlacesListFragment;
+import org.avaliabrasil.avaliabrasil.avb.fragments.main.PlacesMapFragment;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
-import org.avaliabrasil.avaliabrasil.data.AvBProvider;
+import org.avaliabrasil.avaliabrasil.data.AvBDBHelper;
 import org.avaliabrasil.avaliabrasil.data.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.Anwser;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Instrument;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.User;
 import org.avaliabrasil.avaliabrasil.sync.Constant;
 import org.avaliabrasil.avaliabrasil.sync.Observer;
 import org.avaliabrasil.avaliabrasil.util.CircleTransform;
+import org.avaliabrasil.avaliabrasil.util.Utils;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -146,16 +138,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-    }
-
     /**
      * Method use to fetch the data from the google api every time that the activity is started.
      */
@@ -164,34 +146,6 @@ public class MainActivity extends AppCompatActivity
             return;
         }
         GooglePlacesAPIClient.getNearlyPlaces(MainActivity.this, location);
-    }
-
-
-    /**
-     * Show the user a message if the GPS is turned off.
-     */
-    private void showGPSDisabledAlertToUser() {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-        alertDialogBuilder
-                .setMessage(
-                        "GPS está desativado em seu dispositivo. Deseja ativa-lo?")
-                .setCancelable(false)
-                .setPositiveButton("Configurações de ativação do GPS",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                Intent callGPSSettingIntent = new Intent(
-                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                                startActivity(callGPSSettingIntent);
-                            }
-                        });
-        alertDialogBuilder.setNegativeButton("Cancelar",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        AlertDialog alert = alertDialogBuilder.create();
-        alert.show();
     }
 
 
@@ -207,7 +161,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         switch (id) {
@@ -232,6 +185,9 @@ public class MainActivity extends AppCompatActivity
                 for (Account c : manager.getAccountsByType(Constant.ACCOUNT_TYPE)) {
                     manager.removeAccount(c, null, null);
                 }
+
+                AvBDBHelper helper = new AvBDBHelper(MainActivity.this);
+                helper.clearAllData(helper.getWritableDatabase());
 
                 manager.addAccount(Constant.ACCOUNT_TYPE, Constant.ACCOUNT_TOKEN_TYPE_USER, null, null, MainActivity.this, new AccountManagerCallback<Bundle>() {
                     @Override
@@ -311,14 +267,13 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    //TODO tirar fora atualização de localização.
     @Override
     public void onLocationChanged(Location providerLocation) {
 
         Toast.makeText(MainActivity.this, "Buscando novo local", Toast.LENGTH_LONG).show();
 
         if (providerLocation != null) {
-            if (isBetterLocation(providerLocation, location)) {
+            if (Utils.isBetterLocation(providerLocation, location)) {
                 location = providerLocation;
 
                 this.location = providerLocation;
@@ -393,10 +348,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (args != null) {
-            Uri uri = AvBProvider.PLACE_CONTENT_URI;
+            Uri uri = AvBContract.PlaceEntry.PLACE_URI;
             return new CursorLoader(MainActivity.this, uri, null, null, new String[]{args.getString("query", "")}, null);
         } else {
-            Uri uri = AvBProvider.PLACE_CONTENT_URI;
+            Uri uri = AvBContract.PlaceEntry.PLACE_URI;
             return new CursorLoader(MainActivity.this, uri, null, null, null, null);
         }
     }
@@ -450,6 +405,7 @@ public class MainActivity extends AppCompatActivity
                     startActivity(intent);
                 } else {
                     Toast.makeText(MainActivity.this, "This application need the access location to work property", Toast.LENGTH_LONG).show();
+                    finish();
                 }
                 break;
         }
@@ -471,71 +427,8 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    /**
-     * Constant for 2 minutes.
-     */
-    private static final int TWO_MINUTES = 1000 * 60 * 2;
 
-    /**
-     * Check if the last user place is better than the last one.
-     *
-     * @param location
-     * @param currentBestLocation
-     * @return if the new location is better than the older.
-     */
-    protected boolean isBetterLocation(Location location, Location currentBestLocation) {
-        if (currentBestLocation == null) {
-            // A new location is always better than no location
-            return true;
-        }
 
-        // Check whether the new location fix is newer or older
-        long timeDelta = location.getTime() - currentBestLocation.getTime();
-        boolean isSignificantlyNewer = timeDelta > TWO_MINUTES;
-        boolean isSignificantlyOlder = timeDelta < -TWO_MINUTES;
-        boolean isNewer = timeDelta > 0;
-
-        // If it's been more than two minutes since the current location, use the new location
-        // because the user has likely moved
-        if (isSignificantlyNewer) {
-            return true;
-            // If the new location is more than two minutes older, it must be worse
-        } else if (isSignificantlyOlder) {
-            return false;
-        }
-
-        // Check whether the new location fix is more or less accurate
-        int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
-        boolean isLessAccurate = accuracyDelta > 0;
-        boolean isMoreAccurate = accuracyDelta < 0;
-        boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-
-        // Check if the old and new location are from the same provider
-        boolean isFromSameProvider = isSameProvider(location.getProvider(),
-                currentBestLocation.getProvider());
-
-        // Determine location quality using a combination of timeliness and accuracy
-        if (isMoreAccurate) {
-            return true;
-        } else if (isNewer && !isLessAccurate) {
-            return true;
-        } else if (isNewer && !isSignificantlyLessAccurate && isFromSameProvider) {
-            return true;
-        }
-        return false;
-    }
-
-    public Bitmap getImageBitmap(Context context) {
-        try {
-            FileInputStream fis = context.openFileInput("profile.jpg");
-            Bitmap b = BitmapFactory.decodeStream(fis);
-            fis.close();
-            return b;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     private boolean checkIfThereIsPendingSurvey(){
         Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,null,AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?",new String[]{"false"},"_id desc");
@@ -543,21 +436,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     private String getPlaceNameByPlaceId(String place_id){
-        Cursor c = getContentResolver().query(AvBProvider.getPlaceDetails(place_id),null,null,null,null);
+        Cursor c = getContentResolver().query(AvBContract.PlaceEntry.getPlaceDetails(place_id),null,null,null,null);
         c.moveToNext();
-
         return c.getString(c.getColumnIndex("name"));
     }
 
-    /**
-     * Checks whether two providers are the same
-     */
-    private boolean isSameProvider(String provider1, String provider2) {
-        if (provider1 == null) {
-            return provider2 == null;
-        }
-        return provider1.equals(provider2);
-    }
+
 
     private void syncAnwsers(){
         Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,new String[]{AvBContract.SurveyEntry.PLACE_ID},null,null,null);
@@ -640,10 +524,10 @@ public class MainActivity extends AppCompatActivity
     /**
      * {@link AsyncTask} class to act has a splash screen
      */
-    private class Loading extends AsyncTask<String, Void, String> {
+    private class Loading extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected String doInBackground(String... params) {
+        protected Void doInBackground(Void... params) {
             try {
                 syncAnwsers();
                 if (getIntent().getExtras() != null) {
@@ -654,11 +538,11 @@ public class MainActivity extends AppCompatActivity
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            return "Executed";
+            return null;
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(Void avoid) {
             if (canAccessFineLocation() && canAccessCoarseLocation()) {
                 user = ((AvaliaBrasilApplication) getApplication()).getUser();
                 manager = AccountManager.get(MainActivity.this);
@@ -707,7 +591,7 @@ public class MainActivity extends AppCompatActivity
                         if (!locationManager
                                 .isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
 
-                            showGPSDisabledAlertToUser();
+                            Utils.showGPSDisabledAlertToUser(MainActivity.this);
                         } else {
 
                             Location providerLocation;
@@ -719,7 +603,7 @@ public class MainActivity extends AppCompatActivity
                                 Log.e("Location", "location " + provider + " in provider is " + (providerLocation == null ? "null" : "not null"));
 
                                 if (providerLocation != null) {
-                                    if (isBetterLocation(providerLocation, location)) {
+                                    if (Utils.isBetterLocation(providerLocation, location)) {
                                         location = providerLocation;
                                     }
                                 }
@@ -731,10 +615,6 @@ public class MainActivity extends AppCompatActivity
                             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, MainActivity.this);
                             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, MainActivity.this);
                             locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 0, 0, MainActivity.this);
-                        } else {
-                            Log.e("Location", "location isn't null");
-                            Log.e("Location", "lat: " + location.getLatitude());
-                            Log.e("Location", "long: " + location.getLongitude());
                         }
                     } catch (SecurityException e) {
                         e.printStackTrace();
@@ -755,7 +635,7 @@ public class MainActivity extends AppCompatActivity
                     getSupportLoaderManager().initLoader(0, null, MainActivity.this);
 
                     String name = manager.getUserData(manager.getAccountsByType(Constant.ACCOUNT_TYPE)[0], AccountManager.KEY_ACCOUNT_NAME);
-                    Bitmap photo = getImageBitmap(MainActivity.this);
+                    Bitmap photo = Utils.getImageBitmap(MainActivity.this);
 
                     TextView tvName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tvName);
                     ImageView ivProfilePhoto = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.ivProfilePhoto);

@@ -48,12 +48,14 @@ import org.avaliabrasil.avaliabrasil.avb.adapters.DividerItemDecoration;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlaceRankingAdapter;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlaceTypeCursorAdapter;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
+import org.avaliabrasil.avaliabrasil.data.AvBDBHelper;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.GoogleGeoCodeReverse;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceRankingSearch;
 import org.avaliabrasil.avaliabrasil.sync.Constant;
 import org.avaliabrasil.avaliabrasil.util.CircleTransform;
+import org.avaliabrasil.avaliabrasil.util.Utils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -128,7 +130,7 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
         navigationView.setNavigationItemSelectedListener(RankingActivity.this);
 
         String name = manager.getUserData(manager.getAccountsByType(Constant.ACCOUNT_TYPE)[0], AccountManager.KEY_ACCOUNT_NAME);
-        Bitmap photo = getImageBitmap(RankingActivity.this);
+        Bitmap photo = Utils.getImageBitmap(RankingActivity.this);
 
         TextView tvName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tvName);
         ImageView ivProfilePhoto = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.ivProfilePhoto);
@@ -151,7 +153,7 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
 
         spCategory = (Spinner) findViewById(R.id.spCategory);
 
-        categoryCursorAdapter = new CategoryCursorAdapter(RankingActivity.this,getContentResolver().query(AvBContract.PlaceCategoryEntry.PLACE_CATEGORY_URI,null,null,null,null));
+        categoryCursorAdapter = new CategoryCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceCategoryEntry.PLACE_CATEGORY_URI, null, null, null, null));
 
         spCategory.setAdapter(categoryCursorAdapter);
 
@@ -164,7 +166,7 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
                 Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
                 cur.moveToPosition(position);
 
-                placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this,getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))),null,null,null,null));
+                placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));
 
                 spPlaceType.setAdapter(placeTypeCursorAdapter);
             }
@@ -182,7 +184,7 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
             getIntentInfo();
         } else {
             try {
-                List<Address> addresses = geocoder.getFromLocation(getIntent().getExtras().getDouble("latitude"),getIntent().getExtras().getDouble("longitude"),5);
+                List<Address> addresses = geocoder.getFromLocation(getIntent().getExtras().getDouble("latitude"), getIntent().getExtras().getDouble("longitude"), 5);
 
                 actvPlace.setText(
                         addresses.get(0).getLocality() + "," + addresses.get(0).getCountryName() + " " + addresses.get(0).getAdminArea());
@@ -205,16 +207,16 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
         //TODO set {#link spCategory} by category string
         Cursor cur = categoryCursorAdapter.getCursor();
 
-        while(cur.moveToNext()){
-            if(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)).contains(category)){
+        while (cur.moveToNext()) {
+            if (cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)).contains(category)) {
                 spCategory.setSelection(cur.getPosition());
 
-                placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this,getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))),null,null,null,null));
+                placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));
 
                 spPlaceType.setAdapter(placeTypeCursorAdapter);
 
-                while(cur.moveToNext()){
-                    if(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)).contains(placeType)){
+                while (cur.moveToNext()) {
+                    if (cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)).contains(placeType)) {
                         spPlaceType.setSelection(cur.getPosition());
                         break;
                     }
@@ -266,18 +268,6 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
         };
 
         Volley.newRequestQueue(RankingActivity.this).add(stringRequest);
-    }
-
-    public Bitmap getImageBitmap(Context context) {
-        try {
-            FileInputStream fis = context.openFileInput("profile.jpg");
-            Bitmap b = BitmapFactory.decodeStream(fis);
-            fis.close();
-            return b;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private void fetchData(String response) {
@@ -346,6 +336,9 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
                     manager.removeAccount(c, null, null);
                 }
 
+                AvBDBHelper helper = new AvBDBHelper(RankingActivity.this);
+                helper.clearAllData(helper.getWritableDatabase());
+
                 manager.addAccount(Constant.ACCOUNT_TYPE, Constant.ACCOUNT_TOKEN_TYPE_USER, null, null, RankingActivity.this, new AccountManagerCallback<Bundle>() {
                     @Override
                     public void run(AccountManagerFuture<Bundle> future) {
@@ -365,10 +358,10 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
 
                 break;
             case R.id.btnHelp:
-                startActivity(new Intent(RankingActivity.this,HelpActivity.class));
+                startActivity(new Intent(RankingActivity.this, HelpActivity.class));
                 break;
             case R.id.btnTermsOfUse:
-                startActivity(new Intent(RankingActivity.this,TermsOfUseActivity.class));
+                startActivity(new Intent(RankingActivity.this, TermsOfUseActivity.class));
                 break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

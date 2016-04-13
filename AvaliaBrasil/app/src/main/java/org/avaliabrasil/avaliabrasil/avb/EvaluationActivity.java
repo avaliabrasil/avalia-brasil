@@ -3,12 +3,18 @@ package org.avaliabrasil.avaliabrasil.avb;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -21,6 +27,8 @@ import com.android.volley.toolbox.Volley;
 import com.facebook.CallbackManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
 import org.avaliabrasil.avaliabrasil.R;
@@ -32,10 +40,12 @@ import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.ShareEvaluateFragmen
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.TransactionFragment;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
+import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Anwser;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Instrument;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
+import org.avaliabrasil.avaliabrasil.util.ImageLoader;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -129,9 +139,6 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
         ivPlace = (ImageView) findViewById(R.id.ivPlace);
 
-        //Picasso.with(EvaluationActivity.this).load(new Uri()).into(ivPlace);
-
-        //TODO: Alterar com o título dos dados reais
         getSupportActionBar().setTitle(getIntent().getExtras().getString("name"));
 
         if (savedInstanceState == null) {
@@ -140,9 +147,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
             place_id = getIntent().getExtras().getString("placeid");
 
             if (getIntent().getExtras().getBoolean("pendingSurvey", false)) {
-
                 preparePendingSurvey();
-
                 newFragment = getNextQuestionFragment();
             } else if (holder.isNewPlace()) {
                 newFragment = new NewPlaceFragment();
@@ -164,6 +169,18 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.fragment_container, new ShareEvaluateFragment()).commit();
             }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String ref = getIntent().getExtras().getString("photo_reference","");
+        if(!ref.isEmpty()){
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+            new ImageLoader(EvaluationActivity.this, metrics.widthPixels,ivPlace.getDrawable().getIntrinsicHeight(),ivPlace).execute(place_id);
         }
     }
 

@@ -12,4 +12,6 @@
         android:divider="@color/greyText"
         android:dividerHeight="1dp"/>
 
+    <include layout="@layout/empty_text_view"></include>
+
 </FrameLayout>

@@ -11,10 +11,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
-
-import org.avaliabrasil.avaliabrasil.data.database.DatabaseHelper;
-import org.avaliabrasil.avaliabrasil.data.database.DatabaseWrapper;
 
 /**
  * Created by Pedro on 23/02/2016.
@@ -22,73 +18,55 @@ import org.avaliabrasil.avaliabrasil.data.database.DatabaseWrapper;
 public class AvBProvider extends ContentProvider {
     public final String LOG_TAG = this.getClass().getSimpleName();
 
-    public static final String CONTENT_AUTHORITY = "org.avaliabrasil.avaliabrasil";
-
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY);
-
-    public static final Uri PLACE_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY+"/places");
-
-    public static final Uri PLACE_DETAILS_CONTENT_URI = Uri.parse("content://"+CONTENT_AUTHORITY+"/placesdetails");
-
-    static final int PLACE = 1;
-    static final int PLACE_ID = 2;
-    static final int PLACEDETAILS = 3;
-
+    private AvBDBHelper helper;
+    
+    private Context context;
+    
     static final UriMatcher uriMatcher;
     static{
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(CONTENT_AUTHORITY, "places", PLACE);
-        uriMatcher.addURI(CONTENT_AUTHORITY, "places/*", PLACE_ID);
-        uriMatcher.addURI(CONTENT_AUTHORITY, "placesdetails", PLACEDETAILS);
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_INSTRUMENT,AvBContract.INSTRUMENT);
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_INSTRUMENTS,AvBContract.INSTRUMENTS);
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_INSTRUMENT_PLACE,AvBContract.INSTRUMENT_PLACE);
 
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_GROUP,AvBContract.GROUP_QUESTION);
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_GROUPS,AvBContract.GROUP_QUESTIONS);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_PLACE, AvBContract.PLACE);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_PLACES, AvBContract.PLACE_ID);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_PLACES_DETAILS , AvBContract.PLACEDETAILS);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_INSTRUMENT,AvBContract.INSTRUMENT);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_INSTRUMENTS,AvBContract.INSTRUMENTS);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_INSTRUMENT_PLACE,AvBContract.INSTRUMENT_PLACE);
 
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_QUESTION,AvBContract.QUESTION);
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_QUESTIONS,AvBContract.QUESTIONS);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_GROUP,AvBContract.GROUP_QUESTION);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_GROUPS,AvBContract.GROUP_QUESTIONS);
 
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_SURVEY,AvBContract.SURVEY);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_QUESTION,AvBContract.QUESTION);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_QUESTIONS,AvBContract.QUESTIONS);
 
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_NEW_PLACE,AvBContract.NEWPLACE);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_SURVEY,AvBContract.SURVEY);
 
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_PLACE_CATEGORY,AvBContract.PLACE_CATEGORY);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_NEW_PLACE,AvBContract.NEWPLACE);
 
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_PLACE_TYPE,AvBContract.PLACE_TYPE);
-        uriMatcher.addURI(CONTENT_AUTHORITY, AvBContract.PATH_PLACE_TYPES,AvBContract.PLACE_TYPES);
-    }
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_PLACE_CATEGORY,AvBContract.PLACE_CATEGORY);
 
-    public static Uri getPlaceDetails(String place_id){
-        Uri uri = Uri.parse("content://"+CONTENT_AUTHORITY+"/places/" + place_id);
-        return uri;
-    }
-
-    public static Uri getInstruments(String place_id){
-        Uri uri = Uri.parse(place_id);
-        return uri;
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_PLACE_TYPE,AvBContract.PLACE_TYPE);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_PLACE_TYPES,AvBContract.PLACE_TYPES);
     }
 
     @Override
     public boolean onCreate() {
-        Context context = getContext();
-        return DatabaseWrapper.setUp(context);
+        this.context = getContext();
+        helper = new AvBDBHelper(context);
+        return true;
     }
 
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-        SQLiteDatabase db;
+        SQLiteDatabase db =helper.getWritableDatabase();
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         Cursor c;
 
-        db = DatabaseWrapper.getDatabase(getContext());
-
         switch (uriMatcher.match(uri)) {
-            case PLACE:
-                qb.setTables(DatabaseHelper.place_table);
+            case AvBContract.PLACE:
+                qb.setTables(AvBContract.PlaceEntry.TABLE_NAME);
 
                 if(selectionArgs != null){
                     c = qb.query(db,projection,	"name like ?", selectionArgs,null, null, "distance asc");
@@ -98,22 +76,15 @@ public class AvBProvider extends ContentProvider {
 
                 c.setNotificationUri(getContext().getContentResolver(), uri);
                 break;
-            case PLACE_ID:
-                c = db.rawQuery("select * from place_detail LEFT OUTER join place on place_detail.place_id = place.place_id where place_detail.place_id = ? order by distance asc",new String[]{ uri.getPathSegments().get(1)});
+            case AvBContract.PLACE_ID:
+                c = db.rawQuery("select * from place_detail LEFT OUTER join place on place_detail.PLACE_ID = place.PLACE_ID where place_detail.PLACE_ID = ? order by distance asc",new String[]{ uri.getPathSegments().get(1)});
                 break;
            case AvBContract.INSTRUMENTS:
-
-                //TODO fix this call.
-                c =  db.rawQuery("select instrument.instrument_id,instrument.updated_at from instrument_places left join instrument on instrument.instrument_id = instrument_places.instrument_id where place_id = ? ",new String[]{ uri.getPathSegments().get(1)});
+                c =  db.rawQuery("select instrument.instrument_id,instrument.updated_at from instrument_places left join instrument on instrument.instrument_id = instrument_places.instrument_id where PLACE_ID = ? ",new String[]{ uri.getPathSegments().get(1)});
                 break;
             case AvBContract.GROUP_QUESTIONS:
-                /*c =  db.rawQuery("SELECT *" +
-                        "  FROM group_question left join question on question.group_id = group_question.group_id" +
-                        " WHERE group_question.instrument_id = ? ",new String[]{ uri.getPathSegments().get(1)});*/
-
                 c = db.rawQuery("select * from instrument left join group_question on instrument.instrument_id = group_question.instrument_id left join question on question.group_id = group_question.group_id " +
                         "where instrument.instrument_id = ? ",new String[]{ uri.getPathSegments().get(1)});
-
                 break;
             case AvBContract.SURVEY:
 
@@ -141,10 +112,10 @@ public class AvBProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
         switch (uriMatcher.match(uri)){
-            case PLACE:
-                return "vnd.android.cursor.dir/vnd."+ CONTENT_AUTHORITY + DatabaseHelper.place_table  +" ";
-            case PLACE_ID:
-                return "vnd.android.cursor.item/vnd."+ CONTENT_AUTHORITY + DatabaseHelper.place_detail_table  +" ";
+            case AvBContract.PLACE:
+                return "vnd.android.cursor.dir/vnd."+ AvBContract.CONTENT_AUTHORITY + AvBContract.PlaceEntry.TABLE_NAME  +" ";
+            case AvBContract.PLACE_ID:
+                return "vnd.android.cursor.item/vnd."+ AvBContract.CONTENT_AUTHORITY + AvBContract.PlaceDetailsEntry.TABLE_NAME  +" ";
             case AvBContract.INSTRUMENT:
                 return AvBContract.InstrumentEntry.CONTENT_TYPE;
             case AvBContract.INSTRUMENTS:
@@ -157,37 +128,34 @@ public class AvBProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        SQLiteDatabase db = null;
+        SQLiteDatabase db = helper.getWritableDatabase();
         long rowID;
 
         switch (uriMatcher.match(uri)){
-            case PLACE:
-                db = DatabaseWrapper.getDatabase(getContext());
-                rowID = db.insertWithOnConflict(	DatabaseHelper.place_table, "", values,SQLiteDatabase.CONFLICT_REPLACE);
+            case AvBContract.PLACE:
+                rowID = db.insertWithOnConflict(	AvBContract.PlaceEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
                 if(rowID == -1){
-                    db.update(DatabaseHelper.place_table,values,"where place_id = ?",new String[]{values.getAsString("place_id")});
+                    db.update(AvBContract.PlaceEntry.TABLE_NAME,values,"where PLACE_ID = ?",new String[]{values.getAsString("PLACE_ID")});
                 }
                 if (rowID > 0)
                 {
-                    Uri _uri = ContentUris.withAppendedId(BASE_CONTENT_URI, rowID);
+                    Uri _uri = ContentUris.withAppendedId(AvBContract.BASE_CONTENT_URI, rowID);
                     getContext().getContentResolver().notifyChange(_uri, null);
                     return _uri;
                 }
-            case PLACEDETAILS:
-                db = DatabaseWrapper.getDatabase(getContext());
-                rowID = db.insertWithOnConflict(	DatabaseHelper.place_detail_table, "", values,SQLiteDatabase.CONFLICT_REPLACE);
+            case AvBContract.PLACEDETAILS:
+                rowID = db.insertWithOnConflict(	AvBContract.PlaceDetailsEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
                 if(rowID == -1){
-                    db.update(DatabaseHelper.place_detail_table,values,"where place_id = ?",new String[]{values.getAsString("place_id")});
+                    db.update(AvBContract.PlaceDetailsEntry.TABLE_NAME,values,"where PLACE_ID = ?",new String[]{values.getAsString("PLACE_ID")});
                 }
                 if (rowID > 0)
                 {
-                    Uri _uri = ContentUris.withAppendedId(BASE_CONTENT_URI, rowID);
+                    Uri _uri = ContentUris.withAppendedId(AvBContract.BASE_CONTENT_URI, rowID);
                     getContext().getContentResolver().notifyChange(_uri, null);
                     return _uri;
                 }
 
             case AvBContract.INSTRUMENT:
-                db = DatabaseWrapper.getDatabase(getContext());
                 rowID = db.insertWithOnConflict( AvBContract.InstrumentEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
                 if (rowID > 0)
                 {
@@ -197,7 +165,6 @@ public class AvBProvider extends ContentProvider {
                 }
 
             case AvBContract.INSTRUMENT_PLACE:
-                db = DatabaseWrapper.getDatabase(getContext());
                 rowID = db.insertWithOnConflict( AvBContract.InstrumentPlaceEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
                 if (rowID > 0)
                 {
@@ -207,7 +174,6 @@ public class AvBProvider extends ContentProvider {
                 }
 
             case AvBContract.GROUP_QUESTION:
-                db = DatabaseWrapper.getDatabase(getContext());
                 rowID = db.insertWithOnConflict( AvBContract.GroupQuestionEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
                 if (rowID > 0)
                 {
@@ -217,7 +183,6 @@ public class AvBProvider extends ContentProvider {
                 }
 
             case AvBContract.QUESTION:
-                db = DatabaseWrapper.getDatabase(getContext());
                 rowID = db.insertWithOnConflict( AvBContract.QuestionEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
                 if (rowID > 0)
                 {
@@ -227,7 +192,6 @@ public class AvBProvider extends ContentProvider {
                 }
 
             case AvBContract.SURVEY:
-                db = DatabaseWrapper.getDatabase(getContext());
                 rowID = db.insertWithOnConflict( AvBContract.SurveyEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
                 if (rowID > 0)
                 {
@@ -237,7 +201,6 @@ public class AvBProvider extends ContentProvider {
                 }
 
             case AvBContract.NEWPLACE:
-                db = DatabaseWrapper.getDatabase(getContext());
                 rowID = db.insertWithOnConflict( AvBContract.NewPlaceEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
                 if (rowID > 0)
                 {
@@ -246,7 +209,6 @@ public class AvBProvider extends ContentProvider {
                     return _uri;
                 }
             case AvBContract.PLACE_CATEGORY:
-                db = DatabaseWrapper.getDatabase(getContext());
                 rowID = db.insertWithOnConflict( AvBContract.PlaceCategoryEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
                 if (rowID > 0)
                 {
@@ -256,7 +218,6 @@ public class AvBProvider extends ContentProvider {
                 }
 
             case AvBContract.PLACE_TYPE:
-                db = DatabaseWrapper.getDatabase(getContext());
                 rowID = db.insertWithOnConflict( AvBContract.PlaceTypeEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
                 if (rowID > 0)
                 {
@@ -273,25 +234,21 @@ public class AvBProvider extends ContentProvider {
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         int count = 0;
-        SQLiteDatabase db = null;
+        SQLiteDatabase db = helper.getWritableDatabase();
 
         switch (uriMatcher.match(uri)){
-            case PLACE:
-                db = DatabaseWrapper.getDatabase(getContext());
-                count = db.delete(DatabaseHelper.place_table, selection, selectionArgs);
+            case AvBContract.PLACE:
+                count = db.delete(AvBContract.PlaceEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-            case PLACE_ID:
-                db = DatabaseWrapper.getDatabase(getContext());
+            case AvBContract.PLACE_ID:
                 String id = uri.getPathSegments().get(1);
-                count = db.delete( DatabaseHelper.place_table, "_id" +  " = " + id +
+                count = db.delete( AvBContract.PlaceEntry.TABLE_NAME, "_id" +  " = " + id +
                         (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""), selectionArgs);
                 break;
             case AvBContract.SURVEY:
-                db = DatabaseWrapper.getDatabase(getContext());
                 count = db.delete(AvBContract.SurveyEntry.TABLE_NAME, selection,selectionArgs);
                 break;
             case AvBContract.NEWPLACE:
-                db = DatabaseWrapper.getDatabase(getContext());
                 count = db.delete(AvBContract.NewPlaceEntry.TABLE_NAME,selection,selectionArgs);
                 break;
             default:
@@ -305,26 +262,21 @@ public class AvBProvider extends ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         int count = 0;
-        SQLiteDatabase db = null;
+        SQLiteDatabase db = helper.getWritableDatabase();
 
         switch (uriMatcher.match(uri)){
-            case PLACE:
-                db = DatabaseWrapper.getDatabase(getContext());
-                count = db.update( DatabaseHelper.place_table, values, selection, selectionArgs);
+            case AvBContract.PLACE:
+                count = db.update( AvBContract.PlaceEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
-            case PLACE_ID:
-                db = DatabaseWrapper.getDatabase(getContext());
-
-                count = db.update( DatabaseHelper.place_table, values, "_id = " + uri.getPathSegments().get(1) +
+            case AvBContract.PLACE_ID:
+                count = db.update( AvBContract.PlaceEntry.TABLE_NAME, values, "_id = " + uri.getPathSegments().get(1) +
                         (!TextUtils.isEmpty(selection) ? " AND (" +selection + ')' : ""), selectionArgs);
                 break;
 
             case AvBContract.GROUP_QUESTION:
-                db = DatabaseWrapper.getDatabase(getContext());
                 count = db.update( AvBContract.GroupQuestionEntry.TABLE_NAME, values,selection,selectionArgs);
                break;
             case AvBContract.SURVEY:
-                db = DatabaseWrapper.getDatabase(getContext());
                 count = db.update( AvBContract.SurveyEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
             default:
@@ -336,19 +288,18 @@ public class AvBProvider extends ContentProvider {
 
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
-        SQLiteDatabase db = null;
+        SQLiteDatabase db = helper.getWritableDatabase();
         int returnCount = 0;
 
         switch (uriMatcher.match(uri)) {
-            case PLACE:
-                db = DatabaseWrapper.getDatabase(getContext());
+            case AvBContract.PLACE:
                 db.beginTransaction();
 
                 try {
                     for (ContentValues value : values) {
-                        long rowID = db.insertWithOnConflict(	DatabaseHelper.place_table, "", value,SQLiteDatabase.CONFLICT_REPLACE);
+                        long rowID = db.insertWithOnConflict(	AvBContract.PlaceEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
                         if(rowID == -1){
-                            db.update(DatabaseHelper.place_table,value,"where place_id = ?",new String[]{value.getAsString("place_id")});
+                            db.update(AvBContract.PlaceEntry.TABLE_NAME,value,"where PLACE_ID = ?",new String[]{value.getAsString("PLACE_ID")});
                         }
                         if (rowID != -1) {
                             returnCount++;
@@ -361,7 +312,6 @@ public class AvBProvider extends ContentProvider {
                 getContext().getContentResolver().notifyChange(uri, null);
                 return returnCount;
             case AvBContract.INSTRUMENT:
-                db = DatabaseWrapper.getDatabase(getContext());
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
@@ -380,7 +330,6 @@ public class AvBProvider extends ContentProvider {
                 getContext().getContentResolver().notifyChange(uri, null);
                 return returnCount;
             case AvBContract.INSTRUMENT_PLACE:
-                db = DatabaseWrapper.getDatabase(getContext());
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
@@ -400,7 +349,6 @@ public class AvBProvider extends ContentProvider {
                 return returnCount;
 
             case AvBContract.GROUP_QUESTION:
-                db = DatabaseWrapper.getDatabase(getContext());
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
@@ -417,7 +365,6 @@ public class AvBProvider extends ContentProvider {
                 return returnCount;
 
             case AvBContract.QUESTION:
-                db = DatabaseWrapper.getDatabase(getContext());
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
@@ -435,7 +382,6 @@ public class AvBProvider extends ContentProvider {
 
 
             case AvBContract.SURVEY:
-                db = DatabaseWrapper.getDatabase(getContext());
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
@@ -452,7 +398,6 @@ public class AvBProvider extends ContentProvider {
                 return returnCount;
 
             case AvBContract.NEWPLACE:
-                db = DatabaseWrapper.getDatabase(getContext());
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
@@ -469,7 +414,6 @@ public class AvBProvider extends ContentProvider {
                 return returnCount;
 
             case AvBContract.PLACE_CATEGORY:
-                db = DatabaseWrapper.getDatabase(getContext());
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
@@ -486,7 +430,6 @@ public class AvBProvider extends ContentProvider {
                 return returnCount;
 
             case AvBContract.PLACE_TYPE:
-                db = DatabaseWrapper.getDatabase(getContext());
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
