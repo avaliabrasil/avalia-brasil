@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- SyncAdapter related -->
+    <string name="api_url">http://api.avaliabrasil.org</string>
+    <string name="sync_account_type">org.avaliabrasil.avaliabrasil</string>
+    <string name="content_authority">org.avaliabrasil.avaliabrasil</string>
+
+    <!-- Facebook id -->
+    <string name="facebook_app_id">604507936379654</string>
+
+    <string name="google_app_id">AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0</string>
+
+</resources>
