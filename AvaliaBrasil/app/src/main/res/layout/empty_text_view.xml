@@ -8,6 +8,6 @@
         android:id="@+id/tvEmpty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Erro ao buscar, verifique sua conexão com a internet"
+        android:text="@string/internet_connection_error"
         android:gravity="center"/>
 </LinearLayout>

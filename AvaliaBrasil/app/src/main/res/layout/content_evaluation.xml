@@ -23,31 +23,31 @@
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Concordo Totalmente"
+            android:text="@string/likert_fully_agree"
             android:id="@+id/option1"
             />
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Concordo"
+            android:text="@string/likert_agree"
             android:id="@+id/option2"
             />
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Neutro"
+            android:text="@string/likert_neutral"
             android:id="@+id/option3"
             />
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Discordo"
+            android:text="@string/likert_disagree"
             android:id="@+id/option4"
             />
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Discordo Totalmente"
+            android:text="@string/likert_fully_disagree"
             android:id="@+id/option5"
             />
 </RadioGroup>

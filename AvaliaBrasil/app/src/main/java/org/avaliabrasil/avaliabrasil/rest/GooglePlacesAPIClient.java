@@ -3,17 +3,13 @@ package org.avaliabrasil.avaliabrasil.rest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Html;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -21,15 +17,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.location.places.PlacePhotoMetadata;
-import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
-import com.google.android.gms.location.places.PlacePhotoMetadataResult;
-import com.google.android.gms.location.places.Places;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
-import org.avaliabrasil.avaliabrasil.data.AvBProvider;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceSearch;
 

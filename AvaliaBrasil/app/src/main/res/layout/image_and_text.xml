@@ -33,7 +33,6 @@ android:minHeight="?android:attr/listPreferredItemHeight"  >
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center_vertical"
-        android:text="Place Name"
         android:textColor="@color/blackText"
         android:id="@+id/text"
         android:layout_weight="2"/>

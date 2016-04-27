@@ -4,23 +4,23 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/btnSearchInstitution"
-            android:title="Busca de Instituições" />
+            android:title="@string/drawer_place_search" />
         <item
             android:id="@+id/btnClassification"
-            android:title="Classificação" />
+            android:title="@string/drawer_classification" />
     </group>
 
     <item android:title="Etc">
         <menu>
             <item
                 android:id="@+id/btnLogout"
-                android:title="Sair"/>
+                android:title="@string/drawer_logout"/>
             <item
                 android:id="@+id/btnHelp"
-                android:title="Ajuda" />
+                android:title="@string/drawer_help" />
             <item
                 android:id="@+id/btnTermsOfUse"
-                android:title="Termos de Uso" />
+                android:title="@string/drawer_terms_of_use" />
         </menu>
     </item>
 

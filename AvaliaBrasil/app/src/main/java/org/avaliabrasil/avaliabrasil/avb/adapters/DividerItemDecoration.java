@@ -3,13 +3,13 @@ package org.avaliabrasil.avaliabrasil.avb.adapters;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.util.AttributeSet;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.view.View;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.graphics.Canvas;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
+import android.view.View;
 
 /**
  * Created by Developer on 08/04/2016.

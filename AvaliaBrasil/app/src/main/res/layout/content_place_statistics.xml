@@ -30,7 +30,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Local"
+                    android:text="@string/statistics_place"
                     android:layout_alignParentLeft="true"
                     android:textColor="@android:color/holo_blue_dark"/>
                 <TextView
@@ -49,7 +49,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Categoria"
+                    android:text="@string/statistics_category"
                     android:layout_alignParentLeft="true"
                     android:textColor="@android:color/holo_blue_dark"/>
 
@@ -69,7 +69,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tipo de Instituição"
+                    android:text="@string/statistics_institute_type"
                     android:layout_alignParentLeft="true"
                     android:textColor="@android:color/holo_blue_dark"/>
                 <TextView
@@ -91,7 +91,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Índice de Qualidade"
+                    android:text="@string/statistics_quality_indice"
                     android:layout_alignParentLeft="true"/>
                 <TextView
                     android:layout_width="wrap_content"
@@ -144,7 +144,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Avaliações na ultima semana:"
+                    android:text="@string/statistics_last_week_evaluations"
                     android:layout_alignParentLeft="true"
                     android:id="@+id/textView" />
                 <TextView

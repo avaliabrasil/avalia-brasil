@@ -1,17 +1,6 @@
 package org.avaliabrasil.avaliabrasil.data;
 
-import android.content.ComponentName;
-import android.content.ContentValues;
-import android.content.pm.PackageManager;
-import android.content.pm.ProviderInfo;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.test.AndroidTestCase;
-
-import org.avaliabrasil.avaliabrasil.data.AvBContract.PlaceEntry;
-
-import java.util.UUID;
 
 /**
  * Created by Pedro on 23/02/2016.

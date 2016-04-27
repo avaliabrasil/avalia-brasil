@@ -3,7 +3,6 @@ package org.avaliabrasil.avaliabrasil.data;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.text.format.Time;
 
 /**
  * Created by Pedro on 22/02/2016.

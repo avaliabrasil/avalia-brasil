@@ -5,12 +5,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.AvaliaBrasilPlaceType;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Comment;
 
 import java.util.ArrayList;

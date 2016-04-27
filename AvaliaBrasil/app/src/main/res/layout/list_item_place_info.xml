@@ -35,7 +35,6 @@
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:maxLength="50"
-            android:text="Place Name"
             android:textColor="@color/blackText" />
 
         <TextView
@@ -45,8 +44,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:gravity="center_vertical"
-            android:singleLine="true"
-            android:text="Place Adress" />
+            android:singleLine="true" />
     </LinearLayout>
 
     <FrameLayout
@@ -58,8 +56,7 @@
             android:id="@+id/place_distance_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="120m" />
+            android:layout_gravity="center" />
     </FrameLayout>
 
 </LinearLayout>

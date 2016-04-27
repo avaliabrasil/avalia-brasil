@@ -3,18 +3,11 @@ package org.avaliabrasil.avaliabrasil.avb;
 import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.database.Cursor;
-import android.graphics.Point;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.Display;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -27,9 +20,6 @@ import com.android.volley.toolbox.Volley;
 import com.facebook.CallbackManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.picasso.OkHttpDownloader;
-import com.squareup.picasso.Picasso;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.CommentFragment;
@@ -40,10 +30,8 @@ import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.ShareEvaluateFragmen
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.TransactionFragment;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
-import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Anwser;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.Instrument;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
 import org.avaliabrasil.avaliabrasil.util.ImageLoader;
 
@@ -151,7 +139,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 newFragment = getNextQuestionFragment();
             } else if (holder.isNewPlace()) {
                 newFragment = new NewPlaceFragment();
-                args.putSerializable("question", new Question("Você é o primeiro a avaliar este local, por favor nos de algumas informações adicionais"));
+                args.putSerializable("question", new Question(getResources().getString(R.string.new_place_dialog)));
                 args.putSerializable("categoriess", (Serializable) holder.getCategories());
                 args.putSerializable("types", (Serializable) holder.getPlaceTypes());
 
@@ -276,7 +264,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                         sendAnwserBack();
                     }
                 } else {
-                    Toast.makeText(EvaluationActivity.this, "Você não respondeu a questão", Toast.LENGTH_LONG).show();
+                    Toast.makeText(EvaluationActivity.this, getResources().getString(R.string.question_not_anwsered), Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.tvSkip:

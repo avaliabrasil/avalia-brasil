@@ -34,16 +34,12 @@ import com.google.gson.JsonObject;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
-import org.avaliabrasil.avaliabrasil.data.AvBProvider;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.Data;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Instrument;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceRanking;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceStatistics;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -52,7 +48,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class PlaceActivity extends AppCompatActivity {
 

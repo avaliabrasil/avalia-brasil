@@ -23,7 +23,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Classificação Geral:"
+            android:text="@string/general_classification"
             android:id="@+id/tvClassificationType"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
@@ -43,7 +43,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Text"
             android:id="@+id/tvRank"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/ivRankingStatus"

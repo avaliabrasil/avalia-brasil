@@ -10,7 +10,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Obrigado pela participação!"
+            android:text="@string/evaluation_thanks"
             android:id="@+id/textView2"
             android:textSize="20sp"
             android:layout_gravity="center_horizontal" />
@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sua ajuda é fundamental para que possamos aprimorar a prestação de serviços públicos no Brasil!"
+            android:text="@string/share_text_1"
             android:id="@+id/textView3"
             android:layout_gravity="right|top"
             android:layout_below="@+id/textView2"
@@ -29,7 +29,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="\nIncentive seus amigos a fazerem o mesmo."
+            android:text="@string/share_text_2"
             android:id="@+id/textView4"
             android:layout_below="@+id/textView3"
             android:layout_alignLeft="@+id/textView3"
@@ -40,7 +40,7 @@
         <com.facebook.share.widget.ShareButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Compartilhar esta avaliação"
+            android:text="@string/share_button_text"
             android:id="@+id/btnShare"
             android:layout_below="@+id/textView4"
             android:layout_centerHorizontal="true"
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
-            android:text="Pular essa etapa"
+            android:text="@string/skip_share"
             android:id="@+id/tvSkip"
             android:layout_below="@+id/btnShare"
             android:layout_centerHorizontal="true" />

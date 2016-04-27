@@ -1,11 +1,6 @@
 package org.avaliabrasil.avaliabrasil.data;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
-
-import java.util.HashSet;
 
 /**
  * Created by Pedro on 22/02/2016.

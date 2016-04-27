@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location providerLocation) {
 
-        Toast.makeText(MainActivity.this, "Buscando novo local", Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, getResources().getString(R.string.fetching_provider_location), Toast.LENGTH_LONG).show();
 
         if (providerLocation != null) {
             if (Utils.isBetterLocation(providerLocation, location)) {
@@ -404,7 +404,7 @@ public class MainActivity extends AppCompatActivity
                     intent.putExtra("showSplash", false);
                     startActivity(intent);
                 } else {
-                    Toast.makeText(MainActivity.this, "This application need the access location to work property", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, getResources().getString(R.string.location_access_needed), Toast.LENGTH_LONG).show();
                     finish();
                 }
                 break;
@@ -709,8 +709,8 @@ public class MainActivity extends AppCompatActivity
                         };
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setMessage("Há um questionário pendente, deseja finaliza-lo?").setPositiveButton("Sim", dialogClickListener)
-                                .setNegativeButton("Não", dialogClickListener).show();
+                        builder.setMessage(getResources().getString(R.string.evaluation_not_completed)).setPositiveButton(getResources().getString(R.string.yes), dialogClickListener)
+                                .setNegativeButton(getResources().getString(R.string.no), dialogClickListener).show();
                     }
                 }
             } else {

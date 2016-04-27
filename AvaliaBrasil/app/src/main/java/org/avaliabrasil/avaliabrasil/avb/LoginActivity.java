@@ -15,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -196,7 +195,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     public void startMainActivity(View view){
         if(accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0){
             Snackbar
-                    .make(findViewById(R.id.layout),"Já há um usuário logado!", Snackbar.LENGTH_LONG)
+                    .make(findViewById(R.id.layout),getResources().getString(R.string.user_already_logged), Snackbar.LENGTH_LONG)
                     .show();
         }else{
             checkForPermissions();
@@ -211,7 +210,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                     getUserToken(LoginActivity.this);
                 }
                 else {
-                    Toast.makeText(LoginActivity.this,"This application need the access location to work property",Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this,getResources().getString(R.string.location_access_needed),Toast.LENGTH_LONG).show();
                 }
                 break;
         }
@@ -329,7 +328,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(LoginActivity.this,"Não foi possível realizar o login, verifique sua internet!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this,getResources().getString(R.string.internet_connection_error),Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override

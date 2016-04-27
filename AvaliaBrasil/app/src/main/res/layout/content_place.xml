@@ -59,7 +59,6 @@
            <Button
                android:layout_width="1dp"
                android:layout_height="wrap_content"
-               android:text="3,8"
                android:layout_weight="1"
                style="@style/TextButton"
                android:id="@+id/quality_index"
@@ -88,21 +87,11 @@
             <Button
                 android:layout_width="1dp"
                 android:layout_height="wrap_content"
-                android:text="20°"
                 android:layout_weight="1"
                 style="@style/TextButton"
                 android:id="@+id/ranking_position"
                 />
         </LinearLayout>
-
-        <!--<Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="New Place!"
-            android:id="@+id/new_place_button"
-            android:onClick="startNewPlaceActivity"
-            style="@style/SecondaryActionButton"
-            /-->
 
         <ScrollView
             android:layout_width="match_parent"
