@@ -20,7 +20,7 @@ public class AvBDBHelper extends SQLiteOpenHelper {
             "    place_id             TEXT REFERENCES place (place_id) UNIQUE," +
             "    website              TEXT DEFAULT ('Not Declared')," +
             "    formattedPhoneNumber TEXT DEFAULT ('Not Declared'), " +
-            "    photo_reference TEXT , " +
+            "    photo_reference TEXT " +
             ");";
 
     private static final String createQueryPlace = "CREATE TABLE place (" +

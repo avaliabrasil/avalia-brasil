@@ -44,6 +44,7 @@ import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.User;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.UserToken;
 import org.avaliabrasil.avaliabrasil.sync.Constant;
+import org.avaliabrasil.avaliabrasil.util.LocationPermission;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,15 +57,6 @@ import java.util.Map;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
     public final String LOG_TAG = this.getClass().getSimpleName();
-
-    /**
-     *  TODO refatorar para classe única
-     */
-    private static final int INITIAL_REQUEST=1337;
-    private static final String[] INITIAL_PERMS={
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-    };
 
     /**
      * The {@link AccountManager} for check the users and/or add it to the {@link Account}
@@ -90,12 +82,18 @@ public class LoginActivity extends AccountAuthenticatorActivity {
      */
     private CallbackManager callbackManager;
 
+    /**
+     *
+     */
+    private LocationPermission locationPermission;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         accountManager =  AccountManager.get(this);
 
+        locationPermission = new LocationPermission(this);
 
         if(!FacebookSdk.isInitialized()) {
             FacebookSdk.sdkInitialize(LoginActivity.this);
@@ -205,8 +203,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch(requestCode) {
-            case INITIAL_REQUEST:
-                if (canAccessFineLocation()&&canAccessCoarseLocation()) {
+            case LocationPermission.INITIAL_REQUEST:
+                if (locationPermission.canAccessFineLocation()&&locationPermission.canAccessCoarseLocation()) {
                     getUserToken(LoginActivity.this);
                 }
                 else {
@@ -216,35 +214,18 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         }
     }
 
-
-    private boolean canAccessFineLocation() {
-        return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
-    }
-
-    private boolean canAccessCoarseLocation() {
-        return(hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION));
-    }
-
-
-    private boolean hasPermission(String perm) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
-        }
-        return true;
-    }
-
     /**
      * Get the user token and add it to the {@link Account}
      * @param context
      */
     public void getUserToken(final Context context){
-       StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserTokenURL(),
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
+       //StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserTokenURL(),
+      //          new Response.Listener<String>() {
+       //             @Override
+       //             public void onResponse(String response) {
                         Gson gson = new Gson();
                         JsonParser jsonParser = new JsonParser();
-                        JsonObject jo = (JsonObject)jsonParser.parse(response);
+                        JsonObject jo = (JsonObject)jsonParser.parse("{\"data\":{\"token\":\"token\",\"expires\":\"4ever\"}}"/*response*/);
 
                         UserToken userToken = gson.fromJson(jo.get("data").getAsJsonObject(), UserToken.class);
 
@@ -323,15 +304,15 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                                     intent.putExtra("showSplash",false);
                                     startActivity(intent);
                         }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Toast.makeText(LoginActivity.this,getResources().getString(R.string.internet_connection_error),Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
+    //                }
+     //           }, new Response.ErrorListener() {
+     //       @Override
+    //        public void onErrorResponse(VolleyError error) {
+    //            error.printStackTrace();
+    //            Toast.makeText(LoginActivity.this,getResources().getString(R.string.internet_connection_error),Toast.LENGTH_SHORT).show();
+    //        }
+   //     }) {
+   /*         @Override
             protected Map<String, String> getParams () {
                 String android_id = Settings.Secure.getString(context.getContentResolver(),
                         Settings.Secure.ANDROID_ID);
@@ -344,16 +325,16 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 return params;
             }
         };
-        Volley.newRequestQueue(context).add(stringRequest);
+        Volley.newRequestQueue(context).add(stringRequest);*/
     }
 
     /**
      * Check the user permissions to make sure the app work property in the phone
      */
     public void checkForPermissions(){
-         if (!canAccessCoarseLocation()||!canAccessFineLocation()) {
+         if (!locationPermission.canAccessCoarseLocation()||!locationPermission.canAccessFineLocation()) {
              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                 requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
+                 requestPermissions(LocationPermission.INITIAL_PERMS, LocationPermission.INITIAL_REQUEST);
              }
          }else{
              getUserToken(LoginActivity.this);

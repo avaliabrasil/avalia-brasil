@@ -71,6 +71,7 @@ import org.avaliabrasil.avaliabrasil.rest.javabeans.User;
 import org.avaliabrasil.avaliabrasil.sync.Constant;
 import org.avaliabrasil.avaliabrasil.sync.Observer;
 import org.avaliabrasil.avaliabrasil.util.CircleTransform;
+import org.avaliabrasil.avaliabrasil.util.LocationPermission;
 import org.avaliabrasil.avaliabrasil.util.Utils;
 
 import java.io.IOException;
@@ -129,11 +130,18 @@ public class MainActivity extends AppCompatActivity
      */
     private LocationManager locationManager;
 
+    /**
+     *
+     */
+    private LocationPermission locationPermission;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
+
+            locationPermission = new LocationPermission(this);
+
             new Loading().execute();
         }
     }
@@ -370,66 +378,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    /**
-     * TODO refatorar para classe única
-     */
-    private static final int INITIAL_REQUEST = 1337;
-    private static final String[] INITIAL_PERMS = {
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-    };
-
-    /**
-     * Check the user permissions to make sure the app work property in the phone
-     */
-    public void checkForPermissions() {
-        if (!canAccessCoarseLocation() || !canAccessFineLocation()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(INITIAL_PERMS, INITIAL_REQUEST);
-            }
-        } else {
-            Intent intent = new Intent(MainActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case INITIAL_REQUEST:
-                if (canAccessFineLocation() && canAccessCoarseLocation()) {
-                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    intent.putExtra("showSplash", false);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(MainActivity.this, getResources().getString(R.string.location_access_needed), Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                break;
-        }
-    }
-
-    private boolean canAccessFineLocation() {
-        return (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
-    }
-
-    private boolean canAccessCoarseLocation() {
-        return (hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION));
-    }
-
-
-    private boolean hasPermission(String perm) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
-        }
-        return true;
-    }
-
-
-
-
     private boolean checkIfThereIsPendingSurvey(){
         Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,null,AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?",new String[]{"false"},"_id desc");
         return c.getCount() > 0;
@@ -521,6 +469,23 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case LocationPermission.INITIAL_REQUEST:
+                if (locationPermission.canAccessFineLocation() && locationPermission.canAccessCoarseLocation()) {
+                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.putExtra("showSplash", false);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getBaseContext(), getResources().getString(R.string.location_access_needed), Toast.LENGTH_LONG).show();
+                    finish();
+                }
+                break;
+        }
+    }
+
     /**
      * {@link AsyncTask} class to act has a splash screen
      */
@@ -543,7 +508,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onPostExecute(Void avoid) {
-            if (canAccessFineLocation() && canAccessCoarseLocation()) {
+            if (locationPermission.canAccessFineLocation() && locationPermission.canAccessCoarseLocation()) {
                 user = ((AvaliaBrasilApplication) getApplication()).getUser();
                 manager = AccountManager.get(MainActivity.this);
 
@@ -714,7 +679,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             } else {
-                checkForPermissions();
+                locationPermission.checkForPermissions(this.getClass());
             }
         }
 
