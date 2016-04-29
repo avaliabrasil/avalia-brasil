@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Avalia Brasil</string>
     <string name="login_with_facebook">Login With Facebook</string>
     <string name="anonymous_login"><u>Or Login Anonymously</u></string>
 
@@ -123,6 +122,13 @@
     <string name="search_places">Search</string>
     <string name="search_hint">Search Places</string>
 
+    <!-- activity_main_drawer.xml -->
+    <string name="drawer_place_search">Busca de Instituições</string>
+    <string name="drawer_classification">Classificação</string>
+    <string name="drawer_logout">Sair</string>
+    <string name="drawer_help">Ajuda</string>
+    <string name="drawer_terms_of_use">Termos de Uso</string>
+
     <!-- General Dialogs -->
     <string name="location_access_needed">This application need the access location to work property</string>
     <string name="internet_connection_error">Could not login,verify your internet</string>
@@ -162,6 +168,13 @@
     <string name="statistics_institute_type">Tipo de Instituição</string>
     <string name="statistics_quality_indice">Índice de Qualidade</string>
     <string name="statistics_last_week_evaluations">Avaliações na ultima semana:</string>
+
+    <!-- content_evaluation.xml -->
+    <string name="likert_fully_agree">Concordo Totalmente</string>
+    <string name="likert_agree">Concordo</string>
+    <string name="likert_neutral">Neutro</string>
+    <string name="likert_disagree">Discordo</string>
+    <string name="likert_fully_disagree">Discordo Totalmente</string>
 
 
 </resources>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Avalia Brasil</string>
     <string name="login_with_facebook">Faça login com o facebook</string>
     <string name="anonymous_login"><u>Ou login anônimo</u></string>
 

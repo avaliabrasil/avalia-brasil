@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -175,8 +176,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.btnClassification:
 
                 Intent rankingIntent = new Intent(MainActivity.this, RankingActivity.class);
-                rankingIntent.putExtra("latitude",location != null ? location.getLatitude() : 0);
-                rankingIntent.putExtra("longitude",location != null ? location.getLongitude() : 0);
+                rankingIntent.putExtra("latitude", location != null ? location.getLatitude() : 0);
+                rankingIntent.putExtra("longitude", location != null ? location.getLongitude() : 0);
 
 
                 startActivity(rankingIntent);
@@ -216,10 +217,10 @@ public class MainActivity extends AppCompatActivity
 
                 break;
             case R.id.btnHelp:
-                startActivity(new Intent(MainActivity.this,HelpActivity.class));
+                startActivity(new Intent(MainActivity.this, HelpActivity.class));
                 break;
             case R.id.btnTermsOfUse:
-                startActivity(new Intent(MainActivity.this,TermsOfUseActivity.class));
+                startActivity(new Intent(MainActivity.this, TermsOfUseActivity.class));
                 break;
         }
 
@@ -289,6 +290,12 @@ public class MainActivity extends AppCompatActivity
                 fetchDataFromGoogleAPI();
 
                 getSupportLoaderManager().restartLoader(0, null, MainActivity.this);
+
+                try{
+                    locationManager.removeUpdates(MainActivity.this);
+                }catch(SecurityException e){
+                    
+                }
             }
         }
     }
