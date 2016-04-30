@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class PlaceRanking {
 
-    @SerializedName("rankingPosition")
+    @SerializedName("rankingatual")
     @Expose
     private Integer rankingPosition;
     @SerializedName("name")

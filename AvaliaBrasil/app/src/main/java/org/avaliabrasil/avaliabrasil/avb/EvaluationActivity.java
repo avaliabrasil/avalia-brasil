@@ -1,6 +1,7 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -283,9 +284,15 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
         getContentResolver().update(AvBContract.SurveyEntry.SURVEY_URI, cv,AvBContract.SurveyEntry.SURVEY_FINISHED + " = ? " ,new String[]{"false"});
     }
+    /**
+     *
+     */
+    private ProgressDialog progress;
 
-    //TODO Still need to be test with the API
     private void sendAnwserBack() {
+        progress = ProgressDialog.show(this, getResources().getString(R.string.anwser_dialog_title),
+                getResources().getString(R.string.anwser_dialog_message), true);
+
         StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.postAnwsers(place_id),
                 new Response.Listener<String>() {
                     @Override
@@ -301,6 +308,8 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.fragment_container, share).commit();
+
+                        progress.dismiss();
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -318,6 +327,8 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, share).commit();
+
+                progress.dismiss();
             }
         }) {
             @Override

@@ -219,10 +219,10 @@ public class LoginActivity extends AccountAuthenticatorActivity {
      * @param context
      */
     public void getUserToken(final Context context){
-       //StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserTokenURL(),
-      //          new Response.Listener<String>() {
-       //             @Override
-       //             public void onResponse(String response) {
+       StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserTokenURL(),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
                         Gson gson = new Gson();
                         JsonParser jsonParser = new JsonParser();
                         JsonObject jo = (JsonObject)jsonParser.parse("{\"data\":{\"token\":\"token\",\"expires\":\"4ever\"}}"/*response*/);
@@ -304,15 +304,15 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                                     intent.putExtra("showSplash",false);
                                     startActivity(intent);
                         }
-    //                }
-     //           }, new Response.ErrorListener() {
-     //       @Override
-    //        public void onErrorResponse(VolleyError error) {
-    //            error.printStackTrace();
-    //            Toast.makeText(LoginActivity.this,getResources().getString(R.string.internet_connection_error),Toast.LENGTH_SHORT).show();
-    //        }
-   //     }) {
-   /*         @Override
+                   }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+               error.printStackTrace();
+               Toast.makeText(LoginActivity.this,getResources().getString(R.string.internet_connection_error),Toast.LENGTH_SHORT).show();
+           }
+       }) {
+            @Override
             protected Map<String, String> getParams () {
                 String android_id = Settings.Secure.getString(context.getContentResolver(),
                         Settings.Secure.ANDROID_ID);
@@ -325,7 +325,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 return params;
             }
         };
-        Volley.newRequestQueue(context).add(stringRequest);*/
+        Volley.newRequestQueue(context).add(stringRequest);
     }
 
     /**

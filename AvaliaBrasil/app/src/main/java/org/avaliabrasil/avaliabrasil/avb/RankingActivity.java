@@ -6,6 +6,7 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -100,6 +101,10 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
      */
     private Geocoder geocoder;
 
+    /**
+     *
+     */
+    private ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,10 +183,12 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
             getIntentInfo();
         } else {
             try {
-                List<Address> addresses = geocoder.getFromLocation(getIntent().getExtras().getDouble("latitude"), getIntent().getExtras().getDouble("longitude"), 5);
+                if(getIntent().getExtras().getDouble("latitude") != 0){
+                    List<Address> addresses = geocoder.getFromLocation(getIntent().getExtras().getDouble("latitude"), getIntent().getExtras().getDouble("longitude"), 5);
 
-                actvPlace.setText(
-                        addresses.get(0).getLocality() + "," + addresses.get(0).getCountryName() + " " + addresses.get(0).getAdminArea());
+                    actvPlace.setText(
+                            addresses.get(0).getLocality() + "," + addresses.get(0).getCountryName() + " " + addresses.get(0).getAdminArea());
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -236,17 +243,22 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
     private void requestRankingUpdate(final Map<String, String> params) {
          /* -------------------------------------------------------------------------------------------------------------- */
 
+        progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
+                getResources().getString(R.string.progress_dialog_message), true);
+
         StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getPlacesRanking(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         fetchData(response);
+                        progress.dismiss();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
                 fetchData("");
+                progress.dismiss();
             }
         }) {
             @Override

@@ -267,7 +267,7 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
         protected void onPreExecute() {
             try{
                 TextView view = new TextView(PlaceStatisticsActivity.this);
-                view.setText("Aguarde enquanto buscamos os dados...");
+                view.setText(getResources().getString(R.string.progress_dialog_message));
                 view.setGravity(Gravity.CENTER);
                 view.setWidth(ViewGroup.LayoutParams.FILL_PARENT);
                 view.setHeight(ViewGroup.LayoutParams.FILL_PARENT);

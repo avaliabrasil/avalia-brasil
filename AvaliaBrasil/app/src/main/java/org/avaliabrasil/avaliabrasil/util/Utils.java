@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import java.io.FileInputStream;
 
@@ -108,6 +109,16 @@ public abstract class Utils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String normalizeAvaliaBrasilResponse(String response){
+        response = response.replaceFirst("\\[","");
+        int ind = response.lastIndexOf("}");
+
+        if( ind>=0 )
+            response = new StringBuilder(response).replace(ind, ind+1,"]").toString();
+
+        return response;
     }
 
 }

@@ -52,7 +52,7 @@ public class AvaliaBrasilAPIClient {
     public static String getUserTokenURL(){
         StringBuilder target = new StringBuilder();
         target.append(avaliabrasilApiTarget);
-        target.append("user/");
+        //target.append("user/");
         target.append("authenticate");
 
         Log.d("GoogleAPI", "URL: " + target.toString());
@@ -124,7 +124,7 @@ public class AvaliaBrasilAPIClient {
     public static String getPlacesRanking(){
         StringBuilder target = new StringBuilder();
         target.append(avaliabrasilApiTarget);
-        target.append("ranking/");
+        target.append("ranking/all/all");
 
         Log.d("GoogleAPI", "URL: " + target.toString());
 

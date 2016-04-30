@@ -1,5 +1,6 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -36,10 +37,12 @@ import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.AvaliaBrasilCategory;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Instrument;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceStatistics;
+import org.avaliabrasil.avaliabrasil.util.Utils;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -60,6 +63,10 @@ public class PlaceActivity extends AppCompatActivity {
     private Button quality_index;
     private Button ranking_position;
     private ImageView ivRankingStatus;
+    /**
+     *
+     */
+    private ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +117,8 @@ public class PlaceActivity extends AppCompatActivity {
             if (cursor.getCount() <= 0) {
                 final String placeid = getIntent().getExtras().getString("placeid");
 
+                progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
+                        getResources().getString(R.string.progress_dialog_message), true);
 
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlaceDetails(placeid, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
                         new Response.Listener<String>() {
@@ -178,6 +187,7 @@ public class PlaceActivity extends AppCompatActivity {
                                         .newCameraPosition(cameraPosition));
                                 // adding marker
                                 googleMap.addMarker(marker);
+                                progress.dismiss();
 
                             }
                         }, new Response.ErrorListener() {
@@ -190,6 +200,9 @@ public class PlaceActivity extends AppCompatActivity {
                         ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_search_white_24dp));
 
                         placesInfo.addView(view);
+                        progress.dismiss();
+
+
                     }
                 });
 
@@ -326,104 +339,13 @@ public class PlaceActivity extends AppCompatActivity {
 
     public void fetchData(String response) {
         Gson gson = new Gson();
-        Holder data = gson.fromJson("{ \"instruments\":[ " +
-                "                                    { " +
-                "                                      \"id\":1, " +
-                "                                        \"data\":{ " +
-                "                                           \"groups\":[ " +
-                "                                               { " +
-                "                                                    \"id\":1, " +
-                "                                                    \"order\":1, " +
-                "                                                    \"questions\":[ " +
-                "                                                        { " +
-                "                                                            \"id\":1, " +
-                "                                                            \"title\":\"Question 1 \", " +
-                "                                                            \"questionType\":\"is_comment\" " +
-                "                                                        }, " +
-                "                                                        { " +
-                "                                                            \"id\":2, " +
-                "                                                            \"title\":\"Question 2 \"," +
-                "                                                            \"questionType\":\"is_number\" " +
-                "                                                        }, " +
-                "                                                        { " +
-                "                                                            \"id\":3," +
-                "                                                            \"title\":\"Question 3\", " +
-                "                                                            \"questionType\":\"is_number\" " +
-                "                                                        }, " +
-                "                                                        { " +
-                "                                                            \"id\":4, " +
-                "                                                            \"title\":\"Question 4 \"," +
-                "                                                            \"questionType\":\"is_likert\"" +
-                "                                                        } " +
-                "                                                    ] " +
-                "                                                }, " +
-                "                                                { " +
-                "                                                    \"id\":2, " +
-                "                                                    \"order\":2," +
-                "                                                    \"questions\":[ " +
-                "                                                        { " +
-                "                                                            \"id\":5," +
-                "                                                            \"title\":\" Question 5 \"," +
-                "                                                            \"questionType\":\"is_number\" " +
-                "                                                        }, " +
-                "                                                        { " +
-                "                                                            \"id\":6," +
-                "                                                            \"title\":\" Question 6 \", " +
-                "                                                            \"questionType\":\"is_comment\" " +
-                "                                                        }, " +
-                "                                                        { " +
-                "                                                            \"id\":7," +
-                "                                                            \"title\":\" Question 7 \", " +
-                "                                                            \"questionType\":\"is_likert\" " +
-                "                                                        }, " +
-                "                                                        { " +
-                "                                                            \"id\":8," +
-                "                                                            \"title\":\" Question 8 \"," +
-                "                                                            \"questionType\":\"is_number\" " +
-                "                                                        } " +
-                "                                                    ] " +
-                "                                                } " +
-                "                                            ] " +
-                "                                        } " +
-                "                                    }, " +
-                "                                    { " +
-                "                                        \"id\":2, " +
-                "                                        \"data\":{ " +
-                "                                        } " +
-                "                                    } " +
-                "                                ], " +
-                "                            \"newPlace\": true, " +
-                "                            \"categories\": [ " +
-                "                            { \"id\":1, \"name\": \"cat1\" }, " +
-                "                            { \"id\":2, \"name\": \"cat2\" }, " +
-                "                            { \"id\":3, \"name\": \"cat3\" }, " +
-                "                            { \"id\":4, \"name\": \"cat4\" } " +
-                "                            ]," +
-                "                            \"placeTypes\": [" +
-                "                            {" +
-                "                            \"id_category\": 1, " +
-                "                            \"name\": \"TIPO1\" " +
-                "                            }," +
-                "                            {" +
-                "                            \"id_category\": 2, " +
-                "                            \"name\": \"TIPO2\" " +
-                "                            }, " +
-                "                            { " +
-                "                            \"id_category\": 3," +
-                "                            \"name\": \"TIPO3\" " +
-                "                            }, " +
-                "                            {" +
-                "                            \"id_category\": 4," +
-                "                            \"name\": \"TIPO4\" " +
-                "                            } " +
-                "                            ] " +
-                "                            }", Holder.class);
+
+        Holder data = gson.fromJson(Utils.normalizeAvaliaBrasilResponse(response), Holder.class);
 
         ContentValues[] values = new ContentValues[data.getInstruments().size()];
         ContentValues value = null;
 
 
-        //TODO MUDAR PARA ADICIONAR A HORA TAMBÉM
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-dd");
 
         Date dateAtual = new Date(System.currentTimeMillis());
@@ -493,22 +415,56 @@ public class PlaceActivity extends AppCompatActivity {
             }
         }
 
+
+
+        if(data.getCategories().size() > 0){
+            values = new ContentValues[data.getCategories().size()];
+
+            for(int i = 0 ; i < data.getCategories().size() ; i++){
+                value = new ContentValues();
+                value.put(AvBContract.PlaceCategoryEntry.CATEGORY_ID,data.getCategories().get(i).getIdCategory());
+                value.put(AvBContract.PlaceCategoryEntry.NAME,data.getCategories().get(i).getCategory());
+                values[i] = value;
+            }
+            getContentResolver().bulkInsert(
+                    AvBContract.PlaceCategoryEntry.PLACE_CATEGORY_URI, values);
+        }
+
+        if(data.getPlaceTypes().size() > 0){
+            values = new ContentValues[data.getPlaceTypes().size()];
+
+            for(int i = 0 ; i < data.getPlaceTypes().size() ; i++){
+                value = new ContentValues();
+                value.put(AvBContract.PlaceTypeEntry.CATEGORY_ID,data.getPlaceTypes().get(i).getIdCategory());
+                value.put(AvBContract.PlaceTypeEntry.NAME,data.getPlaceTypes().get(i).getCategory());
+                values[i] = value;
+            }
+            getContentResolver().bulkInsert(
+                    AvBContract.PlaceTypeEntry.PLACE_TYPE_URI, values);
+        }
+
         prepareHolder(data);
     }
 
     public void startEvaluationActivity(View view) {
+
+        progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
+                getResources().getString(R.string.progress_dialog_message), true);
+
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getSurveyURL(place_id),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         fetchData(response);
+                        progress.dismiss();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
                 fetchData("");
+                progress.dismiss();
             }
         }) {
             @Override

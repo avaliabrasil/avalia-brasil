@@ -7,6 +7,7 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -136,6 +137,11 @@ public class MainActivity extends AppCompatActivity
      */
     private LocationPermission locationPermission;
 
+    /**
+     *
+     */
+    private ProgressDialog progress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,7 +160,13 @@ public class MainActivity extends AppCompatActivity
         if (location == null) {
             return;
         }
+
+        progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
+                getResources().getString(R.string.progress_dialog_message), true);
+
         GooglePlacesAPIClient.getNearlyPlaces(MainActivity.this, location);
+
+        progress.dismiss();
     }
 
 
@@ -294,7 +306,7 @@ public class MainActivity extends AppCompatActivity
                 try{
                     locationManager.removeUpdates(MainActivity.this);
                 }catch(SecurityException e){
-                    
+
                 }
             }
         }
