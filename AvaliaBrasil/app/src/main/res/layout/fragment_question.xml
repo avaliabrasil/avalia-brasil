@@ -11,10 +11,8 @@
         android:id="@+id/tvQuestion"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
+        android:padding="8dp"
         style="@style/DefaultText"
         android:layout_gravity="center_horizontal" />
-
-
-
 
 </RelativeLayout>

@@ -4,9 +4,12 @@
     android:layout_height="wrap_content">
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/btnSubmit"
-        android:text="Submit"
-        android:layout_gravity="center_horizontal" />
+        style="@style/MainActionButton"
+        android:text="Enviar!"
+        android:layout_gravity="center_horizontal"
+
+        />
 </LinearLayout>
