@@ -15,7 +15,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.5"/>
+        android:layout_weight="0.2"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -24,13 +24,16 @@
         android:src="@drawable/retangular_logo"
         android:layout_weight="3" />
 
+
     <com.facebook.login.widget.LoginButton
         android:id="@+id/login_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp" />
+        android:layout_marginBottom="30dp"
+        android:layout_weight="0.5"
+        />
 
     <View
         android:layout_width="match_parent"
@@ -53,6 +56,38 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.5"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Um projeto premiado pelo"
+        android:textStyle="italic"
+        />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/inovappscomlogo"
+            android:src="@drawable/logo_inovapps"
+            android:layout_weight="2"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/minicomlogo"
+            android:src="@drawable/logo_minicom"
+            android:layout_weight="2"
+            />
+
+    </LinearLayout>
 
     <!--Button
         android:layout_width="wrap_content"
