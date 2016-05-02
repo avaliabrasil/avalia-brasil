@@ -152,7 +152,6 @@
     <string name="fetching_provider_location">Fetching location!</string>
     <string name="evaluation_not_completed">Evaluation not completed, want to return?</string>
 
-
     <!-- EvaluationActivity -->
     <string name="new_place_dialog">You are the first to evaluate this place, please give us some more informations about it</string>
     <string name="question_not_anwsered">You had not anwsered the question</string>

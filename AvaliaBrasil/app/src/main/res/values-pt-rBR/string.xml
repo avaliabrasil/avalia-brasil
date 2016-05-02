@@ -11,13 +11,13 @@
     <string name="places_map">Mapa</string>
     <string name="title_activity_place"></string>
     <string name="action_settings">Configurações</string>
-    <string name="large_text">
-        "Material is the metaphor.\n\n"
+    <string name="help_text">
+        "Obrigado por utilizar o Avalia Brasil. Veja a seguir algumas informações úteis.\n\n"
 
-        "A material metaphor is the unifying theory of a rationalized space and a system of motion."
-        "The material is grounded in tactile reality, inspired by the study of paper and ink, yet "
-        "technologically advanced and open to imagination and magic.\n"
-        "Surfaces and edges of the material provide visual cues that are grounded in reality. The "
+        "Busca de Locais\n\n"
+        "O Avalia Brasil utiliza a API do Google Maps para mostrar locais próximos a você."
+        "Se o estabelecimento que você está tentando procurar não aparece, é possível que ele não esteja cadastrado no Google com o nome que estás procurando."
+        "Tente realizar sua busca de manerias diferentes. Também é possivel que o local não esteja cadastrado no Google. "
         "use of familiar tactile attributes helps users quickly understand affordances. Yet the "
         "flexibility of the material creates new affordances that supercede those in the physical "
         "world, without breaking the rules of physics.\n"
