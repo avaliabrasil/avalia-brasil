@@ -10,6 +10,7 @@ import org.avaliabrasil.avaliabrasil.data.AvBContract;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Developer on 31/03/2016.
@@ -20,16 +21,15 @@ public class Instrument implements Serializable{
     @Expose
     private String id;
 
-    @SerializedName("data")
+    @SerializedName("groups")
     @Expose
-    private Data data;
+    private List<Group> groups = new ArrayList<Group>();
 
     public Instrument() {
     }
 
     public Instrument(String id , Cursor c) {
         this.id = id;
-        data = new Data();
 
         ArrayList<Group> groups = new ArrayList<Group>();
 
@@ -51,7 +51,16 @@ public class Instrument implements Serializable{
             groups.add(new Group(c));
         }
 
-        data.setGroups(groups);
+        setGroups(groups);
+    }
+
+
+    public List<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
     }
 
     public String getId() {
@@ -62,11 +71,5 @@ public class Instrument implements Serializable{
         this.id = id;
     }
 
-    public Data getData() {
-        return data;
-    }
 
-    public void setData(Data data) {
-        this.data = data;
-    }
 }

@@ -5,10 +5,12 @@ import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -16,11 +18,14 @@ import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.CallbackManager;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.CommentFragment;
@@ -30,17 +35,26 @@ import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.NumberFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.ShareEvaluateFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.TransactionFragment;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
+import org.avaliabrasil.avaliabrasil.data.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Anwser;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
+import org.avaliabrasil.avaliabrasil.util.AvaliaBrasilGeocoderService;
 import org.avaliabrasil.avaliabrasil.util.ImageLoader;
+import org.avaliabrasil.avaliabrasil.util.Utils;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
 public class EvaluationActivity extends AppCompatActivity implements View.OnClickListener {
     public final String TAG = this.getClass().getSimpleName();
@@ -109,6 +123,8 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
      *
      */
     private CallbackManager callbackManager;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,14 +205,14 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
             }
         }
 
-        for (int i = 0; i < holder.getInstruments().get(instrumentCursor).getData().getGroups().size(); i++, groupCursor++) {
-            if (holder.getInstruments().get(instrumentCursor).getData().getGroups().get(i).getId().contains(lastGroup_id)) {
+        for (int i = 0; i < holder.getInstruments().get(instrumentCursor).getGroups().size(); i++, groupCursor++) {
+            if (holder.getInstruments().get(instrumentCursor).getGroups().get(i).getId().contains(lastGroup_id)) {
                 break;
             }
         }
 
-        for (int i = 0; i < holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().size() ; i++, questionCursor++) {
-            if (holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().get(i).getId().contains(lastQuestion_id)) {
+        for (int i = 0; i < holder.getInstruments().get(instrumentCursor).getGroups().get(groupCursor).getQuestions().size() ; i++, questionCursor++) {
+            if (holder.getInstruments().get(instrumentCursor).getGroups().get(groupCursor).getQuestions().get(i).getId().contains(lastQuestion_id)) {
                 questionCursor++;
                 break;
             }
@@ -213,9 +229,9 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
         cv.put(AvBContract.SurveyEntry.PLACE_ID, place_id);
         cv.put(AvBContract.SurveyEntry.INSTRUMENT_ID, holder.getInstruments().get(instrumentCursor).getId());
-        cv.put(AvBContract.SurveyEntry.GROUP_ID, holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getId());
+        cv.put(AvBContract.SurveyEntry.GROUP_ID, holder.getInstruments().get(instrumentCursor).getGroups().get(groupCursor).getId());
 
-        cv.put(AvBContract.SurveyEntry.QUESTION_ID, holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().get(questionCursor-1).getId());
+        cv.put(AvBContract.SurveyEntry.QUESTION_ID, awn.getQuestion_id());
         cv.put(AvBContract.SurveyEntry.QUESTION_TYPE, !awn.getNumber().isEmpty() ? "number" : !awn.getComment().isEmpty() ? "comment" : "likert");
         cv.put(AvBContract.SurveyEntry.ANWSER, !awn.getNumber().isEmpty() ? awn.getNumber() : !awn.getComment().isEmpty() ? awn.getComment() : awn.getLikert());
 
@@ -229,23 +245,16 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 if (newFragment.isAnwser()) {
                     Anwser anw;
                     if (newFragment instanceof LikertFragment) {
-                        anw =new Anwser("0", (String) newFragment.getAnwser(), null, null);
-                        anwsers.add(anw);
+                        anw = new Anwser(newFragment.getQuestion().getId(), (String) newFragment.getAnwser(), null, null);
                         insertAnwser(anw);
                     } else if (newFragment instanceof CommentFragment) {
-                        anw = new Anwser("0", null, (String) newFragment.getAnwser(), null);
-                        anwsers.add(anw);
+                        anw = new Anwser(newFragment.getQuestion().getId(), null, (String) newFragment.getAnwser(), null);
                         insertAnwser(anw);
                     } else if (newFragment instanceof NumberFragment) {
-                        anw = new Anwser("0", null, null, (String) newFragment.getAnwser());
-                        anwsers.add(anw);
+                        anw = new Anwser(newFragment.getQuestion().getId(), null, null, (String) newFragment.getAnwser());
                         insertAnwser(anw);
                     } else if (newFragment instanceof NewPlaceFragment) {
-
                         Integer[] responses = (Integer[]) newFragment.getAnwser();
-
-                        response.addProperty("categoryId", responses[0]);
-                        response.addProperty("placeTypeId", responses[1]);
 
                         ContentValues cv = new ContentValues();
 
@@ -271,6 +280,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
             case R.id.tvSkip:
                 Intent intent = new Intent(EvaluationActivity.this, PlaceStatisticsActivity.class);
                 intent.putExtra("placeid", place_id);
+                intent.putExtra("name", getIntent().getExtras().getString("name"));
                 startActivity(intent);
                 finish();
                 break;
@@ -299,7 +309,12 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                     public void onResponse(String response) {
                         ShareEvaluateFragment share = new ShareEvaluateFragment();
 
-                        args.putString("shareString", "blablabla");
+                        JsonParser parser = new JsonParser();
+                        JsonObject o = parser.parse(Utils.normalizeAvaliaBrasilResponse(response)).getAsJsonObject();
+
+                        Log.d(TAG, "onResponse: " + o.get("response").getAsJsonObject().get("fbShareText").getAsString() );
+
+                        args.putString("shareString", o.get("response").getAsJsonObject().get("fbShareText").getAsString());
 
                         share.setArguments(args);
 
@@ -317,89 +332,67 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 setSurveyAsCompleted();
 
                 error.printStackTrace();
-                //TODO show a screen if there is no internet
 
-                ShareEvaluateFragment share = new ShareEvaluateFragment();
-
-                args.putString("shareString", "blablabla");
-
-                share.setArguments(args);
-
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, share).commit();
-
+                Toast.makeText(EvaluationActivity.this, getResources().getString(R.string.internet_connection_error) , Toast.LENGTH_SHORT).show();
                 progress.dismiss();
             }
         }) {
             @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<String, String>();
+            public byte[] getBody() {
                 //TODO ADD THE USER TOKEN
-                response.addProperty("userID", "");
+                Cursor c = getContentResolver().query(AvBContract.NewPlaceEntry.NEWPLACE_URI,null,null,null,null);
+
+
+
+                response.addProperty("userId", "1");
+
+                if(c.getCount() > 0){
+                    c.moveToFirst();
+
+                    AvaliaBrasilGeocoderService service = new AvaliaBrasilGeocoderService(EvaluationActivity.this,new Geocoder(EvaluationActivity.this, Locale.getDefault()),((AvaliaBrasilApplication)getApplication()).getLocation());
+
+                    try {
+                        service.fetchAddress();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    //response.addProperty("categoryId", c.getString(c.getColumnIndex(AvBContract.NewPlaceEntry.CATEGORY_ID)));
+                    response.addProperty("placeTypeId", c.getString(c.getColumnIndex(AvBContract.NewPlaceEntry.PLACE_TYPE_ID)));
+                    response.addProperty("newPlace", true);
+
+                    c = getContentResolver().query(
+                            AvBContract.PlaceEntry.getPlaceDetails(getIntent().getExtras().getString("placeid")), null, null, null, null);
+
+                    c.moveToNext();
+
+                    response.addProperty("address", c.getString(c.getColumnIndex(AvBContract.PlaceEntry.VICINITY)));
+                    response.addProperty("name", c.getString(c.getColumnIndex(AvBContract.PlaceEntry.NAME)));
+                    response.addProperty("cityName",service.getLocality());
+                    response.addProperty("stateLetter", Utils.getStateAbbreviation(service.getAdminArea()));
+
+                }
 
                 JsonArray anwserArray = new JsonArray();
 
-                if(getIntent().getExtras().getBoolean("pendingSurvey", false)){
-                    for (Anwser awn : anwsers) {
-                        JsonObject obj = new JsonObject();
+                c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,null,AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?",new String[]{"false"},"_id asc");
 
-                        obj.addProperty("question_id", awn.getQuestion_id());
+                while(c.moveToNext()){
+                    JsonObject obj = new JsonObject();
 
-                        JsonArray anwsers = new JsonArray();
+                    obj.addProperty("questionId", c.getString(c.getColumnIndex(AvBContract.SurveyEntry.QUESTION_ID)));
+                    obj.addProperty("questionType",c.getString(c.getColumnIndex(AvBContract.SurveyEntry.QUESTION_TYPE)));
+                    obj.addProperty("answer",c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
 
-                        JsonObject anwser = new JsonObject();
-
-                        anwser.addProperty("number",awn.getNumber().isEmpty() ? "": awn.getNumber());
-                        anwser.addProperty("likert",awn.getComment().isEmpty() ? "": awn.getComment());
-                        anwser.addProperty("comment",awn.getLikert().isEmpty() ? "": awn.getLikert());
-
-                        anwsers.add(anwser);
-
-                        obj.add("answer", anwsers);
-
-                        anwserArray.add(obj);
-                    }
-
-                    response.add("answers", anwserArray);
-                }else{
-                    Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,null,AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?",new String[]{"false"},"_id asc");
-
-                    while(c.moveToNext()){
-                        JsonObject obj = new JsonObject();
-
-                        obj.addProperty("question_id", c.getString(c.getColumnIndex(AvBContract.SurveyEntry.QUESTION_ID)));
-
-                        JsonArray anwsers = new JsonArray();
-
-                        String type = c.getString(c.getColumnIndex(AvBContract.SurveyEntry.QUESTION_TYPE));
-
-                        JsonObject anwser = new JsonObject();
-                        
-                        if(type.contains("number")){
-                            anwser.addProperty("number",c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
-                            anwser.addProperty("likert","");
-                            anwser.addProperty("comment","");
-
-                        }else if(type.contains("comment")){
-                            anwser.addProperty("comment",c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
-                            anwser.addProperty("likert","");
-                            anwser.addProperty("number","");
-
-                        }else if(type.contains("likert")){
-                            anwser.addProperty("likert",c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
-                            anwser.addProperty("number","");
-                            anwser.addProperty("comment","");
-                        }
-
-                        anwsers.add(anwser);
-                        
-                        obj.add("answer", anwsers);
-
-                        anwserArray.add(obj);
-                    }
+                    anwserArray.add(obj);
                 }
 
-                return params;
+                response.add("answers",anwserArray);
+
+                Log.d(TAG, "getBody: " + response.toString());
+
+                return response == null ? null : response.toString().getBytes(Charset.forName("UTF-8"));
+
             }
         };
         Volley.newRequestQueue(EvaluationActivity.this).add(stringRequest);
@@ -415,9 +408,9 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
         TransactionFragment nextFragment = null;
 
         if (holder.getInstruments().size() > instrumentCursor) {
-            if (holder.getInstruments().get(instrumentCursor).getData().getGroups().size() > groupCursor) {
-                if (holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().size() > questionCursor) {
-                    String type = holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().get(questionCursor).getQuestionType();
+            if (holder.getInstruments().get(instrumentCursor).getGroups().size() > groupCursor) {
+                if (holder.getInstruments().get(instrumentCursor).getGroups().get(groupCursor).getQuestions().size() > questionCursor) {
+                    String type = holder.getInstruments().get(instrumentCursor).getGroups().get(groupCursor).getQuestions().get(questionCursor).getQuestionType();
 
                     if (type.contentEquals(Question.QuestionTypes.IS_COMMENT.getType())) {
                         nextFragment = new CommentFragment();
@@ -426,7 +419,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                     } else if (type.contentEquals(Question.QuestionTypes.IS_NUMBER.getType())) {
                         nextFragment = new NumberFragment();
                     }
-                    args.putSerializable("question", holder.getInstruments().get(instrumentCursor).getData().getGroups().get(groupCursor).getQuestions().get(questionCursor));
+                    args.putSerializable("question", holder.getInstruments().get(instrumentCursor).getGroups().get(groupCursor).getQuestions().get(questionCursor));
 
                     nextFragment.setArguments(args);
 

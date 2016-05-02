@@ -12,17 +12,7 @@ import java.util.List;
  */
 public class Data implements Serializable {
 
-    @SerializedName("groups")
-    @Expose
-    private List<Group> groups = new ArrayList<Group>();
 
-    public List<Group> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(List<Group> groups) {
-        this.groups = groups;
-    }
 
     
 }

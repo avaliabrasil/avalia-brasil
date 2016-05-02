@@ -67,7 +67,7 @@ public class Question implements Serializable {
 
 
     public enum QuestionTypes{
-        IS_LIKERT("is_likert"),IS_NUMBER("is_number"),IS_COMMENT("is_comment");
+        IS_LIKERT("likert"),IS_NUMBER("number"),IS_COMMENT("comment");
 
         private final String type;
 

@@ -146,9 +146,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null) {
-
             locationPermission = new LocationPermission(this);
-
             new Loading().execute();
         }
     }
@@ -298,6 +296,8 @@ public class MainActivity extends AppCompatActivity
                 location = providerLocation;
 
                 this.location = providerLocation;
+
+                ((AvaliaBrasilApplication)getApplication()).setLocation(location);
 
                 fetchDataFromGoogleAPI();
 
@@ -589,6 +589,8 @@ public class MainActivity extends AppCompatActivity
                                 if (providerLocation != null) {
                                     if (Utils.isBetterLocation(providerLocation, location)) {
                                         location = providerLocation;
+
+                                        ((AvaliaBrasilApplication)getApplication()).setLocation(location);
                                     }
                                 }
                             }

@@ -106,6 +106,11 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
     /**
      *
      */
+    private String name;
+
+    /**
+     *
+     */
     private PlaceStatistics placeRanking;
 
     @Override
@@ -113,6 +118,7 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
         super.onCreate(savedInstanceState);
 
         placeId = getIntent().getExtras().getString("placeid","");
+        name = getIntent().getExtras().getString("name","");
 
         new Loading().execute();
 

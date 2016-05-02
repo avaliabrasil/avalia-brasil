@@ -1,6 +1,7 @@
 package org.avaliabrasil.avaliabrasil.data;
 
 import android.app.Application;
+import android.location.Location;
 
 import org.avaliabrasil.avaliabrasil.rest.javabeans.User;
 
@@ -13,12 +14,21 @@ public class AvaliaBrasilApplication extends Application {
 
     private User user;
 
+    private Location location;
+
     @Override
     public void onCreate() {
         super.onCreate();
         user = new User();
     }
 
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
 
     public User getUser() {
         return user;

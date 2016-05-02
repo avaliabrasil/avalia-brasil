@@ -126,6 +126,7 @@
     <!-- General Dialogs -->
     <string name="location_access_needed">É necessário o privilégio de acesso a localidade para o correto funcionamento do app</string>
     <string name="internet_connection_error">Não foi possível conectar-se, verifique sua internet</string>
+    <string name="location_error">Não foi possível localiza-lo, verifique se o GPS está ligado.</string>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
     <string name="progress_dialog_title">Aguarde....</string>

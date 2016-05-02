@@ -350,7 +350,7 @@ public class PlaceActivity extends AppCompatActivity {
 
         Date dateAtual = new Date(System.currentTimeMillis());
         for (int i = 0; i < values.length; i++) {
-            if (data.getInstruments().get(i).getData().getGroups().size() != 0) {
+            if (data.getInstruments().get(i).getGroups().size() != 0) {
                 value = new ContentValues();
                 value.put(AvBContract.InstrumentEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
                 value.put(AvBContract.InstrumentEntry.UPDATED_AT, dateFormat.format(dateAtual));
@@ -362,7 +362,7 @@ public class PlaceActivity extends AppCompatActivity {
                 AvBContract.InstrumentEntry.INSTRUMENT_URI, values);
 
         for (int i = 0; i < values.length; i++) {
-            if (data.getInstruments().get(i).getData().getGroups().size() != 0) {
+            if (data.getInstruments().get(i).getGroups().size() != 0) {
                 value = new ContentValues();
                 value.put(AvBContract.InstrumentPlaceEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
                 value.put(AvBContract.InstrumentPlaceEntry.PLACE_ID, place_id);
@@ -374,12 +374,12 @@ public class PlaceActivity extends AppCompatActivity {
                 AvBContract.InstrumentPlaceEntry.INSTRUMENTPLACE_URI, values);
 
         for (int i = 0; i < data.getInstruments().size(); i++) {
-            values = new ContentValues[data.getInstruments().get(i).getData().getGroups().size()];
-            for (int j = 0; j < data.getInstruments().get(i).getData().getGroups().size(); j++) {
+            values = new ContentValues[data.getInstruments().get(i).getGroups().size()];
+            for (int j = 0; j < data.getInstruments().get(i).getGroups().size(); j++) {
                 value = new ContentValues();
                 value.put(AvBContract.GroupQuestionEntry.INSTRUMENT_ID, data.getInstruments().get(i).getId());
-                value.put(AvBContract.GroupQuestionEntry.GROUP_ID, data.getInstruments().get(i).getData().getGroups().get(j).getId());
-                value.put(AvBContract.GroupQuestionEntry.ORDER_QUESTION, data.getInstruments().get(i).getData().getGroups().get(j).getOrder());
+                value.put(AvBContract.GroupQuestionEntry.GROUP_ID, data.getInstruments().get(i).getGroups().get(j).getId());
+                value.put(AvBContract.GroupQuestionEntry.ORDER_QUESTION, data.getInstruments().get(i).getGroups().get(j).getOrder());
                 values[j] = value;
             }
 
@@ -389,24 +389,24 @@ public class PlaceActivity extends AppCompatActivity {
 
         for (int k = 0; k < data.getInstruments().size(); k++) {
             Log.d("PlaceActivity", "instrument ID: " + data.getInstruments().get(k).getId());
-            for (int i = 0; i < data.getInstruments().get(k).getData().getGroups().size(); i++) {
+            for (int i = 0; i < data.getInstruments().get(k).getGroups().size(); i++) {
 
-                values = new ContentValues[data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size()];
-                Log.d("PlaceActivity", "Group ID: " + data.getInstruments().get(k).getData().getGroups().get(i).getId());
-                Log.d("PlaceActivity", "order: " + data.getInstruments().get(k).getData().getGroups().get(i).getOrder());
-                Log.d("PlaceActivity", "order: " + data.getInstruments().get(k).getData().getGroups().get(i).getOrder());
+                values = new ContentValues[data.getInstruments().get(k).getGroups().get(i).getQuestions().size()];
+                Log.d("PlaceActivity", "Group ID: " + data.getInstruments().get(k).getGroups().get(i).getId());
+                Log.d("PlaceActivity", "order: " + data.getInstruments().get(k).getGroups().get(i).getOrder());
+                Log.d("PlaceActivity", "order: " + data.getInstruments().get(k).getGroups().get(i).getOrder());
 
-                for (int j = 0; j < data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().size(); j++) {
+                for (int j = 0; j < data.getInstruments().get(k).getGroups().get(i).getQuestions().size(); j++) {
 
-                    Log.d("PlaceActivity", "Question type: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getQuestionType());
-                    Log.d("PlaceActivity", "Question: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getTitle());
-                    Log.d("PlaceActivity", "Question ID: " + data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getId());
+                    Log.d("PlaceActivity", "Question type: " + data.getInstruments().get(k).getGroups().get(i).getQuestions().get(j).getQuestionType());
+                    Log.d("PlaceActivity", "Question: " + data.getInstruments().get(k).getGroups().get(i).getQuestions().get(j).getTitle());
+                    Log.d("PlaceActivity", "Question ID: " + data.getInstruments().get(k).getGroups().get(i).getQuestions().get(j).getId());
 
                     value = new ContentValues();
-                    value.put(AvBContract.QuestionEntry.QUESTION, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getTitle());
-                    value.put(AvBContract.QuestionEntry.GROUP_ID, data.getInstruments().get(k).getData().getGroups().get(i).getId());
-                    value.put(AvBContract.QuestionEntry.QUESTION_ID, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getId());
-                    value.put(AvBContract.QuestionEntry.QUESTION_TYPE, data.getInstruments().get(k).getData().getGroups().get(i).getQuestions().get(j).getQuestionType());
+                    value.put(AvBContract.QuestionEntry.QUESTION, data.getInstruments().get(k).getGroups().get(i).getQuestions().get(j).getTitle());
+                    value.put(AvBContract.QuestionEntry.GROUP_ID, data.getInstruments().get(k).getGroups().get(i).getId());
+                    value.put(AvBContract.QuestionEntry.QUESTION_ID, data.getInstruments().get(k).getGroups().get(i).getQuestions().get(j).getId());
+                    value.put(AvBContract.QuestionEntry.QUESTION_TYPE, data.getInstruments().get(k).getGroups().get(i).getQuestions().get(j).getQuestionType());
                     values[j] = value;
                 }
 
