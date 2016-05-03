@@ -73,7 +73,7 @@ public class LikertFragment extends TransactionFragment {
         }
         for(int i = 0 ; i < options.size() ; i++){
             if(options.get(i).isChecked()){
-                return String.valueOf((i+1));
+                return String.valueOf((5 - i));
             }
         }
         return null;

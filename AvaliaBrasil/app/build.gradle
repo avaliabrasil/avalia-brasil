@@ -8,13 +8,17 @@ android {
         applicationId "org.avaliabrasil.avaliabrasil"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.02"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        shrunk{
+            minifyEnabled true
+            shrinkResources true
         }
     }
 }
@@ -30,6 +34,7 @@ dependencies {
     compile 'com.android.support:support-v4:23.1.1'
     compile 'com.android.support:recyclerview-v7:23.2.1'
     compile 'com.google.maps.android:android-maps-utils:0.4+'
+    compile 'org.apache.commons:commons-lang3:3.4'
 
     /** For dynamic HTTPS redirect */
     compile 'com.squareup.okhttp:okhttp:2.7.5'
@@ -40,7 +45,9 @@ dependencies {
     /** For the graphs */
     compile 'com.jjoe64:graphview:4.0.1'
 
+    /** Compile Volley project */
     compile project(':volley')
+
     /** Necessary for parse Json Objects. */
     compile 'com.google.code.gson:gson:2.6.2'
 }

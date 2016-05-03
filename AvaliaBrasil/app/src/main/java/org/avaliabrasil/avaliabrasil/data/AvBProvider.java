@@ -92,7 +92,7 @@ public class AvBProvider extends ContentProvider {
                 break;
 
             case AvBContract.NEWPLACE:
-                c = db.rawQuery("select * from newPlace",null);
+                c = db.query("newPlace",projection,selection,selectionArgs,null,null,sortOrder);
                 break;
 
             case AvBContract.PLACE_CATEGORY:

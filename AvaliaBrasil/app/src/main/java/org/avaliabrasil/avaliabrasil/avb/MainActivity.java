@@ -194,6 +194,11 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.btnLogout:
 
+                progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
+                        getResources().getString(R.string.progress_dialog_message), true);
+
+                progress.show();
+
                 if (!FacebookSdk.isInitialized()) {
                     FacebookSdk.sdkInitialize(MainActivity.this);
                 }
@@ -208,6 +213,10 @@ public class MainActivity extends AppCompatActivity
                 AvBDBHelper helper = new AvBDBHelper(MainActivity.this);
                 helper.clearAllData(helper.getWritableDatabase());
 
+                Bitmap photo = Utils.getImageBitmap(MainActivity.this);
+
+                progress.dismiss();
+
                 manager.addAccount(Constant.ACCOUNT_TYPE, Constant.ACCOUNT_TOKEN_TYPE_USER, null, null, MainActivity.this, new AccountManagerCallback<Bundle>() {
                     @Override
                     public void run(AccountManagerFuture<Bundle> future) {
@@ -221,9 +230,9 @@ public class MainActivity extends AppCompatActivity
                         } catch (AuthenticatorException e) {
                             e.printStackTrace();
                         }
-
                     }
                 }, null);
+
 
                 break;
             case R.id.btnHelp:
@@ -514,6 +523,9 @@ public class MainActivity extends AppCompatActivity
         protected Void doInBackground(Void... params) {
             try {
                 syncAnwsers();
+                getContentResolver().delete(AvBContract.NewPlaceEntry.NEWPLACE_URI,null,null);
+                //getContentResolver().delete(AvBContract.QuestionEntry.QUESTION_URI,null,null);
+
                 if (getIntent().getExtras() != null) {
                     if (getIntent().getExtras().getBoolean("showSplash", true)) {
                         Thread.sleep(3000);

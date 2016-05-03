@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -32,6 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
@@ -63,6 +65,7 @@ public class PlaceActivity extends AppCompatActivity {
     private Button quality_index;
     private Button ranking_position;
     private ImageView ivRankingStatus;
+    private PlaceStatistics placeStats;
     /**
      *
      */
@@ -201,8 +204,6 @@ public class PlaceActivity extends AppCompatActivity {
 
                         placesInfo.addView(view);
                         progress.dismiss();
-
-
                     }
                 });
 
@@ -258,51 +259,72 @@ public class PlaceActivity extends AppCompatActivity {
                 googleMap.addMarker(marker);
             }
 
-            Gson gson = new Gson();
-            PlaceStatistics placeRanking = gson.fromJson("{" +
-                    " \"id\":3," +
-                    " \"name\":\"UPA Outra\"," +
-                    " \"city\":\"Porto Alegre\"," +
-                    " \"state\":\"RS\"," +
-                    " \"category\":\"Saude\"," +
-                    " \"type\":\"Pronto Atendimento\"," +
-                    " \"qualityIndex\":[3.8, 3.8, 3.8, 2.5]," +
-                    " \"rankingPosition\":{" +
-                    "  \"national\":2," +
-                    "  \"regional\":2," +
-                    "  \"state\":2," +
-                    "  \"municipal\":2" +
-                    " }," +
-                    " \"rankingStatus\":{" +
-                    "  \"national\":\"up\"," +
-                    "  \"regional\":\"up\"," +
-                    "  \"state\":\"down\"," +
-                    "  \"municipal\":\"none\"" +
-                    " }," +
-                    " \"lastWeekSurveys\":212," +
-                    " \"comments\":[" +
-                    "  {\"uid\":1,\"description\":\"1 - teste de comentario\"}," +
-                    "  {\"uid\":2,\"description\":\"2 - teste de comentario\"}," +
-                    "  {\"uid\":3,\"description\":\"3 - teste de comentario\"}" +
-                    " ]" +
-                    "}", PlaceStatistics.class);
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getPlaceStatistics(place_id),
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.d("Teste", "onResponse: " + response);
+                    Gson gson = new Gson();
+                    placeStats = gson.fromJson(Utils.normalizeAvaliaBrasilResponse(response),PlaceStatistics.class);
 
-            ranking_position.setText(String.valueOf(placeRanking.getRankingPosition().getNational()) + "º");
+                    /*PlaceStatistics placeStats = gson.fromJson("{" +
+                            " \"id\":3," +
+                            " \"name\":\"UPA Outra\"," +
+                            " \"city\":\"Porto Alegre\"," +
+                            " \"state\":\"RS\"," +
+                            " \"category\":\"Saude\"," +
+                            " \"type\":\"Pronto Atendimento\"," +
+                            " \"qualityIndex\":[3.8, 3.8, 3.8, 2.5]," +
+                            " \"rankingPosition\":{" +
+                            "  \"national\":2," +
+                            "  \"regional\":2," +
+                            "  \"state\":2," +
+                            "  \"municipal\":2" +
+                            " }," +
+                            " \"rankingStatus\":{" +
+                            "  \"national\":\"up\"," +
+                            "  \"regional\":\"up\"," +
+                            "  \"state\":\"down\"," +
+                            "  \"municipal\":\"none\"" +
+                            " }," +
+                            " \"lastWeekSurveys\":212," +
+                            " \"comments\":[" +
+                            "  {\"uid\":1,\"description\":\"1 - teste de comentario\"}," +
+                            "  {\"uid\":2,\"description\":\"2 - teste de comentario\"}," +
+                            "  {\"uid\":3,\"description\":\"3 - teste de comentario\"}" +
+                            " ]" +
+                            "}", PlaceStatistics.class);*/
 
-            quality_index.setText(String.valueOf(placeRanking.getQualityIndex().get(placeRanking.getQualityIndex().size() - 1)));
+                    if(placeStats == null){
+                        ranking_position.setText("-- º");
+                        quality_index.setText("0");
+                        ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
+                    }else{
+                        ranking_position.setText(String.valueOf(placeStats.getRankingPosition().getNational()) + "º");
 
-            switch (placeRanking.getRankingStatus().getNational()) {
-                case "up":
-                    ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                    break;
-                case "down":
-                    ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                    break;
-                case "none":
-                    ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
-                    break;
-            }
+                        quality_index.setText(String.valueOf(placeStats.getQualityIndex().get(placeStats.getQualityIndex().size() - 1).getValue()));
 
+                        switch (placeStats.getRankingStatus().getNational()) {
+                            case "up":
+                                ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+                                break;
+                            case "down":
+                                ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                                break;
+                            case "none":
+                                ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
+                                break;
+                        }
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+
+                }
+            });
+            Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
         }
     }
 
@@ -344,7 +366,6 @@ public class PlaceActivity extends AppCompatActivity {
 
         ContentValues[] values = new ContentValues[data.getInstruments().size()];
         ContentValues value = null;
-
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-M-dd");
 
@@ -423,6 +444,7 @@ public class PlaceActivity extends AppCompatActivity {
             for(int i = 0 ; i < data.getCategories().size() ; i++){
                 value = new ContentValues();
                 value.put(AvBContract.PlaceCategoryEntry.CATEGORY_ID,data.getCategories().get(i).getIdCategory());
+                Log.d("PlaceAct", "id: " + data.getCategories().get(i).getIdCategory());
                 value.put(AvBContract.PlaceCategoryEntry.NAME,data.getCategories().get(i).getCategory());
                 values[i] = value;
             }
@@ -436,6 +458,7 @@ public class PlaceActivity extends AppCompatActivity {
             for(int i = 0 ; i < data.getPlaceTypes().size() ; i++){
                 value = new ContentValues();
                 value.put(AvBContract.PlaceTypeEntry.CATEGORY_ID,data.getPlaceTypes().get(i).getIdCategory());
+                Log.d("PlaceAct", "id: " + data.getPlaceTypes().get(i).getIdCategory());
                 value.put(AvBContract.PlaceTypeEntry.NAME,data.getPlaceTypes().get(i).getCategory());
                 values[i] = value;
             }
@@ -463,7 +486,6 @@ public class PlaceActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                fetchData("");
                 progress.dismiss();
             }
         }) {
@@ -547,6 +569,10 @@ public class PlaceActivity extends AppCompatActivity {
     }
 
     public void startStatisticsActivity(View view) {
+        if(placeStats == null){
+            Toast.makeText(PlaceActivity.this, getResources().getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent intent = new Intent(PlaceActivity.this, PlaceStatisticsActivity.class);
         intent.putExtra("placeid", place_id);
         startActivity(intent);

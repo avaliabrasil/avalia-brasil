@@ -10,7 +10,11 @@ import java.io.Serializable;
  */
 public class AvaliaBrasilPlaceType implements Serializable {
 
-    @SerializedName("id_category")
+    @SerializedName("id")
+    @Expose
+    private String id;
+
+    @SerializedName("idCategory")
     @Expose
     private String idCategory;
 
@@ -20,6 +24,14 @@ public class AvaliaBrasilPlaceType implements Serializable {
 
     public String getIdCategory() {
         return idCategory;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setIdCategory(String idCategory) {

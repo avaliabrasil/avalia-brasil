@@ -50,7 +50,4 @@
         <!-- include layout="@layout/content_evaluation" /-->
 
     </android.support.v4.widget.NestedScrollView>
-
-
-
 </android.support.design.widget.CoordinatorLayout>

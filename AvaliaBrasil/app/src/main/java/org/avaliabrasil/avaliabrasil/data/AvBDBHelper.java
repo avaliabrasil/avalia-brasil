@@ -14,13 +14,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class AvBDBHelper extends SQLiteOpenHelper {
     private static String database = "AvaliaBrasil";
 
-    public static final int version = 5;
+    public static final int version = 6;
 
     private static final String createQueryPlaceDetails = "CREATE TABLE place_detail (" +
             "    place_id             TEXT REFERENCES place (place_id) UNIQUE," +
             "    website              TEXT DEFAULT ('Not Declared')," +
             "    formattedPhoneNumber TEXT DEFAULT ('Not Declared'), " +
-            "    photo_reference TEXT " +
+            "    photo_reference TEXT" +
             ");";
 
     private static final String createQueryPlace = "CREATE TABLE place (" +

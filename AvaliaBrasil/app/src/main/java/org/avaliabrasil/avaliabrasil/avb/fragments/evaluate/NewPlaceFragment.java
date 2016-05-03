@@ -135,7 +135,7 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
         if(id == 1){
-            tvCategory.setText(tvCategory.getText() + category.get(position).getCategory());
+            tvCategory.setText(tvCategory.getText() + " " + category.get(position).getCategory());
             rcCategory.setVisibility(View.GONE);
             rcType.setVisibility(View.VISIBLE);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
@@ -145,12 +145,11 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
 
             rcType.setAdapter(new PlaceTypeAdapter(getContext(),types,this,category.get(position).getIdCategory()));
             rcType.setHasFixedSize(true);
-
         }else{
-            tvType.setText(tvType.getText() + types.get(position).getCategory());
+            tvType.setText(tvType.getText() + " " + types.get(position).getCategory());
             rcType.setVisibility(View.GONE);
             isPlaceSelected = true;
-            type_pos = types.get(position).getIdCategory();
+            type_pos = types.get(position).getId();
 
             btnSubmit.setVisibility(View.VISIBLE);
         }
