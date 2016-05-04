@@ -5,6 +5,9 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import java.util.HashMap;
+import java.util.Set;
+
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>
  *
@@ -121,10 +124,22 @@ public class AvaliaBrasilAPIClient {
      * @version 1.0
      * @return {@link String} targeting the base API.
      */
-    public static String getPlacesRanking(){
+    public static String getPlacesRanking(HashMap<String,String> params){
         StringBuilder target = new StringBuilder();
         target.append(avaliabrasilApiTarget);
-        target.append("ranking/all/all");
+        target.append("ranking/");
+
+        if(params != null){
+            if(!params.isEmpty()){
+                Set keys = params.keySet();
+                target.append("?");
+                for(Object key : keys){
+                    target.append(key);
+                    target.append("=");
+                    target.append(params.get(key));
+                }
+            }
+        }
 
         Log.d("GoogleAPI", "URL: " + target.toString());
 

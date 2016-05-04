@@ -185,10 +185,10 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
             try {
                 if(getIntent().getExtras().getDouble("latitude") != 0){
                     List<Address> addresses = geocoder.getFromLocation(getIntent().getExtras().getDouble("latitude"), getIntent().getExtras().getDouble("longitude"), 5);
-
                     actvPlace.setText(
                             addresses.get(0).getLocality() + "," + addresses.get(0).getCountryName() + " " + addresses.get(0).getAdminArea());
                 }
+                requestRankingUpdate(null);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -227,7 +227,7 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
         }
 
         //TODO send the rankingType to the query.
-        Map<String, String> params = new HashMap<>();
+        HashMap<String, String> params = new HashMap<>();
 
         params.put("name", name);
 
@@ -240,13 +240,13 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
         requestRankingUpdate(params);
     }
 
-    private void requestRankingUpdate(final Map<String, String> params) {
+    private void requestRankingUpdate(final HashMap<String, String> params) {
          /* -------------------------------------------------------------------------------------------------------------- */
 
         progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
                 getResources().getString(R.string.progress_dialog_message), true);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getPlacesRanking(),
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getPlacesRanking(params),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -278,42 +278,7 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
 
     private void fetchData(String response) {
         Gson gson = new Gson();
-        PlaceRankingSearch placeRanking = gson.fromJson("{" +
-                "\"places\":" +
-                "[" +
-                "{" +
-                "\"rankingPosition\": 1," +
-                "\"name\": \"Nome do Lugar 1\"," +
-                "\"address\": \"Endereço do Lugar 1\"," +
-                "\"qualityIndex\": 3.8" +
-                "}," +
-                "{" +
-                "\"rankingPosition\": 2," +
-                "\"name\": \"Nome do Lugar 2\"," +
-                "\"address\": \"Endereço do Lugar 2\"," +
-                "\"qualityIndex\": 3.6" +
-                "}," +
-                "{" +
-                "\"rankingPosition\": 3," +
-                "\"name\": \"Nome do Lugar 3\"," +
-                "\"address\": \"Endereço do Lugar 3\"," +
-                "\"qualityIndex\": 3.4" +
-                "}," +
-                "{" +
-                "\"rankingPosition\": 4," +
-                "\"name\": \"Nome do Lugar 4\"," +
-                "\"address\": \"Endereço do Lugar 4\"," +
-                "\"qualityIndex\": 3.0" +
-                "}," +
-                "{" +
-                "\"rankingPosition\": 5," +
-                "\"name\": \"Nome do Lugar 5\"," +
-                "\"address\": \"Endereço do Lugar 5\"," +
-                "\"qualityIndex\": 2.8" +
-                "}" +
-                "]" +
-                "}", PlaceRankingSearch.class);
-
+        PlaceRankingSearch placeRanking = gson.fromJson(response, PlaceRankingSearch.class);
 
         rvRankingList.setAdapter(new PlaceRankingAdapter(RankingActivity.this, placeRanking.getPlaceRankings()));
 

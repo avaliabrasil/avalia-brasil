@@ -185,7 +185,8 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
             DisplayMetrics metrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-            new ImageLoader(EvaluationActivity.this, metrics.widthPixels,ivPlace.getDrawable().getIntrinsicHeight(),ivPlace).execute(place_id);
+            new ImageLoader(EvaluationActivity.this, 500,500
+                    ,ivPlace).execute(place_id);
         }
     }
 
@@ -341,21 +342,18 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
             public byte[] getBody() {
                 //TODO ADD THE USER TOKEN
                 Cursor c = getContentResolver().query(AvBContract.NewPlaceEntry.NEWPLACE_URI,null,null,null,null);
-
-
-
                 response.addProperty("userId", "1");
 
                 if(c.getCount() > 0){
                     c.moveToFirst();
 
-                    AvaliaBrasilGeocoderService service = new AvaliaBrasilGeocoderService(EvaluationActivity.this,new Geocoder(EvaluationActivity.this, Locale.getDefault()),((AvaliaBrasilApplication)getApplication()).getLocation());
+//                    AvaliaBrasilGeocoderService service = new AvaliaBrasilGeocoderService(EvaluationActivity.this,new Geocoder(EvaluationActivity.this, Locale.getDefault()),((AvaliaBrasilApplication)getApplication()).getLocation());
 
-                    try {
+                    /*try {
                         service.fetchAddress();
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
+                    }*/
 
                     //response.addProperty("categoryId", c.getString(c.getColumnIndex(AvBContract.NewPlaceEntry.CATEGORY_ID)));
                     response.addProperty("placeTypeId", c.getString(c.getColumnIndex(AvBContract.NewPlaceEntry.PLACE_TYPE_ID)));
@@ -368,9 +366,11 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
                     response.addProperty("address", c.getString(c.getColumnIndex(AvBContract.PlaceEntry.VICINITY)));
                     response.addProperty("name", c.getString(c.getColumnIndex(AvBContract.PlaceEntry.NAME)));
-                    response.addProperty("cityName",service.getLocality());
-                    response.addProperty("stateLetter", Utils.getStateAbbreviation(service.getAdminArea()));
+                    response.addProperty("cityName","Novo Hamburgo"/*service.get*/);
+                    response.addProperty("stateLetter", "RS "/*Utils.getStateAbbreviation(service.getAdminArea())*/);
 
+                }else{
+                    response.addProperty("newPlace", false);
                 }
 
                 JsonArray anwserArray = new JsonArray();

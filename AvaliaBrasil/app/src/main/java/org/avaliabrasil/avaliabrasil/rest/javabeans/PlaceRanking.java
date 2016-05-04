@@ -4,9 +4,11 @@ package org.avaliabrasil.avaliabrasil.rest.javabeans;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigDecimal;
+
 public class PlaceRanking {
 
-    @SerializedName("rankingatual")
+    @SerializedName("rankingPosition")
     @Expose
     private Integer rankingPosition;
     @SerializedName("name")
@@ -79,7 +81,9 @@ public class PlaceRanking {
      *     The qualityIndex
      */
     public Double getQualityIndex() {
-        return qualityIndex;
+        return new BigDecimal(qualityIndex)
+                .setScale(2, BigDecimal.ROUND_HALF_UP)
+                .doubleValue();
     }
 
     /**

@@ -9,6 +9,7 @@ import android.location.Location;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashMap;
 
@@ -110,6 +111,14 @@ public abstract class Utils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void removeProfilePhoto(Context context) {
+        try {
+            context.deleteFile("profile.jpg");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static String normalizeAvaliaBrasilResponse(String response){

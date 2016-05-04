@@ -29,7 +29,7 @@ public class PlaceStatistics {
     private String type;
     @SerializedName("qualityIndex")
     @Expose
-    private List<Double> qualityIndex = new ArrayList<Double>();
+    private List<QualityIndex> qualityIndex = new ArrayList<QualityIndex>();
     @SerializedName("rankingPosition")
     @Expose
     private RankingPosition rankingPosition;
@@ -156,7 +156,7 @@ public class PlaceStatistics {
      * @return
      *     The qualityIndex
      */
-    public List<Double> getQualityIndex() {
+    public List<QualityIndex> getQualityIndex() {
         return qualityIndex;
     }
 
@@ -165,7 +165,7 @@ public class PlaceStatistics {
      * @param qualityIndex
      *     The qualityIndex
      */
-    public void setQualityIndex(List<Double> qualityIndex) {
+    public void setQualityIndex(List<QualityIndex> qualityIndex) {
         this.qualityIndex = qualityIndex;
     }
 

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceRanking;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,6 @@ public class PlaceRankingAdapter extends RecyclerView.Adapter<PlaceRankingAdapte
      *
      */
     private Context context;
-
 
     public PlaceRankingAdapter(Context context, List<PlaceRanking> items) {
 

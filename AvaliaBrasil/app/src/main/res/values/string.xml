@@ -21,20 +21,6 @@
     <string name="places_map">Map</string>
     <string name="title_activity_place">PlaceActivity</string>
     <string name="action_settings">Settings</string>
-    <string name="help_text">
-        "Obrigado por utilizar o Avalia Brasil. Veja a seguir algumas informações úteis.\n\n"
-
-        "Busca de Locais\n\n"
-        "O Avalia Brasil utiliza a API do Google Maps para mostrar locais próximos a você. "
-        "Se o estabelecimento que você está tentando procurar não aparece, é possível que ele não esteja cadastrado no Google com o nome que estás procurando. "
-        "Tente realizar sua busca de manerias diferentes. Também é possivel que o local não esteja cadastrado no Google. Neste caso, a alternativa para avaliar o local é primeiro cadastrá-lo no Google Maps e somente depois será possível avaliá-lo. \n\n "
-
-        "Calculo do Índice de Qualidade\n\n"
-        "Atualmente, o Calculo do Índice de Qualidade utilizado no Avalia Brasil é feito utilizando-se o instrumento conhecido como SERVPERF. "
-        "De acordo com as respostas  "
-        "Tente realizar sua busca de manerias diferentes. Também é possivel que o local não esteja cadastrado no Google. "
-
-    </string>
     <string name="title_activity_evaluation">EvaluationActivity</string>
     <string name="title_activity_place_statistics">PlaceStatisticsActivity</string>
     <string name="title_activity_ranking">RankingActivity</string>
@@ -69,6 +55,12 @@
     <string name="internet_connection_error">Could not login,verify your internet</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
+    <string name="progress_dialog_title">Fetching Data</string>
+    <string name="progress_dialog_message">Where are fetching data from server...</string>
+    <string name="location_error">Couldnt location you, check if GPS is on.</string>
+
+    <string name="anwser_dialog_title">Sending Data</string>
+    <string name="anwser_dialog_message">Sending to server your anwsers...</string>
 
     <!-- LoginActivity -->
     <string name="user_already_logged">There is already an user logged!</string>
@@ -76,6 +68,7 @@
     <!-- MainActivity -->
     <string name="fetching_provider_location">Fetching location!</string>
     <string name="evaluation_not_completed">Evaluation not completed, want to return?</string>
+
 
     <!-- EvaluationActivity -->
     <string name="new_place_dialog">You are the first to evaluate this place, please give us some more informations about it</string>
@@ -109,5 +102,16 @@
     <string name="likert_neutral">Neutro</string>
     <string name="likert_disagree">Discordo</string>
     <string name="likert_fully_disagree">Discordo Totalmente</string>
+
+
+    <string name="help_text">
+        "Obrigado por utilizar o Avalia Brasil. Veja a seguir algumas informações úteis.\n\n"
+
+        "Busca de Locais\n\n"
+        "O Avalia Brasil utiliza a API do Google Maps para mostrar locais próximos a você."
+        "Se o estabelecimento que você está tentando procurar não aparece, é possível que ele não esteja cadastrado no Google com o nome que estás procurando."
+        "Tente realizar sua busca de manerias diferentes. Também é possivel que o local não esteja cadastrado no Google. "
+
+    </string>
 
 </resources>
