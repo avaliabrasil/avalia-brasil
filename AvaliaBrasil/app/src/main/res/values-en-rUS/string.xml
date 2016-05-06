@@ -70,6 +70,9 @@
     <string name="fetching_provider_location">Fetching location!</string>
     <string name="evaluation_not_completed">Evaluation not completed, want to return?</string>
 
+    <!-- PlaceActivity -->
+    <string name="isOpen">Open</string>
+    <string name="isClose">Close</string>
 
     <!-- EvaluationActivity -->
     <string name="new_place_dialog">You are the first to evaluate this place, please give us some more informations about it</string>

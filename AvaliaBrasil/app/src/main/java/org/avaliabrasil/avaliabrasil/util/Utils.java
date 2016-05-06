@@ -169,4 +169,12 @@ public abstract class Utils {
         return states.get(state);
     }
 
+
+    public static String formatTime(String time){
+        StringBuilder builder = new StringBuilder();
+        builder.append(time.substring(0,2));
+        builder.append(":");
+        builder.append(time.substring(2));
+        return builder.toString();
+    }
 }

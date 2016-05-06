@@ -23,7 +23,7 @@ public class ResultPlaceSearch {
     private String name;
     @SerializedName("opening_hours")
     @Expose
-    private OpeningHours openingHours;
+    private OpeningHour openingHour;
     @SerializedName("place_id")
     @Expose
     private String placeId;
@@ -123,8 +123,8 @@ public class ResultPlaceSearch {
      * @return
      *     The openingHours
      */
-    public OpeningHours getOpeningHours() {
-        return openingHours;
+    public OpeningHour getOpeningHours() {
+        return openingHour;
     }
 
     /**
@@ -132,8 +132,8 @@ public class ResultPlaceSearch {
      * @param openingHours
      *     The opening_hours
      */
-    public void setOpeningHours(OpeningHours openingHours) {
-        this.openingHours = openingHours;
+    public void setOpeningHours(OpeningHour openingHours) {
+        this.openingHour = openingHour;
     }
 
     /**

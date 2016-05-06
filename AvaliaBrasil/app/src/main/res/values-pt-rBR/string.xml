@@ -61,6 +61,9 @@
     <string name="fetching_provider_location">Buscando novo local!</string>
     <string name="evaluation_not_completed">Há um questionário pendente, deseja finaliza-lo?</string>
 
+    <!-- PlaceActivity -->
+    <string name="isOpen">Abre ás</string>
+    <string name="isClose">Fecha ás</string>
 
     <!-- EvaluationActivity -->
     <string name="new_place_dialog">Você é o primeiro a avaliar este local, por favor nos de algumas informações adicionais</string>

@@ -72,6 +72,9 @@ public class ResultDetails {
     @SerializedName("website")
     @Expose
     private String website;
+    @SerializedName("opening_hours")
+    @Expose
+    private OpeningHour openingHour;
 
     /**
      *
@@ -451,4 +454,12 @@ public class ResultDetails {
         this.website = website;
     }
 
+
+    public OpeningHour getOpeningHour() {
+        return openingHour;
+    }
+
+    public void setOpeningHour(OpeningHour openingHour) {
+        this.openingHour = openingHour;
+    }
 }

@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class AvBDBHelper extends SQLiteOpenHelper {
     private static String database = "AvaliaBrasil";
 
-    public static final int version = 6;
+    public static final int version = 7;
 
     private static final String createQueryPlaceDetails = "CREATE TABLE place_detail (" +
             "    place_id             TEXT REFERENCES place (place_id) UNIQUE," +
@@ -111,6 +111,15 @@ public class AvBDBHelper extends SQLiteOpenHelper {
             ");";
 
 
+    private static final String createPlacePeriod = "CREATE TABLE place_period (" +
+            "    _id      INTEGER PRIMARY KEY," +
+            "    place_id INTEGER REFERENCES place (place_id) ON DELETE CASCADE" +
+            "                                                 ON UPDATE CASCADE" +
+            "                     NOT NULL," +
+            "    day      TEXT    NOT NULL," +
+            "    time     TEXT    NOT NULL," +
+            "    status   TEXT    NOT NULL" +
+            ");";
 
 
     public AvBDBHelper(Context context){
@@ -129,6 +138,7 @@ public class AvBDBHelper extends SQLiteOpenHelper {
         db.execSQL(createNewPlace);
         db.execSQL(createPlaceCategory);
         db.execSQL(createPlaceType);
+        db.execSQL(createPlacePeriod);
     }
 
     @Override
@@ -144,6 +154,8 @@ public class AvBDBHelper extends SQLiteOpenHelper {
                 db.execSQL(createPlaceType);
             case 5:
                 db.execSQL("alter table place_detail add column photo_reference TEXT ");
+            case 7:
+                db.execSQL(createPlacePeriod);
         }
     }
 

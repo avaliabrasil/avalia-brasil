@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,6 +35,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.annotations.SerializedName;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
@@ -42,6 +44,7 @@ import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.AvaliaBrasilCategory;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Instrument;
+import org.avaliabrasil.avaliabrasil.rest.javabeans.Period;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceDetails;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.PlaceStatistics;
 import org.avaliabrasil.avaliabrasil.util.Utils;
@@ -49,6 +52,7 @@ import org.avaliabrasil.avaliabrasil.util.Utils;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -141,7 +145,6 @@ public class PlaceActivity extends AppCompatActivity {
                                 value.put("website", placeDetails.getResult().getWebsite());
                                 value.put("formattedPhoneNumber", placeDetails.getResult().getFormattedPhoneNumber());
                                 value.put("photo_reference", placeDetails.getResult().getPhotos().size() > 0 ? placeDetails.getResult().getPhotos().get(0).getPhotoReference() : "");
-
                                 getContentResolver().insert(
                                         AvBContract.PlaceDetailsEntry.PLACE_DETAILS_URI, value);
 
@@ -169,6 +172,53 @@ public class PlaceActivity extends AppCompatActivity {
                                     ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
 
                                     placesInfo.addView(view);
+                                }
+
+                                if(placeDetails.getResult().getOpeningHour() != null){
+
+                                    Calendar c = Calendar.getInstance();
+
+                                    if(placeDetails.getResult().getOpeningHour().getPeriods().size() > 0){
+
+                                        ContentValues[] values = new ContentValues[placeDetails.getResult().getOpeningHour().getPeriods().size()*2];
+
+                                        for(int i = 0, j = 0 ; i < placeDetails.getResult().getOpeningHour().getPeriods().size(); i ++){
+                                            value = null;
+                                            Period p = placeDetails.getResult().getOpeningHour().getPeriods().get(i);
+                                            if(p.getIsClose() != null){
+                                                value = new ContentValues();
+                                                value.put("place_id", placeid);
+                                                value.put("day", p.getIsClose().getDay());
+                                                value.put("time", p.getIsClose().getTime());
+                                                value.put("status","close");
+                                            }
+
+                                            values[j++] = value;
+                                            value = null;
+
+                                            if(p.getIsOpen() != null){
+                                                value = new ContentValues();
+                                                value.put("place_id", placeid);
+                                                value.put("day", p.getIsOpen().getDay());
+                                                value.put("time", p.getIsOpen().getTime());
+                                                value.put("status","open");
+
+                                            }
+                                            values[j++] = value;
+
+                                            if(p.getIsClose() != null && p.getIsOpen() != null){
+                                                if(p.getIsOpen().getDay() == c.get(Calendar.DAY_OF_WEEK) && p.getIsClose().getDay() == c.get(Calendar.DAY_OF_WEEK)){
+                                                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+                                                    ((TextView) view.findViewById(R.id.text)).setText("Aberto hoje " + Utils.formatTime(p.getIsOpen().getTime()) + " - " + Utils.formatTime(p.getIsClose().getTime()));
+                                                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_schedule_black_24dp));
+                                                    placesInfo.addView(view);
+                                                }
+                                            }
+
+                                        }
+                                        getContentResolver().bulkInsert(
+                                                AvBContract.PlacePeriodEntry.PLACE_PERIOD_URI, values);
+                                    }
                                 }
 
                                 toolbarLayout.setTitle(placeDetails.getResult().getName());
@@ -257,6 +307,27 @@ public class PlaceActivity extends AppCompatActivity {
                         .newCameraPosition(cameraPosition));
 
                 googleMap.addMarker(marker);
+
+                cursor = getContentResolver().query(
+                        AvBContract.PlacePeriodEntry.buildPlacePeriodUri(place_id), null, null, null, null);
+
+                Log.d("Teste", DatabaseUtils.dumpCursorToString(cursor));
+
+                if(cursor.moveToNext()){
+
+                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+                    HashMap<String,String> openAndClose = new HashMap<String,String>();
+                    openAndClose.put("open","");
+                    openAndClose.put("close","");
+                    openAndClose.put(cursor.getString(cursor.getColumnIndex("status")),Utils.formatTime(cursor.getString(cursor.getColumnIndex("time"))));
+                    if(cursor.moveToNext()){
+                        openAndClose.put(cursor.getString(cursor.getColumnIndex("status")),Utils.formatTime(cursor.getString(cursor.getColumnIndex("time"))));
+                    }
+
+                    ((TextView) view.findViewById(R.id.text)).setText("Aberto hoje " + openAndClose.get("open") + " - " + openAndClose.get("close"));
+                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_schedule_black_24dp));
+                    placesInfo.addView(view);
+                }
             }
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getPlaceStatistics(place_id),
@@ -266,34 +337,6 @@ public class PlaceActivity extends AppCompatActivity {
                     Log.d("Teste", "onResponse: " + response);
                     Gson gson = new Gson();
                     placeStats = gson.fromJson(Utils.normalizeAvaliaBrasilResponse(response),PlaceStatistics.class);
-
-                    /*PlaceStatistics placeStats = gson.fromJson("{" +
-                            " \"id\":3," +
-                            " \"name\":\"UPA Outra\"," +
-                            " \"city\":\"Porto Alegre\"," +
-                            " \"state\":\"RS\"," +
-                            " \"category\":\"Saude\"," +
-                            " \"type\":\"Pronto Atendimento\"," +
-                            " \"qualityIndex\":[3.8, 3.8, 3.8, 2.5]," +
-                            " \"rankingPosition\":{" +
-                            "  \"national\":2," +
-                            "  \"regional\":2," +
-                            "  \"state\":2," +
-                            "  \"municipal\":2" +
-                            " }," +
-                            " \"rankingStatus\":{" +
-                            "  \"national\":\"up\"," +
-                            "  \"regional\":\"up\"," +
-                            "  \"state\":\"down\"," +
-                            "  \"municipal\":\"none\"" +
-                            " }," +
-                            " \"lastWeekSurveys\":212," +
-                            " \"comments\":[" +
-                            "  {\"uid\":1,\"description\":\"1 - teste de comentario\"}," +
-                            "  {\"uid\":2,\"description\":\"2 - teste de comentario\"}," +
-                            "  {\"uid\":3,\"description\":\"3 - teste de comentario\"}" +
-                            " ]" +
-                            "}", PlaceStatistics.class);*/
 
                     if(placeStats == null){
                         ranking_position.setText("-- º");
@@ -321,6 +364,9 @@ public class PlaceActivity extends AppCompatActivity {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     error.printStackTrace();
+                    ranking_position.setText("-- º");
+                    quality_index.setText("0");
+                    ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
 
                 }
             });

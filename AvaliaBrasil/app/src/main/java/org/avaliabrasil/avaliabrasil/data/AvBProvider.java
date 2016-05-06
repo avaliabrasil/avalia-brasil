@@ -11,6 +11,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
+
+import java.util.Calendar;
 
 /**
  * Created by Pedro on 23/02/2016.
@@ -47,6 +50,9 @@ public class AvBProvider extends ContentProvider {
 
         uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_PLACE_TYPE,AvBContract.PLACE_TYPE);
         uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_PLACE_TYPES,AvBContract.PLACE_TYPES);
+
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_PLACE_PERIOD,AvBContract.PLACE_PERIOD);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_PLACE_PERIODS,AvBContract.PLACE_PERIODS);
     }
 
     @Override
@@ -100,6 +106,14 @@ public class AvBProvider extends ContentProvider {
                 break;
             case AvBContract.PLACE_TYPES:
                 c = db.rawQuery("select * from place_type where category_id = ? ",new String[]{ uri.getPathSegments().get(1)});
+                break;
+            case AvBContract.PLACE_PERIOD:
+                c = db.rawQuery("select * from place_period ",null);
+                break;
+            case AvBContract.PLACE_PERIODS:
+                Calendar calendar = Calendar.getInstance();
+                Log.d("Teste", "query: " + String.valueOf(calendar.get(Calendar.DAY_OF_WEEK)));
+                c = db.rawQuery("select * from place_period where place_id = ? and day = ? order by status", new String[]{ uri.getPathSegments().get(1),String.valueOf(calendar.get(Calendar.DAY_OF_WEEK))});
                 break;
 
             default:
@@ -225,6 +239,14 @@ public class AvBProvider extends ContentProvider {
                     getContext().getContentResolver().notifyChange(_uri, null);
                     return _uri;
                 }
+            case AvBContract.PLACE_PERIOD:
+                rowID = db.insertWithOnConflict( AvBContract.PlacePeriodEntry.TABLE_NAME, "", values,SQLiteDatabase.CONFLICT_REPLACE);
+                if (rowID > 0)
+                {
+                    Uri _uri = ContentUris.withAppendedId(AvBContract.PlacePeriodEntry.PLACE_PERIOD_URI, rowID);
+                    getContext().getContentResolver().notifyChange(_uri, null);
+                    return _uri;
+                }
 
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
@@ -279,6 +301,10 @@ public class AvBProvider extends ContentProvider {
             case AvBContract.SURVEY:
                 count = db.update( AvBContract.SurveyEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
+            case AvBContract.PLACE_PERIOD:
+                count = db.update( AvBContract.PlacePeriodEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri );
         }
@@ -434,6 +460,24 @@ public class AvBProvider extends ContentProvider {
                 try {
                     for (ContentValues value : values) {
                         long rowID = db.insertWithOnConflict(AvBContract.PlaceTypeEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
+                        if (rowID != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            case AvBContract.PLACE_PERIOD:
+                db.beginTransaction();
+                try {
+                    for (ContentValues value : values) {
+                        if(value == null){
+                            continue;
+                        }
+                        long rowID = db.insertWithOnConflict(AvBContract.PlacePeriodEntry.TABLE_NAME, "", value,SQLiteDatabase.CONFLICT_REPLACE);
                         if (rowID != -1) {
                             returnCount++;
                         }

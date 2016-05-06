@@ -47,6 +47,9 @@ public class AvBContract {
 
     public static final String PATH_PLACE_TYPES = "place_types/*";
 
+    public static final String PATH_PLACE_PERIOD = "place_period";
+    public static final String PATH_PLACE_PERIODS = "place_period/*";
+
 
     public static final int PLACE = 1;
     public static final int PLACE_ID = 2;
@@ -63,6 +66,8 @@ public class AvBContract {
     public static final int PLACE_CATEGORY = 13;
     public static final int PLACE_TYPE = 14;
     public static final int PLACE_TYPES = 15;
+    public static final int PLACE_PERIOD = 16;
+    public static final int PLACE_PERIODS = 17;
 
     public static final class PlaceEntry implements BaseColumns {
 
@@ -312,4 +317,27 @@ public class AvBContract {
             return PLACE_TYPE_URI.buildUpon().appendPath(category_id).build();
         }
     }
+
+    public static final class PlacePeriodEntry implements BaseColumns {
+
+        public static final Uri PLACE_PERIOD_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLACE_PERIOD).build();
+
+        public static final Uri PLACE_PERIODS_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_PLACE_PERIODS).build();
+
+        // Place Table Name
+        public static final String TABLE_NAME = "place_period";
+
+        public static final String PLACE_ID = "place_id";
+        public static final String DAY = "day";
+        public static final String TIME = "time";
+        public static final String STATUS = "status";
+
+        public static Uri buildPlacePeriodUri (String place_id) {
+            Uri uri = Uri.parse("content://"+CONTENT_AUTHORITY+"/place_period/" + place_id);
+            return uri;
+        }
+    }
+
 }
