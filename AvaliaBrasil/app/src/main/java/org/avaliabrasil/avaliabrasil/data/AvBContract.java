@@ -53,7 +53,7 @@ public class AvBContract {
 
     public static final int PLACE = 1;
     public static final int PLACE_ID = 2;
-    public static final int PLACEDETAILS = 3;
+    public static final int PLACE_DETAILS = 3;
     public static final int INSTRUMENT = 4;
     public static final int INSTRUMENTS = 5;
     public static final int INSTRUMENT_PLACE = 6;
@@ -71,7 +71,7 @@ public class AvBContract {
 
     public static final class PlaceEntry implements BaseColumns {
 
-        public static final Uri PLACE_URI = Uri.parse("content://"+CONTENT_AUTHORITY+"/places");
+        public static final Uri PLACE_URI = Uri.parse("content://" + CONTENT_AUTHORITY + "/places");
 
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENT;
@@ -95,15 +95,15 @@ public class AvBContract {
         public static final String LONGITUDE = "longitude";
 
 
-        public static Uri getPlaceDetails(String place_id){
-            Uri uri = Uri.parse("content://"+CONTENT_AUTHORITY+"/places/" + place_id);
+        public static Uri getPlaceDetails(String place_id) {
+            Uri uri = Uri.parse("content://" + CONTENT_AUTHORITY + "/places/" + place_id);
             return uri;
         }
     }
 
     public static final class PlaceDetailsEntry implements BaseColumns {
 
-        public static final Uri PLACE_DETAILS_URI = Uri.parse("content://"+CONTENT_AUTHORITY+"/placesdetails");
+        public static final Uri PLACE_DETAILS_URI = Uri.parse("content://" + CONTENT_AUTHORITY + "/placesdetails");
 
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_INSTRUMENT;
@@ -121,6 +121,12 @@ public class AvBContract {
         public static final String FORMATTED_PHONE_NUMBER = "formattedPhoneNumber";
 
         public static final String PHOTO_REFERENCE = "photo_reference";
+
+        public static final String COUNTRY = "country";
+
+        public static final String STATE = "state";
+
+        public static final String CITY = "city";
 
     }
 
@@ -146,7 +152,7 @@ public class AvBContract {
 
         public static final String UPDATED_AT = "updated_at";
 
-        public static Uri buildInstrumentUri (String place_id) {
+        public static Uri buildInstrumentUri(String place_id) {
             return INSTRUMENT_URI.buildUpon().appendPath(place_id).build();
         }
     }
@@ -191,7 +197,7 @@ public class AvBContract {
         public static final String ORDER_QUESTION = "order_question";
 
 
-        public static Uri buildGroupQuestionsUri (String instrument_id) {
+        public static Uri buildGroupQuestionsUri(String instrument_id) {
             return GROUP_URI.buildUpon().appendPath(instrument_id).build();
         }
     }
@@ -223,7 +229,7 @@ public class AvBContract {
         public static final String GROUP_ID = "group_id";
 
 
-        public static Uri buildQuestionsUri (String instrument_id) {
+        public static Uri buildQuestionsUri(String instrument_id) {
             return QUESTION_URI.buildUpon().appendPath(instrument_id).build();
         }
     }
@@ -313,7 +319,7 @@ public class AvBContract {
 
         public static final String NAME = "name";
 
-        public static Uri buildPlaceTypeUri (String category_id) {
+        public static Uri buildPlaceTypeUri(String category_id) {
             return PLACE_TYPE_URI.buildUpon().appendPath(category_id).build();
         }
     }
@@ -334,8 +340,8 @@ public class AvBContract {
         public static final String TIME = "time";
         public static final String STATUS = "status";
 
-        public static Uri buildPlacePeriodUri (String place_id) {
-            Uri uri = Uri.parse("content://"+CONTENT_AUTHORITY+"/place_period/" + place_id);
+        public static Uri buildPlacePeriodUri(String place_id) {
+            Uri uri = Uri.parse("content://" + CONTENT_AUTHORITY + "/place_period/" + place_id);
             return uri;
         }
     }

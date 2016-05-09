@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -44,198 +43,154 @@ public class PlaceStatistics {
     private List<Comment> comments = new ArrayList<Comment>();
 
     /**
-     * 
-     * @return
-     *     The id
+     * @return The id
      */
     public Integer getId() {
         return id;
     }
 
     /**
-     * 
-     * @param id
-     *     The id
+     * @param id The id
      */
     public void setId(Integer id) {
         this.id = id;
     }
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
-     * @return
-     *     The city
+     * @return The city
      */
     public String getCity() {
         return city;
     }
 
     /**
-     * 
-     * @param city
-     *     The city
+     * @param city The city
      */
     public void setCity(String city) {
         this.city = city;
     }
 
     /**
-     * 
-     * @return
-     *     The state
+     * @return The state
      */
     public String getState() {
         return state;
     }
 
     /**
-     * 
-     * @param state
-     *     The state
+     * @param state The state
      */
     public void setState(String state) {
         this.state = state;
     }
 
     /**
-     * 
-     * @return
-     *     The category
+     * @return The category
      */
     public String getCategory() {
         return category;
     }
 
     /**
-     * 
-     * @param category
-     *     The category
+     * @param category The category
      */
     public void setCategory(String category) {
         this.category = category;
     }
 
     /**
-     * 
-     * @return
-     *     The type
+     * @return The type
      */
     public String getType() {
         return type;
     }
 
     /**
-     * 
-     * @param type
-     *     The type
+     * @param type The type
      */
     public void setType(String type) {
         this.type = type;
     }
 
     /**
-     * 
-     * @return
-     *     The qualityIndex
+     * @return The qualityIndex
      */
     public List<QualityIndex> getQualityIndex() {
         return qualityIndex;
     }
 
     /**
-     * 
-     * @param qualityIndex
-     *     The qualityIndex
+     * @param qualityIndex The qualityIndex
      */
     public void setQualityIndex(List<QualityIndex> qualityIndex) {
         this.qualityIndex = qualityIndex;
     }
 
     /**
-     * 
-     * @return
-     *     The rankingPosition
+     * @return The rankingPosition
      */
     public RankingPosition getRankingPosition() {
         return rankingPosition;
     }
 
     /**
-     * 
-     * @param rankingPosition
-     *     The rankingPosition
+     * @param rankingPosition The rankingPosition
      */
     public void setRankingPosition(RankingPosition rankingPosition) {
         this.rankingPosition = rankingPosition;
     }
 
     /**
-     * 
-     * @return
-     *     The rankingStatus
+     * @return The rankingStatus
      */
     public RankingStatus getRankingStatus() {
         return rankingStatus;
     }
 
     /**
-     * 
-     * @param rankingStatus
-     *     The rankingStatus
+     * @param rankingStatus The rankingStatus
      */
     public void setRankingStatus(RankingStatus rankingStatus) {
         this.rankingStatus = rankingStatus;
     }
 
     /**
-     * 
-     * @return
-     *     The lastWeekSurveys
+     * @return The lastWeekSurveys
      */
     public Integer getLastWeekSurveys() {
         return lastWeekSurveys;
     }
 
     /**
-     * 
-     * @param lastWeekSurveys
-     *     The lastWeekSurveys
+     * @param lastWeekSurveys The lastWeekSurveys
      */
     public void setLastWeekSurveys(Integer lastWeekSurveys) {
         this.lastWeekSurveys = lastWeekSurveys;
     }
 
     /**
-     * 
-     * @return
-     *     The comments
+     * @return The comments
      */
     public List<Comment> getComments() {
         return comments;
     }
 
     /**
-     * 
-     * @param comments
-     *     The comments
+     * @param comments The comments
      */
     public void setComments(List<Comment> comments) {
         this.comments = comments;

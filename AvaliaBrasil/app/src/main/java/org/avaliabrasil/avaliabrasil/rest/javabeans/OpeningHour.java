@@ -1,9 +1,10 @@
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OpeningHour {
 
@@ -16,36 +17,28 @@ public class OpeningHour {
     private List<Period> periods = new ArrayList<Period>();
 
     /**
-     *
-     * @return
-     * The openNow
+     * @return The openNow
      */
     public Boolean getOpenNow() {
         return openNow;
     }
 
     /**
-     *
-     * @param openNow
-     * The open_now
+     * @param openNow The open_now
      */
     public void setOpenNow(Boolean openNow) {
         this.openNow = openNow;
     }
 
     /**
-     *
-     * @return
-     * The periods
+     * @return The periods
      */
     public List<Period> getPeriods() {
         return periods;
     }
 
     /**
-     *
-     * @param periods
-     * The periods
+     * @param periods The periods
      */
     public void setPeriods(List<Period> periods) {
         this.periods = periods;

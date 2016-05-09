@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -14,18 +13,14 @@ public class PlaceRankingSearch {
     private List<PlaceRanking> placeRankings = new ArrayList<PlaceRanking>();
 
     /**
-     * 
-     * @return
-     *     The placeRankings
+     * @return The placeRankings
      */
     public List<PlaceRanking> getPlaceRankings() {
         return placeRankings;
     }
 
     /**
-     * 
-     * @param placeRankings
-     *     The placeRankings
+     * @param placeRankings The placeRankings
      */
     public void setPlaceRankings(List<PlaceRanking> placeRankings) {
         this.placeRankings = placeRankings;

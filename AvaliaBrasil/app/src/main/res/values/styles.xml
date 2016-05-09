@@ -52,7 +52,7 @@
         <item name="android:textColor">@color/blackText</item>
     </style>
 
-    <style name="DefaultText.GreyText" >
+    <style name="DefaultText.GreyText">
         <item name="android:textColor">@color/greyText</item>
     </style>
 

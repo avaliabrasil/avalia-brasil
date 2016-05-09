@@ -12,7 +12,7 @@ public class User {
     private String email;
     private String android_id;
 
-    public User(){
+    public User() {
 
     }
 

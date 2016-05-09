@@ -2,12 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
-    <include layout="@layout/fragment_question" ></include>
+    <include layout="@layout/fragment_question"></include>
 
-    <include layout="@layout/content_category_type" ></include>
+    <include layout="@layout/content_category_type"></include>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
@@ -20,6 +19,6 @@
         android:id="@+id/rcType"
         android:visibility="gone"></android.support.v7.widget.RecyclerView>
 
-    <include layout="@layout/content_submit_button" ></include>
+    <include layout="@layout/content_submit_button"></include>
 
 </LinearLayout>

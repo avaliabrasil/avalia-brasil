@@ -48,7 +48,7 @@ public class PlaceClassificationAdapter extends RecyclerView.Adapter<PlaceClassi
             title.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onItemSelectedListener.onItemSelected(null,v,getPosition(),1);
+                    onItemSelectedListener.onItemSelected(null, v, getPosition(), 1);
                 }
             });
         }

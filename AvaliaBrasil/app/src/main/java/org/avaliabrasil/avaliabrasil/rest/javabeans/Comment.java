@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -14,36 +13,28 @@ public class Comment {
     private String description;
 
     /**
-     * 
-     * @return
-     *     The uid
+     * @return The uid
      */
     public Integer getUid() {
         return uid;
     }
 
     /**
-     * 
-     * @param uid
-     *     The uid
+     * @param uid The uid
      */
     public void setUid(Integer uid) {
         this.uid = uid;
     }
 
     /**
-     * 
-     * @return
-     *     The description
+     * @return The description
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * 
-     * @param description
-     *     The description
+     * @param description The description
      */
     public void setDescription(String description) {
         this.description = description;

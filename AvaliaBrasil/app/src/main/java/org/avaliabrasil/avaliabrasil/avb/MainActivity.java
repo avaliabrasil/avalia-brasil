@@ -1,6 +1,5 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
-import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
@@ -12,7 +11,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -20,11 +18,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -306,15 +302,15 @@ public class MainActivity extends AppCompatActivity
 
                 this.location = providerLocation;
 
-                ((AvaliaBrasilApplication)getApplication()).setLocation(location);
+                ((AvaliaBrasilApplication) getApplication()).setLocation(location);
 
                 fetchDataFromGoogleAPI();
 
                 getSupportLoaderManager().restartLoader(0, null, MainActivity.this);
 
-                try{
+                try {
                     locationManager.removeUpdates(MainActivity.this);
-                }catch(SecurityException e){
+                } catch (SecurityException e) {
 
                 }
             }
@@ -406,38 +402,37 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private boolean checkIfThereIsPendingSurvey(){
-        Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,null,AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?",new String[]{"false"},"_id desc");
+    private boolean checkIfThereIsPendingSurvey() {
+        Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, null, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?", new String[]{"false"}, "_id desc");
         return c.getCount() > 0;
     }
 
-    private String getPlaceNameByPlaceId(String place_id){
-        Cursor c = getContentResolver().query(AvBContract.PlaceEntry.getPlaceDetails(place_id),null,null,null,null);
+    private String getPlaceNameByPlaceId(String place_id) {
+        Cursor c = getContentResolver().query(AvBContract.PlaceEntry.getPlaceDetails(place_id), null, null, null, null);
         c.moveToNext();
         return c.getString(c.getColumnIndex("name"));
     }
 
 
-
-    private void syncAnwsers(){
-        Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,new String[]{AvBContract.SurveyEntry.PLACE_ID},null,null,null);
+    private void syncAnwsers() {
+        Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, new String[]{AvBContract.SurveyEntry.PLACE_ID}, null, null, null);
 
         ArrayList<String> ids = new ArrayList<>();
 
-        while(c.moveToNext()){
-            if(!ids.contains(c.getString(c.getColumnIndex(AvBContract.SurveyEntry.PLACE_ID)))){
+        while (c.moveToNext()) {
+            if (!ids.contains(c.getString(c.getColumnIndex(AvBContract.SurveyEntry.PLACE_ID)))) {
                 ids.add(c.getString(c.getColumnIndex(AvBContract.SurveyEntry.PLACE_ID)));
             }
         }
 
-        for(final String place_id : ids){
+        for (final String place_id : ids) {
             StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.postAnwsers(place_id),
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
 
                             getContentResolver().delete(AvBContract.NewPlaceEntry.NEWPLACE_URI, AvBContract.NewPlaceEntry.PLACE_ID + " = ?", new String[]{place_id});
-                            getContentResolver().delete(AvBContract.SurveyEntry.SURVEY_URI, AvBContract.SurveyEntry.PLACE_ID + " = ?",new String[]{place_id});
+                            getContentResolver().delete(AvBContract.SurveyEntry.SURVEY_URI, AvBContract.SurveyEntry.PLACE_ID + " = ?", new String[]{place_id});
 
                         }
                     }, new Response.ErrorListener() {
@@ -455,9 +450,9 @@ public class MainActivity extends AppCompatActivity
 
                     JsonArray anwserArray = new JsonArray();
 
-                    Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,null,AvBContract.SurveyEntry.PLACE_ID + " = ?",new String[]{place_id},"_id asc");
+                    Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, null, AvBContract.SurveyEntry.PLACE_ID + " = ?", new String[]{place_id}, "_id asc");
 
-                    while(c.moveToNext()){
+                    while (c.moveToNext()) {
                         JsonObject obj = new JsonObject();
 
                         obj.addProperty("question_id", c.getString(c.getColumnIndex(AvBContract.SurveyEntry.QUESTION_ID)));
@@ -468,20 +463,20 @@ public class MainActivity extends AppCompatActivity
 
                         JsonObject anwser = new JsonObject();
 
-                        if(type.contains("number")){
-                            anwser.addProperty("number",c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
-                            anwser.addProperty("likert","");
-                            anwser.addProperty("comment","");
+                        if (type.contains("number")) {
+                            anwser.addProperty("number", c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
+                            anwser.addProperty("likert", "");
+                            anwser.addProperty("comment", "");
 
-                        }else if(type.contains("comment")){
-                            anwser.addProperty("comment",c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
-                            anwser.addProperty("likert","");
-                            anwser.addProperty("number","");
+                        } else if (type.contains("comment")) {
+                            anwser.addProperty("comment", c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
+                            anwser.addProperty("likert", "");
+                            anwser.addProperty("number", "");
 
-                        }else if(type.contains("likert")){
-                            anwser.addProperty("likert",c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
-                            anwser.addProperty("number","");
-                            anwser.addProperty("comment","");
+                        } else if (type.contains("likert")) {
+                            anwser.addProperty("likert", c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
+                            anwser.addProperty("number", "");
+                            anwser.addProperty("comment", "");
                         }
 
                         anwsers.add(anwser);
@@ -523,7 +518,7 @@ public class MainActivity extends AppCompatActivity
         protected Void doInBackground(Void... params) {
             try {
                 syncAnwsers();
-                getContentResolver().delete(AvBContract.NewPlaceEntry.NEWPLACE_URI,null,null);
+                getContentResolver().delete(AvBContract.NewPlaceEntry.NEWPLACE_URI, null, null);
                 //getContentResolver().delete(AvBContract.QuestionEntry.QUESTION_URI,null,null);
 
                 if (getIntent().getExtras() != null) {
@@ -602,7 +597,7 @@ public class MainActivity extends AppCompatActivity
                                     if (Utils.isBetterLocation(providerLocation, location)) {
                                         location = providerLocation;
 
-                                        ((AvaliaBrasilApplication)getApplication()).setLocation(location);
+                                        ((AvaliaBrasilApplication) getApplication()).setLocation(location);
                                     }
                                 }
                             }
@@ -642,46 +637,46 @@ public class MainActivity extends AppCompatActivity
                         ivProfilePhoto.setImageBitmap(new CircleTransform().transform(photo));
                     }
 
-                    if(checkIfThereIsPendingSurvey()){
+                    if (checkIfThereIsPendingSurvey()) {
 
 
                         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Cursor c;
-                                switch (which){
+                                switch (which) {
                                     case DialogInterface.BUTTON_POSITIVE:
 
-                                        c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,null,AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?",new String[]{"false"},"_id desc");
+                                        c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, null, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?", new String[]{"false"}, "_id desc");
 
                                         c.moveToNext();
 
                                         String place_id = c.getString(c.getColumnIndex(AvBContract.SurveyEntry.PLACE_ID));
 
-                                        Intent intent = new Intent(MainActivity.this,EvaluationActivity.class);
+                                        Intent intent = new Intent(MainActivity.this, EvaluationActivity.class);
 
-                                        intent.putExtra("placeid",place_id);
+                                        intent.putExtra("placeid", place_id);
 
-                                        intent.putExtra("name",getPlaceNameByPlaceId(place_id));
+                                        intent.putExtra("name", getPlaceNameByPlaceId(place_id));
 
                                         Holder holder = new Holder();
 
                                         ArrayList<String> ids = new ArrayList<String>();
 
-                                        c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id),null,null,null,null);
+                                        c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id), null, null, null, null);
 
                                         List<Instrument> instruments = new ArrayList<Instrument>();
 
                                         //Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
 
-                                        while(c.moveToNext()){
+                                        while (c.moveToNext()) {
                                             ids.add(c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
                                         }
 
-                                        for(String id : ids){
-                                            c = getContentResolver().query(AvBContract.GroupQuestionEntry.buildGroupQuestionsUri(id),null,null,null,null);
+                                        for (String id : ids) {
+                                            c = getContentResolver().query(AvBContract.GroupQuestionEntry.buildGroupQuestionsUri(id), null, null, null, null);
 
-                                            instruments.add(new Instrument(id,c));
+                                            instruments.add(new Instrument(id, c));
                                         }
 
                                         holder.setInstruments(instruments);
@@ -694,12 +689,12 @@ public class MainActivity extends AppCompatActivity
 
                                     case DialogInterface.BUTTON_NEGATIVE:
 
-                                        c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI,null,AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?",new String[]{"false"},"_id desc");
+                                        c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, null, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?", new String[]{"false"}, "_id desc");
 
                                         c.moveToNext();
 
                                         getContentResolver().delete(AvBContract.NewPlaceEntry.NEWPLACE_URI, AvBContract.NewPlaceEntry.PLACE_ID + " = ?", new String[]{c.getString(c.getColumnIndex(AvBContract.SurveyEntry.PLACE_ID))});
-                                        getContentResolver().delete(AvBContract.SurveyEntry.SURVEY_URI, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?",new String[]{"false"});
+                                        getContentResolver().delete(AvBContract.SurveyEntry.SURVEY_URI, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?", new String[]{"false"});
 
                                         break;
                                 }

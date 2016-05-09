@@ -80,7 +80,7 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         double latitude = activity.location == null ? 0 : activity.location.getLatitude();
         double longitude = activity.location == null ? 0 : activity.location.getLongitude();
 
-        if(!(latitude == 0 || longitude == 0)){
+        if (!(latitude == 0 || longitude == 0)) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(latitude, longitude)).zoom(16).build();
 
@@ -124,13 +124,13 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
     }
 
     @Override
-    public synchronized void update( Cursor cursor) {
+    public synchronized void update(Cursor cursor) {
         googleMap.clear();
 
         double latitude = activity.location == null ? 0 : activity.location.getLatitude();
         double longitude = activity.location == null ? 0 : activity.location.getLongitude();
 
-        if(!(latitude == 0 || longitude == 0)){
+        if (!(latitude == 0 || longitude == 0)) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(new LatLng(latitude, longitude)).zoom(16).build();
 
@@ -140,16 +140,16 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
 
         MarkerOptions marker;
 
-        if(cursor == null){
+        if (cursor == null) {
             return;
         }
 
-        if(cursor.isLast()){
+        if (cursor.isLast()) {
             cursor.moveToPosition(-1);
         }
 
         IconGenerator iconGenerator = new IconGenerator(getContext());
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             iconGenerator.setStyle(getStyle());
 
             Bitmap image = iconGenerator.makeIcon(cursor.getString(cursor.getColumnIndex("name")));
@@ -165,10 +165,11 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
     }
 
 
-    private static int counter=0;
-    private int getStyle(){
+    private static int counter = 0;
+
+    private int getStyle() {
         counter++;
-        if(counter > 7){
+        if (counter > 7) {
             counter = 0;
         }
         return counter;
@@ -182,9 +183,9 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         placeLocation.setLatitude(marker.getPosition().latitude);
         placeLocation.setLongitude(marker.getPosition().longitude);
 
-        intent.putExtra("placeid",marker.getTitle());
-        intent.putExtra("distance",(int)(activity.location== null  ? 0 : activity.location.distanceTo(placeLocation)) + "m");
-        intent.putExtra("name",marker.getSnippet());
+        intent.putExtra("placeid", marker.getTitle());
+        intent.putExtra("distance", (int) (activity.location == null ? 0 : activity.location.distanceTo(placeLocation)) + "m");
+        intent.putExtra("name", marker.getSnippet());
 
         startActivity(intent);
         return true;

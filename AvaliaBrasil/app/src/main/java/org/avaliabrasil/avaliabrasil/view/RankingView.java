@@ -33,17 +33,17 @@ public class RankingView extends RelativeLayout {
 
     private void init() {
         inflate(getContext(), R.layout.content_ranking, this);
-        this.tvClassificationType = (TextView)findViewById(R.id.tvClassificationType);
-        this.tvRank = (TextView)findViewById(R.id.tvRank);
-        this.ivRankingStatus = (ImageView)findViewById(R.id.ivRankingStatus);
+        this.tvClassificationType = (TextView) findViewById(R.id.tvClassificationType);
+        this.tvRank = (TextView) findViewById(R.id.tvRank);
+        this.ivRankingStatus = (ImageView) findViewById(R.id.ivRankingStatus);
     }
 
-    public void setUpView(String classificationType , Integer rank , String status){
+    public void setUpView(String classificationType, Integer rank, String status) {
         tvClassificationType.setText(classificationType);
 
         tvRank.setText(rank + "º");
 
-        switch(status){
+        switch (status) {
             case "up":
                 ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
                 break;

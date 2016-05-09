@@ -8,10 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Klaus Klein
  */
-public class Holder implements Serializable{
+public class Holder implements Serializable {
 
     @SerializedName("instruments")
     @Expose
@@ -29,7 +28,6 @@ public class Holder implements Serializable{
     @SerializedName("placeTypes")
     @Expose
     private List<AvaliaBrasilPlaceType> placeTypes = new ArrayList<AvaliaBrasilPlaceType>();
-
 
 
     public List<Instrument> getInstruments() {

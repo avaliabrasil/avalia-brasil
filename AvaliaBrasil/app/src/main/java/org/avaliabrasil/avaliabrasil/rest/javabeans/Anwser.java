@@ -17,13 +17,13 @@ public class Anwser {
 
     public Anwser(String question_id, String likert, String comment, String number) {
         this.question_id = question_id;
-        if(likert != null){
+        if (likert != null) {
             this.likert = likert;
         }
-        if(comment != null){
+        if (comment != null) {
             this.comment = comment;
         }
-        if(number != null){
+        if (number != null) {
             this.number = number;
         }
     }
@@ -60,18 +60,18 @@ public class Anwser {
         this.number = number;
     }
 
-    public JsonObject toJson(){
+    public JsonObject toJson() {
         JsonObject obj = new JsonObject();
 
-        obj.addProperty("question_id",question_id);
+        obj.addProperty("question_id", question_id);
 
         JsonObject anwsers = new JsonObject();
 
-        anwsers.addProperty("likert",getLikert());
-        anwsers.addProperty("comment",getComment());
-        anwsers.addProperty("number",getNumber());
+        anwsers.addProperty("likert", getLikert());
+        anwsers.addProperty("comment", getComment());
+        anwsers.addProperty("number", getNumber());
 
-        obj.add("anwsers",anwsers);
+        obj.add("anwsers", anwsers);
 
         Log.d("Anwser", "toJson: ".concat(obj.toString()));
 

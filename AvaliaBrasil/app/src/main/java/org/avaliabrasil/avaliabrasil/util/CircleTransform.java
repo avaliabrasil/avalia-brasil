@@ -3,6 +3,7 @@ package org.avaliabrasil.avaliabrasil.util;
 /**
  * Created by Developer on 05/04/2016.
  */
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;

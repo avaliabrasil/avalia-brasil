@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * @version 1.0
  * @since 1.0
  */
-public class NewPlaceFragment extends TransactionFragment implements AdapterView.OnItemSelectedListener{
+public class NewPlaceFragment extends TransactionFragment implements AdapterView.OnItemSelectedListener {
 
     /**
      *
@@ -87,11 +87,11 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
 
         btnSubmit = (Button) rootView.findViewById(R.id.btnSubmit);
 
-        btnSubmit.setOnClickListener((EvaluationActivity)getActivity());
+        btnSubmit.setOnClickListener((EvaluationActivity) getActivity());
 
-        category =(ArrayList<AvaliaBrasilCategory>) getArguments().getSerializable("categoriess");
+        category = (ArrayList<AvaliaBrasilCategory>) getArguments().getSerializable("categoriess");
 
-        types =(ArrayList<AvaliaBrasilPlaceType>) getArguments().getSerializable("types");
+        types = (ArrayList<AvaliaBrasilPlaceType>) getArguments().getSerializable("types");
 
         btnSubmit.setVisibility(View.GONE);
 
@@ -100,7 +100,7 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
         rcCategory.setItemAnimator(new DefaultItemAnimator());
         rcCategory.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.abc_list_divider_mtrl_alpha)));
 
-        rcCategory.setAdapter(new CategoryAdapter(getContext(),category,this));
+        rcCategory.setAdapter(new CategoryAdapter(getContext(), category, this));
         rcCategory.setHasFixedSize(true);
 
         rcType.setItemAnimator(new DefaultItemAnimator());
@@ -111,21 +111,21 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
 
     @Override
     public boolean isAnwser() {
-        return isCategorySelected&&isPlaceSelected;
+        return isCategorySelected && isPlaceSelected;
     }
 
     @Override
     public Integer[] getAnwser() {
-        if(!isAnwser()){
+        if (!isAnwser()) {
             return null;
         }
 
-        Integer[] response = new Integer[]{Integer.valueOf(category_pos),Integer.valueOf(type_pos)};
+        Integer[] response = new Integer[]{Integer.valueOf(category_pos), Integer.valueOf(type_pos)};
 
-         return response;
+        return response;
     }
 
-    boolean isCategorySelected= false;
+    boolean isCategorySelected = false;
     boolean isPlaceSelected = false;
     String category_pos;
     String type_pos;
@@ -134,7 +134,7 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-        if(id == 1){
+        if (id == 1) {
             tvCategory.setText(tvCategory.getText() + " " + category.get(position).getCategory());
             rcCategory.setVisibility(View.GONE);
             rcType.setVisibility(View.VISIBLE);
@@ -143,9 +143,9 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
             isCategorySelected = true;
             category_pos = category.get(position).getIdCategory();
 
-            rcType.setAdapter(new PlaceTypeAdapter(getContext(),types,this,category.get(position).getIdCategory()));
+            rcType.setAdapter(new PlaceTypeAdapter(getContext(), types, this, category.get(position).getIdCategory()));
             rcType.setHasFixedSize(true);
-        }else{
+        } else {
             tvType.setText(tvType.getText() + " " + types.get(position).getCategory());
             rcType.setVisibility(View.GONE);
             isPlaceSelected = true;

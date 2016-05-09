@@ -61,7 +61,7 @@ public class Group implements Serializable {
         this.questions = questions;
     }
 
-    public void addQuestion(Question question){
+    public void addQuestion(Question question) {
         questions.add(question);
     }
 }

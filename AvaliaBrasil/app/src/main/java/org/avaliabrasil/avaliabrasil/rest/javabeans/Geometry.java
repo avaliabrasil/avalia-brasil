@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -17,36 +16,28 @@ public class Geometry {
     private Location location;
 
     /**
-     * 
-     * @return
-     *     The accessPoints
+     * @return The accessPoints
      */
     public List<AccessPoint> getAccessPoints() {
         return accessPoints;
     }
 
     /**
-     * 
-     * @param accessPoints
-     *     The access_points
+     * @param accessPoints The access_points
      */
     public void setAccessPoints(List<AccessPoint> accessPoints) {
         this.accessPoints = accessPoints;
     }
 
     /**
-     * 
-     * @return
-     *     The location
+     * @return The location
      */
     public Location getLocation() {
         return location;
     }
 
     /**
-     * 
-     * @param location
-     *     The location
+     * @param location The location
      */
     public void setLocation(Location location) {
         this.location = location;

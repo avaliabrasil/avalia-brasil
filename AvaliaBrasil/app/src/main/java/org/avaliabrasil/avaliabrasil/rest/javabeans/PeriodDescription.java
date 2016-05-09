@@ -16,36 +16,28 @@ public class PeriodDescription {
     private String time;
 
     /**
-     *
-     * @return
-     * The day
+     * @return The day
      */
     public Integer getDay() {
         return day;
     }
 
     /**
-     *
-     * @param day
-     * The day
+     * @param day The day
      */
     public void setDay(Integer day) {
         this.day = day;
     }
 
     /**
-     *
-     * @return
-     * The time
+     * @return The time
      */
     public String getTime() {
         return time;
     }
 
     /**
-     *
-     * @param time
-     * The time
+     * @param time The time
      */
     public void setTime(String time) {
         this.time = time;

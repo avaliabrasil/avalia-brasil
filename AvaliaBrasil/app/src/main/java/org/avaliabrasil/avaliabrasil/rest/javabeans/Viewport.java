@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -14,36 +13,28 @@ public class Viewport {
     private Location southwest;
 
     /**
-     * 
-     * @return
-     *     The northeast
+     * @return The northeast
      */
     public Location getNortheast() {
         return northeast;
     }
 
     /**
-     * 
-     * @param northeast
-     *     The northeast
+     * @param northeast The northeast
      */
     public void setNortheast(Location northeast) {
         this.northeast = northeast;
     }
 
     /**
-     * 
-     * @return
-     *     The southwest
+     * @return The southwest
      */
     public Location getSouthwest() {
         return southwest;
     }
 
     /**
-     * 
-     * @param southwest
-     *     The southwest
+     * @param southwest The southwest
      */
     public void setSouthwest(Location southwest) {
         this.southwest = southwest;

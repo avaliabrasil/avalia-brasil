@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -20,72 +19,56 @@ public class RankingPosition {
     private Integer municipal;
 
     /**
-     * 
-     * @return
-     *     The national
+     * @return The national
      */
     public Integer getNational() {
         return national;
     }
 
     /**
-     * 
-     * @param national
-     *     The national
+     * @param national The national
      */
     public void setNational(Integer national) {
         this.national = national;
     }
 
     /**
-     * 
-     * @return
-     *     The regional
+     * @return The regional
      */
     public Integer getRegional() {
         return regional;
     }
 
     /**
-     * 
-     * @param regional
-     *     The regional
+     * @param regional The regional
      */
     public void setRegional(Integer regional) {
         this.regional = regional;
     }
 
     /**
-     * 
-     * @return
-     *     The state
+     * @return The state
      */
     public Integer getState() {
         return state;
     }
 
     /**
-     * 
-     * @param state
-     *     The state
+     * @param state The state
      */
     public void setState(Integer state) {
         this.state = state;
     }
 
     /**
-     * 
-     * @return
-     *     The municipal
+     * @return The municipal
      */
     public Integer getMunicipal() {
         return municipal;
     }
 
     /**
-     * 
-     * @param municipal
-     *     The municipal
+     * @param municipal The municipal
      */
     public void setMunicipal(Integer municipal) {
         this.municipal = municipal;

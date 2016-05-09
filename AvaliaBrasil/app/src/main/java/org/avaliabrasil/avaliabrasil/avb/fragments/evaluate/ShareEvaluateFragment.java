@@ -53,11 +53,11 @@ public class ShareEvaluateFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setRetainInstance(true);
 
-        if(!FacebookSdk.isInitialized()){
+        if (!FacebookSdk.isInitialized()) {
             FacebookSdk.sdkInitialize(getContext());
         }
 
-        shareString = getArguments().getString("shareString","");
+        shareString = getArguments().getString("shareString", "");
 
         View rootView = inflater.inflate(R.layout.fragment_share_evaluate, container, false);
 
@@ -65,7 +65,7 @@ public class ShareEvaluateFragment extends Fragment {
 
         tvSkip = (TextView) rootView.findViewById(R.id.tvSkip);
 
-        tvSkip.setOnClickListener((EvaluationActivity)getActivity());
+        tvSkip.setOnClickListener((EvaluationActivity) getActivity());
 
         shareLinkContent = new ShareLinkContent.Builder()
                 .setContentUrl(Uri.parse("https://www.facebook.com/avaliabrasil.org/"))
@@ -74,12 +74,12 @@ public class ShareEvaluateFragment extends Fragment {
 
         btnShare.setShareContent(shareLinkContent);
 
-        callbackManager = ((EvaluationActivity)getActivity()).getCallbackManager();
+        callbackManager = ((EvaluationActivity) getActivity()).getCallbackManager();
 
-        btnShare.registerCallback(callbackManager , new FacebookCallback<Sharer.Result>() {
+        btnShare.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result shareResult) {
-                Toast.makeText(getContext(),getResources().getString(R.string.evaluate_shared),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getResources().getString(R.string.evaluate_shared), Toast.LENGTH_SHORT).show();
                 tvSkip.performClick();
             }
 
@@ -89,7 +89,7 @@ public class ShareEvaluateFragment extends Fragment {
 
             @Override
             public void onError(FacebookException exception) {
-                Toast.makeText(getContext(),getResources().getString(R.string.evaluate_shared_error),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getResources().getString(R.string.evaluate_shared_error), Toast.LENGTH_SHORT).show();
             }
         });
 

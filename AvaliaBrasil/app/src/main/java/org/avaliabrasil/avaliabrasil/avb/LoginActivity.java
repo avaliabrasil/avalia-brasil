@@ -1,13 +1,11 @@
 package org.avaliabrasil.avaliabrasil.avb;
 
-import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -91,17 +89,17 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        accountManager =  AccountManager.get(this);
+        accountManager = AccountManager.get(this);
 
         locationPermission = new LocationPermission(this);
 
-        if(!FacebookSdk.isInitialized()) {
+        if (!FacebookSdk.isInitialized()) {
             FacebookSdk.sdkInitialize(LoginActivity.this);
         }
 
         setContentView(R.layout.activity_login);
 
-        user = ((AvaliaBrasilApplication)getApplication()).getUser();
+        user = ((AvaliaBrasilApplication) getApplication()).getUser();
 
         callbackManager = CallbackManager.Factory.create();
         facebookLoginButton = (LoginButton) findViewById(R.id.login_button);
@@ -109,8 +107,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
 
         /** Prevent user to log out via the login page */
-        if(accessToken != null){
-           facebookLoginButton.setVisibility(View.GONE);
+        if (accessToken != null) {
+            facebookLoginButton.setVisibility(View.GONE);
         }
 
         /** Callback for the facebook API to get user details */
@@ -149,7 +147,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                 }
-                                            }catch(Exception e){
+                                            } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
 
@@ -190,25 +188,24 @@ public class LoginActivity extends AccountAuthenticatorActivity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void startMainActivity(View view){
-        if(accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0){
+    public void startMainActivity(View view) {
+        if (accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0) {
             Snackbar
-                    .make(findViewById(R.id.layout),getResources().getString(R.string.user_already_logged), Snackbar.LENGTH_LONG)
+                    .make(findViewById(R.id.layout), getResources().getString(R.string.user_already_logged), Snackbar.LENGTH_LONG)
                     .show();
-        }else{
+        } else {
             checkForPermissions();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch(requestCode) {
+        switch (requestCode) {
             case LocationPermission.INITIAL_REQUEST:
-                if (locationPermission.canAccessFineLocation()&&locationPermission.canAccessCoarseLocation()) {
+                if (locationPermission.canAccessFineLocation() && locationPermission.canAccessCoarseLocation()) {
                     getUserToken(LoginActivity.this);
-                }
-                else {
-                    Toast.makeText(LoginActivity.this,getResources().getString(R.string.location_access_needed),Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(LoginActivity.this, getResources().getString(R.string.location_access_needed), Toast.LENGTH_LONG).show();
                 }
                 break;
         }
@@ -216,35 +213,36 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
     /**
      * Get the user token and add it to the {@link Account}
+     *
      * @param context
      */
-    public void getUserToken(final Context context){
-       StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserTokenURL(),
+    public void getUserToken(final Context context) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.getUserTokenURL(),
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Gson gson = new Gson();
                         JsonParser jsonParser = new JsonParser();
-                        JsonObject jo = (JsonObject)jsonParser.parse("{\"data\":{\"token\":\"token\",\"expires\":\"4ever\"}}"/*response*/);
+                        JsonObject jo = (JsonObject) jsonParser.parse("{\"data\":{\"token\":\"token\",\"expires\":\"4ever\"}}"/*response*/);
 
                         UserToken userToken = gson.fromJson(jo.get("data").getAsJsonObject(), UserToken.class);
 
                         user.setToken(userToken.getToken());
 
-                        Intent intent_main_activity = new Intent(context,MainActivity.class);
+                        Intent intent_main_activity = new Intent(context, MainActivity.class);
                         intent_main_activity.putExtra("userId", user.getAndroid_id());
 
                         Account account = new Account(user.getName() == null ? "Anonimo" : user.getName(), Constant.ACCOUNT_TYPE);
 
                         Bundle bundle = new Bundle();
 
-                        bundle.putString(AccountManager.KEY_ACCOUNT_TYPE,Constant.ACCOUNT_TYPE);
-                        bundle.putString(AccountManager.KEY_ACCOUNT_NAME,user.getName() == null ? "Anonimo" : user.getName());
-                        bundle.putString(AccountManager.KEY_AUTHTOKEN,user.getToken());
-                        bundle.putString(Constant.ACCOUNT_EMAIL,user.getEmail() == null ? "avaliabrasil@gmail.com":user.getEmail());
-                        bundle.putString(Constant.ARG_ACCOUNT_TYPE,user.getName() == null ? Constant.ACCOUNT_TYPE_USER : Constant.ACCOUNT_TYPE_FACEBOOK);
+                        bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, Constant.ACCOUNT_TYPE);
+                        bundle.putString(AccountManager.KEY_ACCOUNT_NAME, user.getName() == null ? "Anonimo" : user.getName());
+                        bundle.putString(AccountManager.KEY_AUTHTOKEN, user.getToken());
+                        bundle.putString(Constant.ACCOUNT_EMAIL, user.getEmail() == null ? "avaliabrasil@gmail.com" : user.getEmail());
+                        bundle.putString(Constant.ARG_ACCOUNT_TYPE, user.getName() == null ? Constant.ACCOUNT_TYPE_USER : Constant.ACCOUNT_TYPE_FACEBOOK);
 
-                        accountManager.addAccountExplicitly(account,null,bundle);
+                        accountManager.addAccountExplicitly(account, null, bundle);
 
                         setAccountAuthenticatorResult(bundle);
 
@@ -253,74 +251,74 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
                         ContentValues[] values = new ContentValues[2];
 
-                        for(int i = 0 ; i < values.length ; i++){
+                        for (int i = 0; i < values.length; i++) {
                             values[i] = new ContentValues();
                         }
 
-                        values[0].put(AvBContract.PlaceCategoryEntry.CATEGORY_ID,1);
-                        values[0].put(AvBContract.PlaceCategoryEntry.NAME,"Saúde");
+                        values[0].put(AvBContract.PlaceCategoryEntry.CATEGORY_ID, 1);
+                        values[0].put(AvBContract.PlaceCategoryEntry.NAME, "Saúde");
 
-                        values[1].put(AvBContract.PlaceCategoryEntry.CATEGORY_ID,2);
-                        values[1].put(AvBContract.PlaceCategoryEntry.NAME,"Educação");
+                        values[1].put(AvBContract.PlaceCategoryEntry.CATEGORY_ID, 2);
+                        values[1].put(AvBContract.PlaceCategoryEntry.NAME, "Educação");
 
-                        getContentResolver().bulkInsert(AvBContract.PlaceCategoryEntry.PLACE_CATEGORY_URI,values);
+                        getContentResolver().bulkInsert(AvBContract.PlaceCategoryEntry.PLACE_CATEGORY_URI, values);
 
                         values = new ContentValues[8];
 
-                        for(int i = 0 ; i < values.length ; i++){
+                        for (int i = 0; i < values.length; i++) {
                             values[i] = new ContentValues();
                         }
 
-                        values[0].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
-                        values[0].put(AvBContract.PlaceTypeEntry.NAME,"Posto de Saúde");
+                        values[0].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
+                        values[0].put(AvBContract.PlaceTypeEntry.NAME, "Posto de Saúde");
 
-                        values[1].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
-                        values[1].put(AvBContract.PlaceTypeEntry.NAME,"Unidade Básica de Saude");
+                        values[1].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
+                        values[1].put(AvBContract.PlaceTypeEntry.NAME, "Unidade Básica de Saude");
 
-                        values[2].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
-                        values[2].put(AvBContract.PlaceTypeEntry.NAME,"Policlínica");
+                        values[2].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
+                        values[2].put(AvBContract.PlaceTypeEntry.NAME, "Policlínica");
 
-                        values[3].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
-                        values[3].put(AvBContract.PlaceTypeEntry.NAME,"Hospital");
+                        values[3].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
+                        values[3].put(AvBContract.PlaceTypeEntry.NAME, "Hospital");
 
-                        values[4].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
-                        values[4].put(AvBContract.PlaceTypeEntry.NAME,"Unidade Mista");
+                        values[4].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
+                        values[4].put(AvBContract.PlaceTypeEntry.NAME, "Unidade Mista");
 
-                        values[5].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,1);
-                        values[5].put(AvBContract.PlaceTypeEntry.NAME,"Pronto Socorro");
+                        values[5].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
+                        values[5].put(AvBContract.PlaceTypeEntry.NAME, "Pronto Socorro");
 
-                        values[6].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,2);
-                        values[6].put(AvBContract.PlaceTypeEntry.NAME,"Escola");
+                        values[6].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 2);
+                        values[6].put(AvBContract.PlaceTypeEntry.NAME, "Escola");
 
-                        values[7].put(AvBContract.PlaceTypeEntry.CATEGORY_ID,2);
-                        values[7].put(AvBContract.PlaceTypeEntry.NAME,"Universidade");
+                        values[7].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 2);
+                        values[7].put(AvBContract.PlaceTypeEntry.NAME, "Universidade");
 
-                        getContentResolver().bulkInsert(AvBContract.PlaceTypeEntry.PLACE_TYPE_URI,values);
+                        getContentResolver().bulkInsert(AvBContract.PlaceTypeEntry.PLACE_TYPE_URI, values);
 
 
-                        if(accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0){
-                                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    intent.putExtra("showSplash",false);
-                                    startActivity(intent);
+                        if (accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0) {
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.putExtra("showSplash", false);
+                            startActivity(intent);
                         }
-                   }
+                    }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-               error.printStackTrace();
-               Toast.makeText(LoginActivity.this,getResources().getString(R.string.internet_connection_error),Toast.LENGTH_SHORT).show();
-           }
-       }) {
+                error.printStackTrace();
+                Toast.makeText(LoginActivity.this, getResources().getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
+            }
+        }) {
             @Override
-            protected Map<String, String> getParams () {
+            protected Map<String, String> getParams() {
                 String android_id = Settings.Secure.getString(context.getContentResolver(),
                         Settings.Secure.ANDROID_ID);
                 user.setAndroid_id(android_id);
                 Map<String, String> params = new HashMap<String, String>();
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.add("userId",new JsonPrimitive(android_id));
-                params.put("",jsonObject.toString());
+                jsonObject.add("userId", new JsonPrimitive(android_id));
+                params.put("", jsonObject.toString());
 
                 return params;
             }
@@ -331,19 +329,19 @@ public class LoginActivity extends AccountAuthenticatorActivity {
     /**
      * Check the user permissions to make sure the app work property in the phone
      */
-    public void checkForPermissions(){
-         if (!locationPermission.canAccessCoarseLocation()||!locationPermission.canAccessFineLocation()) {
-             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                 requestPermissions(LocationPermission.INITIAL_PERMS, LocationPermission.INITIAL_REQUEST);
-             }
-         }else{
-             getUserToken(LoginActivity.this);
-         }
+    public void checkForPermissions() {
+        if (!locationPermission.canAccessCoarseLocation() || !locationPermission.canAccessFineLocation()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(LocationPermission.INITIAL_PERMS, LocationPermission.INITIAL_REQUEST);
+            }
+        } else {
+            getUserToken(LoginActivity.this);
+        }
     }
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(LoginActivity.this,ExitActivity.class);
+        Intent intent = new Intent(LoginActivity.this, ExitActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

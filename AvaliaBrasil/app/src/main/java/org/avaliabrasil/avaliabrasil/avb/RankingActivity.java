@@ -183,7 +183,7 @@ public class RankingActivity extends AppCompatActivity implements NavigationView
             getIntentInfo();
         } else {
             try {
-                if(getIntent().getExtras().getDouble("latitude") != 0){
+                if (getIntent().getExtras().getDouble("latitude") != 0) {
                     List<Address> addresses = geocoder.getFromLocation(getIntent().getExtras().getDouble("latitude"), getIntent().getExtras().getDouble("longitude"), 5);
                     actvPlace.setText(
                             addresses.get(0).getLocality() + "," + addresses.get(0).getCountryName() + " " + addresses.get(0).getAdminArea());

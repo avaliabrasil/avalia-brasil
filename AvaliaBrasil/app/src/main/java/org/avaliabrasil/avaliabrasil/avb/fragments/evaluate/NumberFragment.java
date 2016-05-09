@@ -54,12 +54,12 @@ public class NumberFragment extends TransactionFragment {
 
         btnSubmit = (Button) rootView.findViewById(R.id.btnSubmit);
 
-        btnSubmit.setOnClickListener((EvaluationActivity)getActivity());
+        btnSubmit.setOnClickListener((EvaluationActivity) getActivity());
 
         likertScale.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                switch(progress){
+                switch (progress) {
                     case 0:
                         tvLegend.setText("1");
                         break;

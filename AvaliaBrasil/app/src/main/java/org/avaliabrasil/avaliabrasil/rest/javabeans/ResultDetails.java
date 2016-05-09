@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -77,383 +76,332 @@ public class ResultDetails {
     private OpeningHour openingHour;
 
     /**
-     *
-     * @return
-     *     The addressComponents
+     * @return The addressComponents
      */
     public List<AddressComponent> getAddressComponents() {
         return addressComponents;
     }
 
     /**
-     *
-     * @param addressComponents
-     *     The address_components
+     * @param addressComponents The address_components
      */
     public void setAddressComponents(List<AddressComponent> addressComponents) {
         this.addressComponents = addressComponents;
     }
 
     /**
-     *
-     * @return
-     *     The adrAddress
+     * @return The adrAddress
      */
     public String getAdrAddress() {
         return adrAddress;
     }
 
     /**
-     *
-     * @param adrAddress
-     *     The adr_address
+     * @param adrAddress The adr_address
      */
     public void setAdrAddress(String adrAddress) {
         this.adrAddress = adrAddress;
     }
 
     /**
-     *
-     * @return
-     *     The formattedAddress
+     * @return The formattedAddress
      */
     public String getFormattedAddress() {
         return formattedAddress;
     }
 
     /**
-     *
-     * @param formattedAddress
-     *     The formatted_address
+     * @param formattedAddress The formatted_address
      */
     public void setFormattedAddress(String formattedAddress) {
         this.formattedAddress = formattedAddress;
     }
 
     /**
-     *
-     * @return
-     *     The formattedPhoneNumber
+     * @return The formattedPhoneNumber
      */
     public String getFormattedPhoneNumber() {
         return formattedPhoneNumber;
     }
 
     /**
-     *
-     * @param formattedPhoneNumber
-     *     The formatted_phone_number
+     * @param formattedPhoneNumber The formatted_phone_number
      */
     public void setFormattedPhoneNumber(String formattedPhoneNumber) {
         this.formattedPhoneNumber = formattedPhoneNumber;
     }
 
     /**
-     *
-     * @return
-     *     The geometry
+     * @return The geometry
      */
     public Geometry getGeometry() {
         return geometry;
     }
 
     /**
-     *
-     * @param geometry
-     *     The geometry
+     * @param geometry The geometry
      */
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
     }
 
     /**
-     *
-     * @return
-     *     The icon
+     * @return The icon
      */
     public String getIcon() {
         return icon;
     }
 
     /**
-     *
-     * @param icon
-     *     The icon
+     * @param icon The icon
      */
     public void setIcon(String icon) {
         this.icon = icon;
     }
 
     /**
-     *
-     * @return
-     *     The id
+     * @return The id
      */
     public String getId() {
         return id;
     }
 
     /**
-     *
-     * @param id
-     *     The id
+     * @param id The id
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     *
-     * @return
-     *     The internationalPhoneNumber
+     * @return The internationalPhoneNumber
      */
     public String getInternationalPhoneNumber() {
         return internationalPhoneNumber;
     }
 
     /**
-     *
-     * @param internationalPhoneNumber
-     *     The international_phone_number
+     * @param internationalPhoneNumber The international_phone_number
      */
     public void setInternationalPhoneNumber(String internationalPhoneNumber) {
         this.internationalPhoneNumber = internationalPhoneNumber;
     }
 
     /**
-     *
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     *
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     *
-     * @return
-     *     The photos
+     * @return The photos
      */
     public List<Photo> getPhotos() {
         return photos;
     }
 
     /**
-     *
-     * @param photos
-     *     The photos
+     * @param photos The photos
      */
     public void setPhotos(List<Photo> photos) {
         this.photos = photos;
     }
 
     /**
-     *
-     * @return
-     *     The placeId
+     * @return The placeId
      */
     public String getPlaceId() {
         return placeId;
     }
 
     /**
-     *
-     * @param placeId
-     *     The place_id
+     * @param placeId The place_id
      */
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
     }
 
     /**
-     *
-     * @return
-     *     The rating
+     * @return The rating
      */
     public Double getRating() {
         return rating;
     }
 
     /**
-     *
-     * @param rating
-     *     The rating
+     * @param rating The rating
      */
     public void setRating(Double rating) {
         this.rating = rating;
     }
 
     /**
-     *
-     * @return
-     *     The reference
+     * @return The reference
      */
     public String getReference() {
         return reference;
     }
 
     /**
-     *
-     * @param reference
-     *     The reference
+     * @param reference The reference
      */
     public void setReference(String reference) {
         this.reference = reference;
     }
 
     /**
-     *
-     * @return
-     *     The reviews
+     * @return The reviews
      */
     public List<Review> getReviews() {
         return reviews;
     }
 
     /**
-     *
-     * @param reviews
-     *     The reviews
+     * @param reviews The reviews
      */
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
     }
 
     /**
-     *
-     * @return
-     *     The scope
+     * @return The scope
      */
     public String getScope() {
         return scope;
     }
 
     /**
-     *
-     * @param scope
-     *     The scope
+     * @param scope The scope
      */
     public void setScope(String scope) {
         this.scope = scope;
     }
 
     /**
-     *
-     * @return
-     *     The types
+     * @return The types
      */
     public List<String> getTypes() {
         return types;
     }
 
     /**
-     *
-     * @param types
-     *     The types
+     * @param types The types
      */
     public void setTypes(List<String> types) {
         this.types = types;
     }
 
     /**
-     *
-     * @return
-     *     The url
+     * @return The url
      */
     public String getUrl() {
         return url;
     }
 
     /**
-     *
-     * @param url
-     *     The url
+     * @param url The url
      */
     public void setUrl(String url) {
         this.url = url;
     }
 
     /**
-     *
-     * @return
-     *     The userRatingsTotal
+     * @return The userRatingsTotal
      */
     public Integer getUserRatingsTotal() {
         return userRatingsTotal;
     }
 
     /**
-     *
-     * @param userRatingsTotal
-     *     The user_ratings_total
+     * @param userRatingsTotal The user_ratings_total
      */
     public void setUserRatingsTotal(Integer userRatingsTotal) {
         this.userRatingsTotal = userRatingsTotal;
     }
 
     /**
-     *
-     * @return
-     *     The utcOffset
+     * @return The utcOffset
      */
     public Integer getUtcOffset() {
         return utcOffset;
     }
 
     /**
-     *
-     * @param utcOffset
-     *     The utc_offset
+     * @param utcOffset The utc_offset
      */
     public void setUtcOffset(Integer utcOffset) {
         this.utcOffset = utcOffset;
     }
 
     /**
-     *
-     * @return
-     *     The vicinity
+     * @return The vicinity
      */
     public String getVicinity() {
         return vicinity;
     }
 
     /**
-     *
-     * @param vicinity
-     *     The vicinity
+     * @param vicinity The vicinity
      */
     public void setVicinity(String vicinity) {
         this.vicinity = vicinity;
     }
 
     /**
-     *
-     * @return
-     *     The website
+     * @return The website
      */
     public String getWebsite() {
         return website;
     }
 
     /**
-     *
-     * @param website
-     *     The website
+     * @param website The website
      */
     public void setWebsite(String website) {
         this.website = website;
     }
 
+    public String getCity(){
+        for(AddressComponent addressComponent : addressComponents){
+            for(String type : addressComponent.getTypes()){
+                if(type.contains("locality")){
+                    return addressComponent.getLongName();
+                }
+            }
+        }
+        return "";
+    }
+
+    public String getState(){
+        for(AddressComponent addressComponent : addressComponents){
+            for(String type : addressComponent.getTypes()){
+                if(type.contains("administrative_area_level_1")){
+                    return addressComponent.getShortName();
+                }
+            }
+        }
+        return "";
+    }
+
+
+    public String getCountry(){
+        for(AddressComponent addressComponent : addressComponents){
+            for(String type : addressComponent.getTypes()){
+                if(type.contains("country")){
+                    return addressComponent.getShortName();
+                }
+            }
+        }
+        return "";
+    }
 
     public OpeningHour getOpeningHour() {
         return openingHour;

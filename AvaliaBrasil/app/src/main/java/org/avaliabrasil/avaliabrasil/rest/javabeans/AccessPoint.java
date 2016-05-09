@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -17,36 +16,28 @@ public class AccessPoint {
     private List<String> travelModes = new ArrayList<String>();
 
     /**
-     * 
-     * @return
-     *     The location
+     * @return The location
      */
     public Location getLocation() {
         return location;
     }
 
     /**
-     * 
-     * @param location
-     *     The location
+     * @param location The location
      */
     public void setLocation(Location location) {
         this.location = location;
     }
 
     /**
-     * 
-     * @return
-     *     The travelModes
+     * @return The travelModes
      */
     public List<String> getTravelModes() {
         return travelModes;
     }
 
     /**
-     * 
-     * @param travelModes
-     *     The travel_modes
+     * @param travelModes The travel_modes
      */
     public void setTravelModes(List<String> travelModes) {
         this.travelModes = travelModes;

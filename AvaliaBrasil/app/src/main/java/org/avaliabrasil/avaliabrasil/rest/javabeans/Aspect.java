@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -14,36 +13,28 @@ public class Aspect {
     private String type;
 
     /**
-     * 
-     * @return
-     *     The rating
+     * @return The rating
      */
     public Integer getRating() {
         return rating;
     }
 
     /**
-     * 
-     * @param rating
-     *     The rating
+     * @param rating The rating
      */
     public void setRating(Integer rating) {
         this.rating = rating;
     }
 
     /**
-     * 
-     * @return
-     *     The type
+     * @return The type
      */
     public String getType() {
         return type;
     }
 
     /**
-     * 
-     * @param type
-     *     The type
+     * @param type The type
      */
     public void setType(String type) {
         this.type = type;

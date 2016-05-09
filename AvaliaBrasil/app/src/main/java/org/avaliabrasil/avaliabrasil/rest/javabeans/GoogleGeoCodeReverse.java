@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -17,36 +16,28 @@ public class GoogleGeoCodeReverse {
     private String status;
 
     /**
-     * 
-     * @return
-     *     The results
+     * @return The results
      */
     public List<GoogleGeoCodeResult> getResults() {
         return results;
     }
 
     /**
-     * 
-     * @param results
-     *     The results
+     * @param results The results
      */
     public void setResults(List<GoogleGeoCodeResult> results) {
         this.results = results;
     }
 
     /**
-     * 
-     * @return
-     *     The status
+     * @return The status
      */
     public String getStatus() {
         return status;
     }
 
     /**
-     * 
-     * @param status
-     *     The status
+     * @param status The status
      */
     public void setStatus(String status) {
         this.status = status;

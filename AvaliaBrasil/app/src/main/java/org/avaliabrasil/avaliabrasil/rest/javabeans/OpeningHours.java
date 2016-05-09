@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -17,36 +16,28 @@ public class OpeningHours {
     private List<Object> weekdayText = new ArrayList<Object>();
 
     /**
-     * 
-     * @return
-     *     The openNow
+     * @return The openNow
      */
     public Boolean getOpenNow() {
         return openNow;
     }
 
     /**
-     * 
-     * @param openNow
-     *     The open_now
+     * @param openNow The open_now
      */
     public void setOpenNow(Boolean openNow) {
         this.openNow = openNow;
     }
 
     /**
-     * 
-     * @return
-     *     The weekdayText
+     * @return The weekdayText
      */
     public List<Object> getWeekdayText() {
         return weekdayText;
     }
 
     /**
-     * 
-     * @param weekdayText
-     *     The weekday_text
+     * @param weekdayText The weekday_text
      */
     public void setWeekdayText(List<Object> weekdayText) {
         this.weekdayText = weekdayText;

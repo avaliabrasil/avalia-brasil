@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -35,144 +34,112 @@ public class Review {
     private Integer time;
 
     /**
-     * 
-     * @return
-     *     The aspects
+     * @return The aspects
      */
     public List<Aspect> getAspects() {
         return aspects;
     }
 
     /**
-     * 
-     * @param aspects
-     *     The aspects
+     * @param aspects The aspects
      */
     public void setAspects(List<Aspect> aspects) {
         this.aspects = aspects;
     }
 
     /**
-     * 
-     * @return
-     *     The authorName
+     * @return The authorName
      */
     public String getAuthorName() {
         return authorName;
     }
 
     /**
-     * 
-     * @param authorName
-     *     The author_name
+     * @param authorName The author_name
      */
     public void setAuthorName(String authorName) {
         this.authorName = authorName;
     }
 
     /**
-     * 
-     * @return
-     *     The authorUrl
+     * @return The authorUrl
      */
     public String getAuthorUrl() {
         return authorUrl;
     }
 
     /**
-     * 
-     * @param authorUrl
-     *     The author_url
+     * @param authorUrl The author_url
      */
     public void setAuthorUrl(String authorUrl) {
         this.authorUrl = authorUrl;
     }
 
     /**
-     * 
-     * @return
-     *     The language
+     * @return The language
      */
     public String getLanguage() {
         return language;
     }
 
     /**
-     * 
-     * @param language
-     *     The language
+     * @param language The language
      */
     public void setLanguage(String language) {
         this.language = language;
     }
 
     /**
-     * 
-     * @return
-     *     The profilePhotoUrl
+     * @return The profilePhotoUrl
      */
     public String getProfilePhotoUrl() {
         return profilePhotoUrl;
     }
 
     /**
-     * 
-     * @param profilePhotoUrl
-     *     The profile_photo_url
+     * @param profilePhotoUrl The profile_photo_url
      */
     public void setProfilePhotoUrl(String profilePhotoUrl) {
         this.profilePhotoUrl = profilePhotoUrl;
     }
 
     /**
-     * 
-     * @return
-     *     The rating
+     * @return The rating
      */
     public Integer getRating() {
         return rating;
     }
 
     /**
-     * 
-     * @param rating
-     *     The rating
+     * @param rating The rating
      */
     public void setRating(Integer rating) {
         this.rating = rating;
     }
 
     /**
-     * 
-     * @return
-     *     The text
+     * @return The text
      */
     public String getText() {
         return text;
     }
 
     /**
-     * 
-     * @param text
-     *     The text
+     * @param text The text
      */
     public void setText(String text) {
         this.text = text;
     }
 
     /**
-     * 
-     * @return
-     *     The time
+     * @return The time
      */
     public Integer getTime() {
         return time;
     }
 
     /**
-     * 
-     * @param time
-     *     The time
+     * @param time The time
      */
     public void setTime(Integer time) {
         this.time = time;

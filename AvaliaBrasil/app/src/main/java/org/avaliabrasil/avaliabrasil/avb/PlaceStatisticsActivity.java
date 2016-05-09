@@ -36,9 +36,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringEscapeUtils.escapeJava;
-
-public class PlaceStatisticsActivity extends AppCompatActivity implements View.OnClickListener{
+public class PlaceStatisticsActivity extends AppCompatActivity implements View.OnClickListener {
     public final String LOG_TAG = this.getClass().getSimpleName();
 
     /**
@@ -121,17 +119,17 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        placeId = getIntent().getExtras().getString("placeid","");
-        name = getIntent().getExtras().getString("name","");
+        placeId = getIntent().getExtras().getString("placeid", "");
+        name = getIntent().getExtras().getString("name", "");
 
         new Loading().execute();
 
     }
 
-    private void fetchData(String response){
+    private void fetchData(String response) {
         Gson gson = new Gson();
 
-        placeStats = gson.fromJson(new String((Utils.normalizeAvaliaBrasilResponse(response)).replace("\\\\","\\").getBytes(Charset.defaultCharset())), PlaceStatistics.class);
+        placeStats = gson.fromJson(new String((Utils.normalizeAvaliaBrasilResponse(response)).replace("\\\\", "\\").getBytes(Charset.defaultCharset())), PlaceStatistics.class);
 
         setContentView(R.layout.activity_place_statistics);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -156,7 +154,7 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
         graph = (GraphView) findViewById(R.id.graph);
 
-        graph.getGridLabelRenderer().setGridStyle( GridLabelRenderer.GridStyle.NONE );
+        graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.NONE);
 
         rvComments = (RecyclerView) findViewById(R.id.rvComments);
 
@@ -173,21 +171,21 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
         tvPlaceType.setText(placeStats.getType());
 
-        tvQualityIndice.setText(placeStats.getQualityIndex().size() > 0 ? String.valueOf(placeStats.getQualityIndex().get(placeStats.getQualityIndex().size() - 1).getValue()) :"0");
+        tvQualityIndice.setText(placeStats.getQualityIndex().size() > 0 ? String.valueOf(placeStats.getQualityIndex().get(placeStats.getQualityIndex().size() - 1).getValue()) : "0");
 
-        rvNacional.setUpView("Nacional",placeStats.getRankingPosition().getNational(),placeStats.getRankingStatus().getNational());
+        rvNacional.setUpView("Nacional", placeStats.getRankingPosition().getNational(), placeStats.getRankingStatus().getNational());
 
         rvNacional.setOnClickListener(this);
 
-        rvRegional.setUpView("Regional",placeStats.getRankingPosition().getRegional(),placeStats.getRankingStatus().getRegional());
+        rvRegional.setUpView("Regional", placeStats.getRankingPosition().getRegional(), placeStats.getRankingStatus().getRegional());
 
         rvRegional.setOnClickListener(this);
 
-        rvEstadual.setUpView("Estadual",placeStats.getRankingPosition().getState(),placeStats.getRankingStatus().getState());
+        rvEstadual.setUpView("Estadual", placeStats.getRankingPosition().getState(), placeStats.getRankingStatus().getState());
 
         rvEstadual.setOnClickListener(this);
 
-        rvMunicipal.setUpView("Municipal",placeStats.getRankingPosition().getMunicipal(),placeStats.getRankingStatus().getMunicipal());
+        rvMunicipal.setUpView("Municipal", placeStats.getRankingPosition().getMunicipal(), placeStats.getRankingStatus().getMunicipal());
 
         rvMunicipal.setOnClickListener(this);
 
@@ -197,15 +195,15 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
         DataPoint[] points = new DataPoint[placeStats.getQualityIndex().size()];
 
-        for(int i = 0 ; i < placeStats.getQualityIndex().size() ; i++){
-            points[i] = new DataPoint(i,placeStats.getQualityIndex().get(i).getValue());
+        for (int i = 0; i < placeStats.getQualityIndex().size(); i++) {
+            points[i] = new DataPoint(i, placeStats.getQualityIndex().get(i).getValue());
         }
 
         LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(points);
 
         graph.addSeries(series);
 
-        rvComments.setAdapter(new CommentAdapter(PlaceStatisticsActivity.this,placeStats.getComments()));
+        rvComments.setAdapter(new CommentAdapter(PlaceStatisticsActivity.this, placeStats.getComments()));
 
         rvComments.setHasFixedSize(true);
     }
@@ -213,32 +211,32 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
     @Override
     public void onClick(View v) {
 
-        Intent rankingIntent = new Intent(PlaceStatisticsActivity.this,RankingActivity.class);
+        Intent rankingIntent = new Intent(PlaceStatisticsActivity.this, RankingActivity.class);
 
-        if(placeStats != null){
-            rankingIntent.putExtra("name",placeStats.getName());
-            rankingIntent.putExtra("city",placeStats.getCity());
-            rankingIntent.putExtra("state",placeStats.getState());
-            rankingIntent.putExtra("category",placeStats.getCategory());
-            rankingIntent.putExtra("type",placeStats.getType());
+        if (placeStats != null) {
+            rankingIntent.putExtra("name", placeStats.getName());
+            rankingIntent.putExtra("city", placeStats.getCity());
+            rankingIntent.putExtra("state", placeStats.getState());
+            rankingIntent.putExtra("category", placeStats.getCategory());
+            rankingIntent.putExtra("type", placeStats.getType());
         }
 
-        switch(v.getId()){
+        switch (v.getId()) {
 
             case R.id.rvNacional:
-                rankingIntent.putExtra("rankingType","nacional");
+                rankingIntent.putExtra("rankingType", "nacional");
 
                 break;
             case R.id.rvRegional:
-                rankingIntent.putExtra("rankingType","regional");
+                rankingIntent.putExtra("rankingType", "regional");
 
                 break;
             case R.id.rvEstadual:
-                rankingIntent.putExtra("rankingType","estadual");
+                rankingIntent.putExtra("rankingType", "estadual");
 
                 break;
             case R.id.rvMunicipal:
-                rankingIntent.putExtra("rankingType","municipal");
+                rankingIntent.putExtra("rankingType", "municipal");
 
                 break;
 
@@ -250,14 +248,14 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
     private class Loading extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
-            try{
+            try {
                 TextView view = new TextView(PlaceStatisticsActivity.this);
                 view.setText(getResources().getString(R.string.progress_dialog_message));
                 view.setGravity(Gravity.CENTER);
                 view.setWidth(ViewGroup.LayoutParams.FILL_PARENT);
                 view.setHeight(ViewGroup.LayoutParams.FILL_PARENT);
                 setContentView(view);
-            }catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -278,7 +276,7 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
                 }
             }) {
                 @Override
-                protected Map<String, String> getParams () {
+                protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();
 
                     return params;

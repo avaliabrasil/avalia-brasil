@@ -1,4 +1,3 @@
-
 package org.avaliabrasil.avaliabrasil.rest.javabeans;
 
 import com.google.gson.annotations.Expose;
@@ -22,63 +21,49 @@ public class PlaceRanking {
     private Double qualityIndex;
 
     /**
-     * 
-     * @return
-     *     The rankingPosition
+     * @return The rankingPosition
      */
     public Integer getRankingPosition() {
         return rankingPosition;
     }
 
     /**
-     * 
-     * @param rankingPosition
-     *     The rankingPosition
+     * @param rankingPosition The rankingPosition
      */
     public void setRankingPosition(Integer rankingPosition) {
         this.rankingPosition = rankingPosition;
     }
 
     /**
-     * 
-     * @return
-     *     The name
+     * @return The name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * 
-     * @param name
-     *     The name
+     * @param name The name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * 
-     * @return
-     *     The address
+     * @return The address
      */
     public String getAddress() {
         return address;
     }
 
     /**
-     * 
-     * @param address
-     *     The address
+     * @param address The address
      */
     public void setAddress(String address) {
         this.address = address;
     }
 
     /**
-     * 
-     * @return
-     *     The qualityIndex
+     * @return The qualityIndex
      */
     public Double getQualityIndex() {
         return new BigDecimal(qualityIndex)
@@ -87,9 +72,7 @@ public class PlaceRanking {
     }
 
     /**
-     * 
-     * @param qualityIndex
-     *     The qualityIndex
+     * @param qualityIndex The qualityIndex
      */
     public void setQualityIndex(Double qualityIndex) {
         this.qualityIndex = qualityIndex;

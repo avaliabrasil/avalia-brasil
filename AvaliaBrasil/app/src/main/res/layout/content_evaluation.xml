@@ -11,8 +11,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".avb.EvaluationActivity"
-    >
+    tools:context=".avb.EvaluationActivity">
+
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -24,31 +24,30 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/likert_fully_agree"
-            android:id="@+id/option1"
-            />
+            android:id="@+id/option1" />
+
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/likert_agree"
-            android:id="@+id/option2"
-            />
+            android:id="@+id/option2" />
+
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/likert_neutral"
-            android:id="@+id/option3"
-            />
+            android:id="@+id/option3" />
+
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/likert_disagree"
-            android:id="@+id/option4"
-            />
+            android:id="@+id/option4" />
+
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/likert_fully_disagree"
-            android:id="@+id/option5"
-            />
-</RadioGroup>
+            android:id="@+id/option5" />
+    </RadioGroup>
 </LinearLayout>

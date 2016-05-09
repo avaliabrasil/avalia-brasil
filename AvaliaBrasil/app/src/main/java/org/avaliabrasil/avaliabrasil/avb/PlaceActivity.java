@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -34,14 +33,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.annotations.SerializedName;
 
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.data.AvBContract;
 import org.avaliabrasil.avaliabrasil.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.rest.GooglePlacesAPIClient;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.AvaliaBrasilCategory;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Holder;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Instrument;
 import org.avaliabrasil.avaliabrasil.rest.javabeans.Period;
@@ -122,143 +118,9 @@ public class PlaceActivity extends AppCompatActivity {
             distance = getIntent().getExtras().getString("distance");
 
             if (cursor.getCount() <= 0) {
-                final String placeid = getIntent().getExtras().getString("placeid");
-
-                progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
-                        getResources().getString(R.string.progress_dialog_message), true);
-
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlaceDetails(placeid, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                Log.d("Teste", "onResponse: " + response);
-                                Gson gson = new Gson();
-                                PlaceDetails placeDetails = gson.fromJson(response, PlaceDetails.class);
-
-                                ArrayList<String> placeInfoList = new ArrayList<String>();
-
-                                placeInfoList.add("Address: " + placeDetails.getResult().getVicinity());
-                                View view = null;
-
-                                ContentValues value = new ContentValues();
-                                value.put("place_id", placeid);
-                                value.put("website", placeDetails.getResult().getWebsite());
-                                value.put("formattedPhoneNumber", placeDetails.getResult().getFormattedPhoneNumber());
-                                value.put("photo_reference", placeDetails.getResult().getPhotos().size() > 0 ? placeDetails.getResult().getPhotos().get(0).getPhotoReference() : "");
-                                getContentResolver().insert(
-                                        AvBContract.PlaceDetailsEntry.PLACE_DETAILS_URI, value);
-
-                                if (placeDetails.getResult().getVicinity() != null) {
-                                    View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
-                                    ((TextView) place.findViewById(R.id.place_name_text_view)).setText(placeDetails.getResult().getName());
-                                    ((TextView) place.findViewById(R.id.place_address_text_view)).setText(placeDetails.getResult().getVicinity());
-                                    ((TextView) place.findViewById(R.id.place_distance_text_view)).setText(distance);
-                                    placesInfo.addView(place);
-                                }
-
-                                if (placeDetails.getResult().getFormattedPhoneNumber() != null) {
-                                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
-
-                                    ((TextView) view.findViewById(R.id.text)).setText(placeDetails.getResult().getFormattedPhoneNumber());
-                                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
-
-                                    placesInfo.addView(view);
-                                }
-
-                                if (placeDetails.getResult().getWebsite() != null) {
-                                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
-
-                                    ((TextView) view.findViewById(R.id.text)).setText(placeDetails.getResult().getWebsite());
-                                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
-
-                                    placesInfo.addView(view);
-                                }
-
-                                if(placeDetails.getResult().getOpeningHour() != null){
-
-                                    Calendar c = Calendar.getInstance();
-
-                                    if(placeDetails.getResult().getOpeningHour().getPeriods().size() > 0){
-
-                                        ContentValues[] values = new ContentValues[placeDetails.getResult().getOpeningHour().getPeriods().size()*2];
-
-                                        for(int i = 0, j = 0 ; i < placeDetails.getResult().getOpeningHour().getPeriods().size(); i ++){
-                                            value = null;
-                                            Period p = placeDetails.getResult().getOpeningHour().getPeriods().get(i);
-                                            if(p.getIsClose() != null){
-                                                value = new ContentValues();
-                                                value.put("place_id", placeid);
-                                                value.put("day", p.getIsClose().getDay());
-                                                value.put("time", p.getIsClose().getTime());
-                                                value.put("status","close");
-                                            }
-
-                                            values[j++] = value;
-                                            value = null;
-
-                                            if(p.getIsOpen() != null){
-                                                value = new ContentValues();
-                                                value.put("place_id", placeid);
-                                                value.put("day", p.getIsOpen().getDay());
-                                                value.put("time", p.getIsOpen().getTime());
-                                                value.put("status","open");
-
-                                            }
-                                            values[j++] = value;
-
-                                            if(p.getIsClose() != null && p.getIsOpen() != null){
-                                                if(p.getIsOpen().getDay() == c.get(Calendar.DAY_OF_WEEK) && p.getIsClose().getDay() == c.get(Calendar.DAY_OF_WEEK)){
-                                                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
-                                                    ((TextView) view.findViewById(R.id.text)).setText("Aberto hoje " + Utils.formatTime(p.getIsOpen().getTime()) + " - " + Utils.formatTime(p.getIsClose().getTime()));
-                                                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_schedule_black_24dp));
-                                                    placesInfo.addView(view);
-                                                }
-                                            }
-
-                                        }
-                                        getContentResolver().bulkInsert(
-                                                AvBContract.PlacePeriodEntry.PLACE_PERIOD_URI, values);
-                                    }
-                                }
-
-                                toolbarLayout.setTitle(placeDetails.getResult().getName());
-
-
-                                MarkerOptions marker;
-
-                                marker = new MarkerOptions().position(
-                                        new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(), placeDetails.getResult().getGeometry().getLocation().getLng())).title(placeDetails.getResult().getName());
-
-                                // Changing marker icon
-                                marker.icon(BitmapDescriptorFactory
-                                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-
-
-                                CameraPosition cameraPosition = new CameraPosition.Builder()
-                                        .target(new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(), placeDetails.getResult().getGeometry().getLocation().getLng())).zoom(16).build();
-                                googleMap.animateCamera(CameraUpdateFactory
-                                        .newCameraPosition(cameraPosition));
-                                // adding marker
-                                googleMap.addMarker(marker);
-                                progress.dismiss();
-
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                        View view = null;
-                        view = getLayoutInflater().inflate(R.layout.image_and_text, null);
-                        ((TextView) view.findViewById(R.id.text)).setText("Não foi possível buscar as informações deste local, verifique sua internet");
-                        ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_search_white_24dp));
-
-                        placesInfo.addView(view);
-                        progress.dismiss();
-                    }
-                });
-
-                Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
+                getPlaceDetails(true);
             } else {
+                getPlaceDetails(false);
                 cursor.moveToFirst();
 
                 View view = null;
@@ -313,15 +175,15 @@ public class PlaceActivity extends AppCompatActivity {
 
                 Log.d("Teste", DatabaseUtils.dumpCursorToString(cursor));
 
-                if(cursor.moveToNext()){
+                if (cursor.moveToNext()) {
 
                     view = getLayoutInflater().inflate(R.layout.image_and_text, null);
-                    HashMap<String,String> openAndClose = new HashMap<String,String>();
-                    openAndClose.put("open","");
-                    openAndClose.put("close","");
-                    openAndClose.put(cursor.getString(cursor.getColumnIndex("status")),Utils.formatTime(cursor.getString(cursor.getColumnIndex("time"))));
-                    if(cursor.moveToNext()){
-                        openAndClose.put(cursor.getString(cursor.getColumnIndex("status")),Utils.formatTime(cursor.getString(cursor.getColumnIndex("time"))));
+                    HashMap<String, String> openAndClose = new HashMap<String, String>();
+                    openAndClose.put("open", "");
+                    openAndClose.put("close", "");
+                    openAndClose.put(cursor.getString(cursor.getColumnIndex("status")), Utils.formatTime(cursor.getString(cursor.getColumnIndex("time"))));
+                    if (cursor.moveToNext()) {
+                        openAndClose.put(cursor.getString(cursor.getColumnIndex("status")), Utils.formatTime(cursor.getString(cursor.getColumnIndex("time"))));
                     }
 
                     ((TextView) view.findViewById(R.id.text)).setText("Aberto hoje " + openAndClose.get("open") + " - " + openAndClose.get("close"));
@@ -331,36 +193,36 @@ public class PlaceActivity extends AppCompatActivity {
             }
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getPlaceStatistics(place_id),
-            new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    Log.d("Teste", "onResponse: " + response);
-                    Gson gson = new Gson();
-                    placeStats = gson.fromJson(Utils.normalizeAvaliaBrasilResponse(response),PlaceStatistics.class);
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.d("Teste", "onResponse: " + response);
+                            Gson gson = new Gson();
+                            placeStats = gson.fromJson(Utils.normalizeAvaliaBrasilResponse(response), PlaceStatistics.class);
 
-                    if(placeStats == null){
-                        ranking_position.setText("-- º");
-                        quality_index.setText("0");
-                        ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
-                    }else{
-                        ranking_position.setText(String.valueOf(placeStats.getRankingPosition().getNational()) + "º");
-
-                        quality_index.setText(String.valueOf(placeStats.getQualityIndex().get(placeStats.getQualityIndex().size() - 1).getValue()));
-
-                        switch (placeStats.getRankingStatus().getNational()) {
-                            case "up":
-                                ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-                                break;
-                            case "down":
-                                ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
-                                break;
-                            case "none":
+                            if (placeStats == null) {
+                                ranking_position.setText("-- º");
+                                quality_index.setText("0");
                                 ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
-                                break;
+                            } else {
+                                ranking_position.setText(String.valueOf(placeStats.getRankingPosition().getNational()) + "º");
+
+                                quality_index.setText(String.valueOf(placeStats.getQualityIndex().get(placeStats.getQualityIndex().size() - 1).getValue()));
+
+                                switch (placeStats.getRankingStatus().getNational()) {
+                                    case "up":
+                                        ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+                                        break;
+                                    case "down":
+                                        ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                                        break;
+                                    case "none":
+                                        ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
+                                        break;
+                                }
+                            }
                         }
-                    }
-                }
-            }, new Response.ErrorListener() {
+                    }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     error.printStackTrace();
@@ -372,6 +234,153 @@ public class PlaceActivity extends AppCompatActivity {
             });
             Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
         }
+    }
+
+    private void getPlaceDetails(final boolean update) {
+        progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
+                getResources().getString(R.string.progress_dialog_message), true);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlaceDetails(place_id, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("Teste", "onResponse: " + response);
+                        Gson gson = new Gson();
+                        PlaceDetails placeDetails = gson.fromJson(response, PlaceDetails.class);
+
+                        ArrayList<String> placeInfoList = new ArrayList<String>();
+
+                        placeInfoList.add("Address: " + placeDetails.getResult().getVicinity());
+                        View view = null;
+
+                        ContentValues value = new ContentValues();
+                        value.put("place_id", place_id);
+                        value.put("website", placeDetails.getResult().getWebsite());
+                        value.put("formattedPhoneNumber", placeDetails.getResult().getFormattedPhoneNumber());
+                        value.put("photo_reference", placeDetails.getResult().getPhotos().size() > 0 ? placeDetails.getResult().getPhotos().get(0).getPhotoReference() : "");
+
+                        value.put("city", placeDetails.getResult().getCity());
+                        value.put("state", placeDetails.getResult().getState());
+                        value.put("country", placeDetails.getResult().getCountry());
+
+                        if (update) {
+                            getContentResolver().insert(
+                                    AvBContract.PlaceDetailsEntry.PLACE_DETAILS_URI, value);
+                        } else {
+                            getContentResolver().update(
+                                    AvBContract.PlaceDetailsEntry.PLACE_DETAILS_URI, value, "place_id = ?", new String[]{place_id});
+                        }
+
+
+                        if (placeDetails.getResult().getVicinity() != null) {
+                            View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
+                            ((TextView) place.findViewById(R.id.place_name_text_view)).setText(placeDetails.getResult().getName());
+                            ((TextView) place.findViewById(R.id.place_address_text_view)).setText(placeDetails.getResult().getVicinity());
+                            ((TextView) place.findViewById(R.id.place_distance_text_view)).setText(distance);
+                            placesInfo.addView(place);
+                        }
+
+                        if (placeDetails.getResult().getFormattedPhoneNumber() != null) {
+                            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+                            ((TextView) view.findViewById(R.id.text)).setText(placeDetails.getResult().getFormattedPhoneNumber());
+                            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
+
+                            placesInfo.addView(view);
+                        }
+
+                        if (placeDetails.getResult().getWebsite() != null) {
+                            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+                            ((TextView) view.findViewById(R.id.text)).setText(placeDetails.getResult().getWebsite());
+                            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
+
+                            placesInfo.addView(view);
+                        }
+
+                        if (placeDetails.getResult().getOpeningHour() != null) {
+
+                            Calendar c = Calendar.getInstance();
+
+                            if (placeDetails.getResult().getOpeningHour().getPeriods().size() > 0) {
+
+                                ContentValues[] values = new ContentValues[placeDetails.getResult().getOpeningHour().getPeriods().size() * 2];
+
+                                for (int i = 0, j = 0; i < placeDetails.getResult().getOpeningHour().getPeriods().size(); i++) {
+                                    value = null;
+                                    Period p = placeDetails.getResult().getOpeningHour().getPeriods().get(i);
+                                    if (p.getIsClose() != null) {
+                                        value = new ContentValues();
+                                        value.put("place_id", place_id);
+                                        value.put("day", p.getIsClose().getDay());
+                                        value.put("time", p.getIsClose().getTime());
+                                        value.put("status", "close");
+                                    }
+
+                                    values[j++] = value;
+                                    value = null;
+
+                                    if (p.getIsOpen() != null) {
+                                        value = new ContentValues();
+                                        value.put("place_id", place_id);
+                                        value.put("day", p.getIsOpen().getDay());
+                                        value.put("time", p.getIsOpen().getTime());
+                                        value.put("status", "open");
+
+                                    }
+                                    values[j++] = value;
+
+                                    if (p.getIsClose() != null && p.getIsOpen() != null) {
+                                        if (p.getIsOpen().getDay() == c.get(Calendar.DAY_OF_WEEK) && p.getIsClose().getDay() == c.get(Calendar.DAY_OF_WEEK)) {
+                                            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+                                            ((TextView) view.findViewById(R.id.text)).setText("Aberto hoje " + Utils.formatTime(p.getIsOpen().getTime()) + " - " + Utils.formatTime(p.getIsClose().getTime()));
+                                            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_schedule_black_24dp));
+                                            placesInfo.addView(view);
+                                        }
+                                    }
+
+                                }
+                                getContentResolver().bulkInsert(
+                                        AvBContract.PlacePeriodEntry.PLACE_PERIOD_URI, values);
+                            }
+                        }
+
+                        toolbarLayout.setTitle(placeDetails.getResult().getName());
+
+
+                        MarkerOptions marker;
+
+                        marker = new MarkerOptions().position(
+                                new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(), placeDetails.getResult().getGeometry().getLocation().getLng())).title(placeDetails.getResult().getName());
+
+                        // Changing marker icon
+                        marker.icon(BitmapDescriptorFactory
+                                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(), placeDetails.getResult().getGeometry().getLocation().getLng())).zoom(16).build();
+                        googleMap.animateCamera(CameraUpdateFactory
+                                .newCameraPosition(cameraPosition));
+                        // adding marker
+                        googleMap.addMarker(marker);
+                        progress.dismiss();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                View view = null;
+                view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+                ((TextView) view.findViewById(R.id.text)).setText("Não foi possível buscar as informações deste local, verifique sua internet");
+                ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_search_white_24dp));
+
+                placesInfo.addView(view);
+                progress.dismiss();
+            }
+        });
+        Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
     }
 
     @Override
@@ -483,29 +492,28 @@ public class PlaceActivity extends AppCompatActivity {
         }
 
 
-
-        if(data.getCategories().size() > 0){
+        if (data.getCategories().size() > 0) {
             values = new ContentValues[data.getCategories().size()];
 
-            for(int i = 0 ; i < data.getCategories().size() ; i++){
+            for (int i = 0; i < data.getCategories().size(); i++) {
                 value = new ContentValues();
-                value.put(AvBContract.PlaceCategoryEntry.CATEGORY_ID,data.getCategories().get(i).getIdCategory());
+                value.put(AvBContract.PlaceCategoryEntry.CATEGORY_ID, data.getCategories().get(i).getIdCategory());
                 Log.d("PlaceAct", "id: " + data.getCategories().get(i).getIdCategory());
-                value.put(AvBContract.PlaceCategoryEntry.NAME,data.getCategories().get(i).getCategory());
+                value.put(AvBContract.PlaceCategoryEntry.NAME, data.getCategories().get(i).getCategory());
                 values[i] = value;
             }
             getContentResolver().bulkInsert(
                     AvBContract.PlaceCategoryEntry.PLACE_CATEGORY_URI, values);
         }
 
-        if(data.getPlaceTypes().size() > 0){
+        if (data.getPlaceTypes().size() > 0) {
             values = new ContentValues[data.getPlaceTypes().size()];
 
-            for(int i = 0 ; i < data.getPlaceTypes().size() ; i++){
+            for (int i = 0; i < data.getPlaceTypes().size(); i++) {
                 value = new ContentValues();
-                value.put(AvBContract.PlaceTypeEntry.CATEGORY_ID,data.getPlaceTypes().get(i).getIdCategory());
+                value.put(AvBContract.PlaceTypeEntry.CATEGORY_ID, data.getPlaceTypes().get(i).getIdCategory());
                 Log.d("PlaceAct", "id: " + data.getPlaceTypes().get(i).getIdCategory());
-                value.put(AvBContract.PlaceTypeEntry.NAME,data.getPlaceTypes().get(i).getCategory());
+                value.put(AvBContract.PlaceTypeEntry.NAME, data.getPlaceTypes().get(i).getCategory());
                 values[i] = value;
             }
             getContentResolver().bulkInsert(
@@ -571,7 +579,10 @@ public class PlaceActivity extends AppCompatActivity {
 
 
         Cursor c = getContentResolver().query(
-                AvBContract.PlaceEntry.getPlaceDetails(getIntent().getExtras().getString("placeid")), null, null, null, null);
+                AvBContract.PlaceEntry.getPlaceDetails(place_id), null, null, null, null);
+
+
+        Log.d("Place",DatabaseUtils.dumpCursorToString(c));
 
         if (c.moveToNext()) {
             String photo_reference = c.getString(c.getColumnIndex(AvBContract.PlaceDetailsEntry.PHOTO_REFERENCE));
@@ -584,8 +595,6 @@ public class PlaceActivity extends AppCompatActivity {
                 c = getContentResolver().query(AvBContract.InstrumentEntry.buildInstrumentUri(place_id), null, null, null, null);
 
                 List<Instrument> instruments = new ArrayList<Instrument>();
-
-                //Log.e("PlaceActivity", DatabaseUtils.dumpCursorToString(c));
 
                 while (c.moveToNext()) {
                     Log.d("PlaceActivity", "startEvaluationActivity: id: " + c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
@@ -603,7 +612,6 @@ public class PlaceActivity extends AppCompatActivity {
                 holder.setInstruments(instruments);
             }
 
-
             Intent intent = new Intent(PlaceActivity.this, EvaluationActivity.class);
             intent.putExtra("holder", (Serializable) holder);
             intent.putExtra("name", getIntent().getExtras().getString("name"));
@@ -615,7 +623,7 @@ public class PlaceActivity extends AppCompatActivity {
     }
 
     public void startStatisticsActivity(View view) {
-        if(placeStats == null){
+        if (placeStats == null) {
             Toast.makeText(PlaceActivity.this, getResources().getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
             return;
         }

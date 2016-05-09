@@ -20,7 +20,7 @@ import org.avaliabrasil.avaliabrasil.sync.Observer;
 /**
  * Created by Pedro on 29/02/2016.
  */
-public class PlacesListFragment extends Fragment implements Observer{
+public class PlacesListFragment extends Fragment implements Observer {
     private PlacesListAdapter mPlacesListAdapter;
 
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -29,7 +29,7 @@ public class PlacesListFragment extends Fragment implements Observer{
 
     private int mPosition = ListView.INVALID_POSITION;
 
-    private  static final String SELECTED_place = "selected_place";
+    private static final String SELECTED_place = "selected_place";
 
 
     public static PlacesListFragment newInstance(int sectionNumber, Location location) {
@@ -40,7 +40,7 @@ public class PlacesListFragment extends Fragment implements Observer{
         return fragment;
     }
 
-    public PlacesListFragment(){
+    public PlacesListFragment() {
 
     }
 
@@ -57,7 +57,7 @@ public class PlacesListFragment extends Fragment implements Observer{
 
         final MainActivity activity = (MainActivity) getActivity();
 
-        mPlacesListAdapter = new PlacesListAdapter(getContext(),null,0,activity.location);
+        mPlacesListAdapter = new PlacesListAdapter(getContext(), null, 0, activity.location);
 
         mListView.setEmptyView(rootView.findViewById(R.id.tvEmpty));
 
@@ -69,16 +69,15 @@ public class PlacesListFragment extends Fragment implements Observer{
                 Cursor cur = (Cursor) mPlacesListAdapter.getItem(position);
                 cur.moveToPosition(position);
 
-
                 Location placeLocation = new Location("");
                 Intent intent = new Intent(getContext(), PlaceActivity.class);
 
                 placeLocation.setLatitude(cur.getDouble(cur.getColumnIndex("latitude")));
                 placeLocation.setLongitude(cur.getDouble(cur.getColumnIndex("longitude")));
 
-                intent.putExtra("placeid",cur.getString(cur.getColumnIndex("place_id")));
-                intent.putExtra("distance",cur.getInt(cur.getColumnIndex("distance")) + "m");
-                intent.putExtra("name",cur.getString(cur.getColumnIndex("name")));
+                intent.putExtra("placeid", cur.getString(cur.getColumnIndex("place_id")));
+                intent.putExtra("distance", cur.getInt(cur.getColumnIndex("distance")) + "m");
+                intent.putExtra("name", cur.getString(cur.getColumnIndex("name")));
 
                 startActivity(intent);
             }

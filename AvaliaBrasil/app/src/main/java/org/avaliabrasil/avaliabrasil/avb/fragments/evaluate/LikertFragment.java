@@ -51,15 +51,15 @@ public class LikertFragment extends TransactionFragment {
 
         btnSubmit = (Button) rootView.findViewById(R.id.btnSubmit);
 
-        btnSubmit.setOnClickListener((EvaluationActivity)getActivity());
+        btnSubmit.setOnClickListener((EvaluationActivity) getActivity());
 
         return rootView;
     }
 
     @Override
     public boolean isAnwser() {
-        for(RadioButton rb : options){
-            if(rb.isChecked()){
+        for (RadioButton rb : options) {
+            if (rb.isChecked()) {
                 return true;
             }
         }
@@ -68,11 +68,11 @@ public class LikertFragment extends TransactionFragment {
 
     @Override
     public String getAnwser() {
-        if(!isAnwser()){
+        if (!isAnwser()) {
             return null;
         }
-        for(int i = 0 ; i < options.size() ; i++){
-            if(options.get(i).isChecked()){
+        for (int i = 0; i < options.size(); i++) {
+            if (options.get(i).isChecked()) {
                 return String.valueOf((5 - i));
             }
         }

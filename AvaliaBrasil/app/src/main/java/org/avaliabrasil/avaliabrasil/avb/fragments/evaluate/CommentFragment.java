@@ -40,7 +40,7 @@ public class CommentFragment extends TransactionFragment {
 
         btnSubmit = (Button) rootView.findViewById(R.id.btnSubmit);
 
-        btnSubmit.setOnClickListener((EvaluationActivity)getActivity());
+        btnSubmit.setOnClickListener((EvaluationActivity) getActivity());
 
         return rootView;
     }
@@ -48,7 +48,7 @@ public class CommentFragment extends TransactionFragment {
     @Override
     public boolean isAnwser() {
 
-        if(TextUtils.isEmpty(etComment.getText().toString())){
+        if (TextUtils.isEmpty(etComment.getText().toString())) {
             return false;
         }
         return true;
@@ -56,7 +56,7 @@ public class CommentFragment extends TransactionFragment {
 
     @Override
     public String getAnwser() {
-        if(!isAnwser()){
+        if (!isAnwser()) {
             return null;
         }
         return etComment.getText().toString();

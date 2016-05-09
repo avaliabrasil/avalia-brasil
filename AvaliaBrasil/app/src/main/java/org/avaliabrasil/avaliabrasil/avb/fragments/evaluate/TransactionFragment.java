@@ -30,7 +30,7 @@ public abstract class TransactionFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getArguments() != null){
+        if (getArguments() != null) {
             question = (Question) getArguments().getSerializable("question");
         }
     }

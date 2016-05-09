@@ -22,7 +22,7 @@ public class AvaliaBrasilGeocoderService {
 
     private List<Address> address = new ArrayList<>();
 
-    private double latitude,longitude;
+    private double latitude, longitude;
 
     private String countryName;
 
@@ -30,18 +30,18 @@ public class AvaliaBrasilGeocoderService {
 
     private String adminArea;
 
-    public AvaliaBrasilGeocoderService(Context context, Geocoder geocoder, double latitude , double longitude) throws IllegalArgumentException{
+    public AvaliaBrasilGeocoderService(Context context, Geocoder geocoder, double latitude, double longitude) throws IllegalArgumentException {
         this.geocoder = geocoder;
-        if(latitude == 0 || longitude == 0){
+        if (latitude == 0 || longitude == 0) {
             throw new IllegalArgumentException(context.getResources().getString(R.string.location_error));
         }
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public AvaliaBrasilGeocoderService(Context context,Geocoder geocoder,Location location)  throws IllegalArgumentException{
+    public AvaliaBrasilGeocoderService(Context context, Geocoder geocoder, Location location) throws IllegalArgumentException {
         this.geocoder = geocoder;
-        if(location == null){
+        if (location == null) {
             throw new IllegalArgumentException(context.getResources().getString(R.string.location_error));
         }
         this.latitude = location.getLatitude();
@@ -50,19 +50,19 @@ public class AvaliaBrasilGeocoderService {
 
     public void fetchAddress() throws IOException {
 
-          address.clear();
-          address = geocoder.getFromLocation(latitude, longitude, 5);
-            locality = address.get(0).getLocality();
-            countryName = address.get(0).getCountryName() ;
-            adminArea = address.get(0).getAdminArea();
-
-        }
-
-    public void fetchAddress(double latitude , double longitude) throws IOException {
         address.clear();
         address = geocoder.getFromLocation(latitude, longitude, 5);
         locality = address.get(0).getLocality();
-        countryName = address.get(0).getCountryName() ;
+        countryName = address.get(0).getCountryName();
+        adminArea = address.get(0).getAdminArea();
+
+    }
+
+    public void fetchAddress(double latitude, double longitude) throws IOException {
+        address.clear();
+        address = geocoder.getFromLocation(latitude, longitude, 5);
+        locality = address.get(0).getLocality();
+        countryName = address.get(0).getCountryName();
         adminArea = address.get(0).getAdminArea();
         address.get(0).getCountryCode();
     }

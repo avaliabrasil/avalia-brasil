@@ -44,13 +44,13 @@ public class AvbAuthenticator extends AbstractAccountAuthenticator {
 
         Intent intent = new Intent(context, LoginActivity.class);
 
-        intent.putExtra(Constant.ARG_ACCOUNT_TYPE,"");
-        intent.putExtra(Constant.ARG_AUTH_TYPE,"");
-        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,r);
+        intent.putExtra(Constant.ARG_ACCOUNT_TYPE, "");
+        intent.putExtra(Constant.ARG_AUTH_TYPE, "");
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, r);
 
         Bundle bundle = new Bundle();
 
-        bundle.putParcelable(AccountManager.KEY_INTENT,intent);
+        bundle.putParcelable(AccountManager.KEY_INTENT, intent);
 
         return bundle;
     }
@@ -75,13 +75,13 @@ public class AvbAuthenticator extends AbstractAccountAuthenticator {
 
         Intent intent = new Intent(context, LoginActivity.class);
 
-        intent.putExtra(Constant.ARG_ACCOUNT_TYPE,"");
-        intent.putExtra(Constant.ARG_AUTH_TYPE,"");
-        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE,r);
+        intent.putExtra(Constant.ARG_ACCOUNT_TYPE, "");
+        intent.putExtra(Constant.ARG_AUTH_TYPE, "");
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, r);
 
         Bundle bundle = new Bundle();
 
-        bundle.putParcelable(AccountManager.KEY_INTENT,intent);
+        bundle.putParcelable(AccountManager.KEY_INTENT, intent);
 
         return bundle;
     }
@@ -92,7 +92,7 @@ public class AvbAuthenticator extends AbstractAccountAuthenticator {
 
         Log.d("Auth", "getAuthTokenLabel: ");
 
-        if(authTokenType.equals(Constant.ACCOUNT_TOKEN_TYPE_USER)){
+        if (authTokenType.equals(Constant.ACCOUNT_TOKEN_TYPE_USER)) {
             return "user";
         }
         return "";

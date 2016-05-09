@@ -14,7 +14,7 @@
         <menu>
             <item
                 android:id="@+id/btnLogout"
-                android:title="@string/drawer_logout"/>
+                android:title="@string/drawer_logout" />
             <item
                 android:id="@+id/btnHelp"
                 android:title="@string/drawer_help" />

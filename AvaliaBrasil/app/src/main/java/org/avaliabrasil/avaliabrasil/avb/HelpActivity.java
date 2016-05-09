@@ -12,7 +12,7 @@ import org.avaliabrasil.avaliabrasil.R;
 /**
  * Created by Developer on 11/04/2016.
  */
-public class HelpActivity extends AppCompatActivity{
+public class HelpActivity extends AppCompatActivity {
     /**
      * The {@link AccountManager} for getting user informations.
      */
