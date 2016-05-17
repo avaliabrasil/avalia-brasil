@@ -10,7 +10,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.EvaluationActivity;
+import org.avaliabrasil.avaliabrasil.avb.activity.EvaluationActivity;
 
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>

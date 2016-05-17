@@ -32,7 +32,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name="org.avaliabrasil.avaliabrasil.data.AvaliaBrasilApplication">
+        android:name=".avb.data.AvaliaBrasilApplication">
 
         <!-- Needed for facebook -->
         <meta-data
@@ -40,7 +40,7 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".avb.LoginActivity"
+            android:name=".avb.activity.LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="keyboardHidden|orientation|screenSize">
@@ -49,7 +49,7 @@
 
 
         <activity
-            android:name=".avb.MainActivity"
+            android:name=".avb.activity.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:launchMode="singleTop"
@@ -66,64 +66,64 @@
         </activity>
 
         <activity
-            android:name=".avb.PlaceActivity"
+            android:name=".avb.activity.PlaceActivity"
             android:label="@string/title_activity_place"
-            android:parentActivityName=".avb.MainActivity"
+            android:parentActivityName=".avb.activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avb.MainActivity" />
+                android:value=".avb.activity.MainActivity" />
         </activity>
         <activity
-            android:name=".avb.EvaluationActivity"
+            android:name=".avb.activity.EvaluationActivity"
             android:label="@string/title_activity_evaluation"
-            android:parentActivityName=".avb.PlaceActivity"
+            android:parentActivityName=".avb.activity.PlaceActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avb.PlaceActivity" />
+                android:value=".avb.activity.PlaceActivity" />
         </activity>
         <activity
-            android:name=".avb.PlaceStatisticsActivity"
+            android:name=".avb.activity.PlaceStatisticsActivity"
             android:label="@string/title_activity_place_statistics"
-            android:parentActivityName=".avb.PlaceActivity"
+            android:parentActivityName=".avb.activity.PlaceActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avb.PlaceActivity"
+                android:value=".avb.activity.PlaceActivity"
                 android:theme="@style/AppTheme.NoActionBar" />
         </activity>
-        <activity android:name=".avb.ExitActivity"></activity>
+        <activity android:name=".avb.activity.ExitActivity"></activity>
         <activity
-            android:name=".avb.RankingActivity"
+            android:name=".avb.activity.RankingActivity"
             android:label="@string/title_activity_ranking"
-            android:parentActivityName=".avb.MainActivity"
+            android:parentActivityName=".avb.activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avb.MainActivity" />
+                android:value=".avb.activity.MainActivity" />
         </activity>
 
         <activity
-            android:name=".avb.HelpActivity"
-            android:parentActivityName=".avb.MainActivity"
+            android:name=".avb.activity.HelpActivity"
+            android:parentActivityName=".avb.activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avb.MainActivity" />
+                android:value=".avb.activity.MainActivity" />
         </activity>
 
         <activity
-            android:name=".avb.TermsOfUseActivity"
-            android:parentActivityName=".avb.MainActivity"
+            android:name=".avb.activity.TermsOfUseActivity"
+            android:parentActivityName=".avb.activity.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".avb.MainActivity" />
+                android:value=".avb.activity.MainActivity" />
         </activity>
 
 
@@ -148,11 +148,11 @@
 
         <provider
             android:authorities="org.avaliabrasil.avaliabrasil"
-            android:name=".data.AvBProvider"
+            android:name=".avb.data.AvBProvider"
             android:syncable="true" />
 
         <!-- SyncAdapter's dummy authentication service -->
-        <service android:name=".sync.AvbAuthenticatorService">
+        <service android:name=".avb.sync.AvbAuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -160,6 +160,17 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+
+        <!-- Location service to update the user current location -->
+        <service android:name=".avb.gps.GPSService"></service>
+
+        <receiver android:name=".avb.gps.GpsLocationReceiver">
+            <intent-filter>
+                <action android:name="android.location.PROVIDERS_CHANGED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

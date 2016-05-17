@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.Comment;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.Comment;
 
 import java.util.ArrayList;
 import java.util.List;

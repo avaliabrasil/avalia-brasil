@@ -13,12 +13,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.EvaluationActivity;
+import org.avaliabrasil.avaliabrasil.avb.activity.EvaluationActivity;
 import org.avaliabrasil.avaliabrasil.avb.adapters.CategoryAdapter;
 import org.avaliabrasil.avaliabrasil.avb.adapters.DividerItemDecoration;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlaceTypeAdapter;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.AvaliaBrasilCategory;
-import org.avaliabrasil.avaliabrasil.rest.javabeans.AvaliaBrasilPlaceType;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.AvaliaBrasilCategory;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.AvaliaBrasilPlaceType;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.NewPlace;
 
 import java.util.ArrayList;
 
@@ -65,6 +66,11 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
      */
     private ArrayList<AvaliaBrasilPlaceType> types;
 
+    /**
+     *
+     */
+    private String placeId;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -93,6 +99,8 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
 
         types = (ArrayList<AvaliaBrasilPlaceType>) getArguments().getSerializable("types");
 
+        placeId = getArguments().getString("placeId");
+
         btnSubmit.setVisibility(View.GONE);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
@@ -115,14 +123,14 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
     }
 
     @Override
-    public Integer[] getAnwser() {
+    public NewPlace getAnwser() {
         if (!isAnwser()) {
             return null;
         }
 
-        Integer[] response = new Integer[]{Integer.valueOf(category_pos), Integer.valueOf(type_pos)};
+        NewPlace newPlace = new NewPlace(placeId,category_pos,type_pos);
 
-        return response;
+        return newPlace;
     }
 
     boolean isCategorySelected = false;

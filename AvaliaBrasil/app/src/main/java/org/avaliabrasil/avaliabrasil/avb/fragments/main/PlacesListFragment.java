@@ -12,10 +12,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.MainActivity;
-import org.avaliabrasil.avaliabrasil.avb.PlaceActivity;
+import org.avaliabrasil.avaliabrasil.avb.activity.MainActivity;
+import org.avaliabrasil.avaliabrasil.avb.activity.PlaceActivity;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlacesListAdapter;
-import org.avaliabrasil.avaliabrasil.sync.Observer;
+import org.avaliabrasil.avaliabrasil.avb.data.AvaliaBrasilApplication;
+import org.avaliabrasil.avaliabrasil.avb.sync.Observer;
 
 /**
  * Created by Pedro on 29/02/2016.
@@ -55,9 +56,7 @@ public class PlacesListFragment extends Fragment implements Observer {
 
         mListView = (ListView) rootView.findViewById(R.id.listview_places);
 
-        final MainActivity activity = (MainActivity) getActivity();
-
-        mPlacesListAdapter = new PlacesListAdapter(getContext(), null, 0, activity.location);
+        mPlacesListAdapter = new PlacesListAdapter(getContext(), null, 0, ((AvaliaBrasilApplication)getActivity().getApplication()).getLocation());
 
         mListView.setEmptyView(rootView.findViewById(R.id.tvEmpty));
 

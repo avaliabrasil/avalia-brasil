@@ -1,0 +1,538 @@
+package org.avaliabrasil.avaliabrasil.avb.activity;
+
+import android.app.ProgressDialog;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.data.AvBContract;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.GroupQuestionDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.InstrumentDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.PlaceCategoryDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.PlaceTypeDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.QuestionDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.SurveyDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.rest.AvaliaBrasilAPIClient;
+import org.avaliabrasil.avaliabrasil.avb.rest.GooglePlacesAPIClient;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.Survey;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.Period;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.place.placedetail.object.PlaceDetails;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.PlaceStatistics;
+import org.avaliabrasil.avaliabrasil.avb.util.Utils;
+
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+public class PlaceActivity extends AppCompatActivity {
+
+    private CollapsingToolbarLayout toolbarLayout;
+    private LinearLayout placesInfo;
+    private String distance;
+    private MapView mMapView;
+    private GoogleMap googleMap;
+    private String place_id;
+    private Button quality_index;
+    private Button ranking_position;
+    private ImageView ivRankingStatus;
+    private PlaceStatistics placeStats;
+    /**
+     *
+     */
+    private ProgressDialog progress;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if ((getIntent() == null) || (getIntent().getExtras() == null) || (getIntent().getExtras().getString("placeid") == null) || (getIntent().getExtras().getString("name") == null)
+                || (getIntent().getExtras().getString("distance") == null)) {
+            finish();
+        } else {
+            setContentView(R.layout.activity_place);
+
+            place_id = getIntent().getExtras().getString("placeid");
+
+            toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+
+            toolbarLayout.setTitle(getIntent().getExtras().getString("name"));
+
+            // Ativando a opção voltar da Toolbar
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+            quality_index = (Button) findViewById(R.id.quality_index);
+            ranking_position = (Button) findViewById(R.id.ranking_position);
+            ivRankingStatus = (ImageView) findViewById(R.id.ivRankingStatus);
+
+            mMapView = (MapView) findViewById(R.id.mapView);
+            mMapView.onCreate(savedInstanceState);
+
+            mMapView.onResume();// needed to get the map to display immediately
+
+            try {
+                MapsInitializer.initialize(getApplicationContext());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            googleMap = mMapView.getMap();
+
+            placesInfo = (LinearLayout) findViewById(R.id.placesInfo);
+
+            Cursor cursor = getContentResolver().query(
+                    AvBContract.PlaceEntry.getPlaceDetails(getIntent().getExtras().getString("placeid")), null, null, null, null);
+
+            distance = getIntent().getExtras().getString("distance");
+
+            if (cursor.getCount() <= 0) {
+                getPlaceDetails(true);
+            } else {
+                getPlaceDetails(false);
+                cursor.moveToFirst();
+
+                View view = null;
+
+                if (cursor.getString(cursor.getColumnIndex("vicinity")) != null) {
+                    View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
+                    ((TextView) place.findViewById(R.id.place_name_text_view)).setText(cursor.getString(cursor.getColumnIndex("name")));
+                    ((TextView) place.findViewById(R.id.place_address_text_view)).setText(cursor.getString(cursor.getColumnIndex("vicinity")));
+                    ((TextView) place.findViewById(R.id.place_distance_text_view)).setText(distance);
+                    placesInfo.addView(place);
+                }
+
+                if (cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")) != null) {
+                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+                    ((TextView) view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")));
+                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
+
+                    placesInfo.addView(view);
+                }
+
+                if (cursor.getString(cursor.getColumnIndex("website")) != null) {
+                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+                    ((TextView) view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("website")));
+                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
+
+                    placesInfo.addView(view);
+                }
+
+                toolbarLayout.setTitle(cursor.getString(cursor.getColumnIndex("name")));
+
+                MarkerOptions marker;
+
+                marker = new MarkerOptions().position(
+                        new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("name")));
+
+                // Changing marker icon
+                marker.icon(BitmapDescriptorFactory
+                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).zoom(16).build();
+                googleMap.animateCamera(CameraUpdateFactory
+                        .newCameraPosition(cameraPosition));
+
+                googleMap.addMarker(marker);
+
+                cursor = getContentResolver().query(
+                        AvBContract.PlacePeriodEntry.buildPlacePeriodUri(place_id), null, null, null, null);
+
+                Log.d("Teste", DatabaseUtils.dumpCursorToString(cursor));
+
+                if (cursor.moveToNext()) {
+
+                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+                    HashMap<String, String> openAndClose = new HashMap<String, String>();
+                    openAndClose.put("open", "");
+                    openAndClose.put("close", "");
+                    openAndClose.put(cursor.getString(cursor.getColumnIndex("status")), Utils.formatTime(cursor.getString(cursor.getColumnIndex("time"))));
+                    if (cursor.moveToNext()) {
+                        openAndClose.put(cursor.getString(cursor.getColumnIndex("status")), Utils.formatTime(cursor.getString(cursor.getColumnIndex("time"))));
+                    }
+
+                    ((TextView) view.findViewById(R.id.text)).setText("Aberto hoje " + openAndClose.get("open") + " - " + openAndClose.get("close"));
+                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_schedule_black_24dp));
+                    placesInfo.addView(view);
+                }
+            }
+
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getPlaceStatistics(place_id),
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            Log.d("Teste", "onResponse: " + response);
+                            Gson gson = new Gson();
+                            placeStats = gson.fromJson(Utils.normalizeAvaliaBrasilResponse(response), PlaceStatistics.class);
+
+                            if (placeStats == null) {
+                                ranking_position.setText("-- º");
+                                quality_index.setText("0");
+                                ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
+                            } else {
+                                ranking_position.setText(String.valueOf(placeStats.getRankingPosition().getNational()) + "º");
+
+                                quality_index.setText(String.valueOf(placeStats.getQualityIndex().get(placeStats.getQualityIndex().size() - 1).getValue()));
+
+                                switch (placeStats.getRankingStatus().getNational()) {
+                                    case "up":
+                                        ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+                                        break;
+                                    case "down":
+                                        ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                                        break;
+                                    case "none":
+                                        ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
+                                        break;
+                                }
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                    ranking_position.setText("-- º");
+                    quality_index.setText("0");
+                    ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
+
+                }
+            });
+            Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
+        }
+    }
+
+    private void getPlaceDetails(final boolean update) {
+        progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
+                getResources().getString(R.string.progress_dialog_message), true);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, GooglePlacesAPIClient.getPlaceDetails(place_id, "AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0"),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("Teste", "onResponse: " + response);
+                        Gson gson = new Gson();
+                        PlaceDetails placeDetails = gson.fromJson(response, PlaceDetails.class);
+
+                        ArrayList<String> placeInfoList = new ArrayList<String>();
+
+                        placeInfoList.add("Address: " + placeDetails.getResult().getVicinity());
+                        View view = null;
+
+                        ContentValues value = new ContentValues();
+                        value.put("place_id", place_id);
+                        value.put("website", placeDetails.getResult().getWebsite());
+                        value.put("formattedPhoneNumber", placeDetails.getResult().getFormattedPhoneNumber());
+                        value.put("photo_reference", placeDetails.getResult().getPhotos().size() > 0 ? placeDetails.getResult().getPhotos().get(0).getPhotoReference() : "");
+
+                        value.put("city", placeDetails.getResult().getCity());
+                        value.put("state", placeDetails.getResult().getState());
+                        value.put("country", placeDetails.getResult().getCountry());
+
+                        if (update) {
+                            getContentResolver().insert(
+                                    AvBContract.PlaceDetailsEntry.PLACE_DETAILS_URI, value);
+                        } else {
+                            getContentResolver().update(
+                                    AvBContract.PlaceDetailsEntry.PLACE_DETAILS_URI, value, "place_id = ?", new String[]{place_id});
+                        }
+
+                        if (placeDetails.getResult().getVicinity() != null) {
+                            View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
+                            ((TextView) place.findViewById(R.id.place_name_text_view)).setText(placeDetails.getResult().getName());
+                            ((TextView) place.findViewById(R.id.place_address_text_view)).setText(placeDetails.getResult().getVicinity());
+                            ((TextView) place.findViewById(R.id.place_distance_text_view)).setText(distance);
+                            placesInfo.addView(place);
+                        }
+
+                        if (placeDetails.getResult().getFormattedPhoneNumber() != null) {
+                            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+                            ((TextView) view.findViewById(R.id.text)).setText(placeDetails.getResult().getFormattedPhoneNumber());
+                            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
+
+                            placesInfo.addView(view);
+                        }
+
+                        if (placeDetails.getResult().getWebsite() != null) {
+                            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+                            ((TextView) view.findViewById(R.id.text)).setText(placeDetails.getResult().getWebsite());
+                            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
+
+                            placesInfo.addView(view);
+                        }
+
+                        if (placeDetails.getResult().getOpeningHour() != null) {
+
+                            Calendar c = Calendar.getInstance();
+
+                            if (placeDetails.getResult().getOpeningHour().getPeriods().size() > 0) {
+
+                                ContentValues[] values = new ContentValues[placeDetails.getResult().getOpeningHour().getPeriods().size() * 2];
+
+                                for (int i = 0, j = 0; i < placeDetails.getResult().getOpeningHour().getPeriods().size(); i++) {
+                                    value = null;
+                                    Period p = placeDetails.getResult().getOpeningHour().getPeriods().get(i);
+                                    if (p.getIsClose() != null) {
+                                        value = new ContentValues();
+                                        value.put("place_id", place_id);
+                                        value.put("day", p.getIsClose().getDay());
+                                        value.put("time", p.getIsClose().getTime());
+                                        value.put("status", "close");
+                                    }
+
+                                    values[j++] = value;
+                                    value = null;
+
+                                    if (p.getIsOpen() != null) {
+                                        value = new ContentValues();
+                                        value.put("place_id", place_id);
+                                        value.put("day", p.getIsOpen().getDay());
+                                        value.put("time", p.getIsOpen().getTime());
+                                        value.put("status", "open");
+
+                                    }
+                                    values[j++] = value;
+
+                                    if (p.getIsClose() != null && p.getIsOpen() != null) {
+                                        if (p.getIsOpen().getDay() == c.get(Calendar.DAY_OF_WEEK) && p.getIsClose().getDay() == c.get(Calendar.DAY_OF_WEEK)) {
+                                            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+                                            ((TextView) view.findViewById(R.id.text)).setText("Aberto hoje " + Utils.formatTime(p.getIsOpen().getTime()) + " - " + Utils.formatTime(p.getIsClose().getTime()));
+                                            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_schedule_black_24dp));
+                                            placesInfo.addView(view);
+                                        }
+                                    }
+
+                                }
+                                getContentResolver().bulkInsert(
+                                        AvBContract.PlacePeriodEntry.PLACE_PERIOD_URI, values);
+                            }
+                        }
+
+                        toolbarLayout.setTitle(placeDetails.getResult().getName());
+
+
+                        MarkerOptions marker;
+
+                        marker = new MarkerOptions().position(
+                                new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(), placeDetails.getResult().getGeometry().getLocation().getLng())).title(placeDetails.getResult().getName());
+
+                        // Changing marker icon
+                        marker.icon(BitmapDescriptorFactory
+                                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+
+                        CameraPosition cameraPosition = new CameraPosition.Builder()
+                                .target(new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(), placeDetails.getResult().getGeometry().getLocation().getLng())).zoom(16).build();
+                        googleMap.animateCamera(CameraUpdateFactory
+                                .newCameraPosition(cameraPosition));
+                        // adding marker
+                        googleMap.addMarker(marker);
+                        progress.dismiss();
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                View view = null;
+                view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+                ((TextView) view.findViewById(R.id.text)).setText("Não foi possível buscar as informações deste local, verifique sua internet");
+                ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_search_white_24dp));
+
+                placesInfo.addView(view);
+                progress.dismiss();
+            }
+        });
+        Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (mMapView != null) {
+            mMapView.onResume();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mMapView != null) {
+            mMapView.onPause();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mMapView != null) {
+            mMapView.onDestroy();
+        }
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
+
+    public void fetchData(String response) throws SQLException {
+        Survey survey = null;
+
+        SurveyDAOImpl surveyDAO = new SurveyDAOImpl(PlaceActivity.this);
+
+        if(response == null){
+            survey = surveyDAO.findSurveyByPlaceId(new InstrumentDAOImpl(PlaceActivity.this),new GroupQuestionDAOImpl(PlaceActivity.this),place_id);
+            if(survey != null){
+                prepareHolder(survey);
+            }else{
+                throw new SQLException(getResources().getString(R.string.internet_connection_error));
+            }
+        }else{
+            Gson gson = new Gson();
+
+            survey = gson.fromJson(Utils.normalizeAvaliaBrasilResponse(response), Survey.class);
+
+            surveyDAO.bulkAddInstrument(new InstrumentDAOImpl(PlaceActivity.this),survey);
+
+            surveyDAO.boundPlaceAndInstrument(place_id,survey);
+
+            surveyDAO.bulkAddQuestionGroup(new GroupQuestionDAOImpl(PlaceActivity.this),survey);
+
+            surveyDAO.bulkAddQuestion(new QuestionDAOImpl(PlaceActivity.this),survey);
+
+            PlaceCategoryDAOImpl placeCategoryDAO = new PlaceCategoryDAOImpl(PlaceActivity.this);
+
+            PlaceTypeDAOImpl placeTypeDAO = new PlaceTypeDAOImpl(PlaceActivity.this);
+
+            placeCategoryDAO.bulkInsertPlaceCategory(survey.getCategories());
+
+            placeTypeDAO.bulkInsertPlaceType(survey.getPlaceTypes());
+
+            prepareHolder(survey);
+        }
+    }
+
+    public void startEvaluationActivity(View view) {
+
+        progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
+                getResources().getString(R.string.progress_dialog_message), true);
+
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getSurveyURL(place_id),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            fetchData(response);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            Toast.makeText(PlaceActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                        progress.dismiss();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                progress.dismiss();
+                try {
+                    fetchData(null);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    Toast.makeText(PlaceActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+
+                JsonObject jsonObject = new JsonObject();
+                JsonArray availableInstruments = new JsonArray();
+                Cursor c = getContentResolver().query(AvBContract.InstrumentEntry.findSurveyByPlaceUri(place_id), null, null, null, null);
+
+                JsonObject objs = null;
+                while (c.moveToNext()) {
+
+                    objs = new JsonObject();
+
+                    objs.addProperty("id", c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
+                    objs.addProperty("updated_at", c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.UPDATED_AT)));
+
+                    availableInstruments.add(objs);
+                }
+                jsonObject.add("availableInstruments", availableInstruments);
+
+                //TODO get the user token to send into the request
+                jsonObject.addProperty("userID", "");
+
+                params.put("", jsonObject.toString());
+                return params;
+            }
+        };
+        Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
+
+    }
+
+
+    private void prepareHolder(Survey survey) {
+            Intent intent = new Intent(PlaceActivity.this, EvaluationActivity.class);
+            intent.putExtra("holder", (Serializable) survey);
+            intent.putExtra("name", getIntent().getExtras().getString("name"));
+            intent.putExtra("placeid", place_id);
+            startActivity(intent);
+            finish();
+    }
+
+    public void startStatisticsActivity(View view) {
+        if (placeStats == null) {
+            Toast.makeText(PlaceActivity.this, getResources().getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(PlaceActivity.this, PlaceStatisticsActivity.class);
+        intent.putExtra("placeid", place_id);
+        startActivity(intent);
+    }
+}

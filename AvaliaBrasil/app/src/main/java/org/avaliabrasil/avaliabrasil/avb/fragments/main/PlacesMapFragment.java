@@ -25,9 +25,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.MainActivity;
-import org.avaliabrasil.avaliabrasil.avb.PlaceActivity;
-import org.avaliabrasil.avaliabrasil.sync.Observer;
+import org.avaliabrasil.avaliabrasil.avb.activity.MainActivity;
+import org.avaliabrasil.avaliabrasil.avb.activity.PlaceActivity;
+import org.avaliabrasil.avaliabrasil.avb.data.AvaliaBrasilApplication;
+import org.avaliabrasil.avaliabrasil.avb.sync.Observer;
 
 /**
  * Created by Pedro on 29/02/2016.
@@ -41,7 +42,7 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
     private MapView mMapView;
     private GoogleMap googleMap;
 
-    private MainActivity activity;
+    private AvaliaBrasilApplication avaliaBrasilApplication;
 
     public PlacesMapFragment() {
     }
@@ -59,9 +60,9 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
                              Bundle savedInstanceState) {
         setRetainInstance(true);
 
-        View rootView = inflater.inflate(R.layout.fragment_places_map, container, false);
+        avaliaBrasilApplication = (AvaliaBrasilApplication) getActivity().getApplication();
 
-        activity = (MainActivity) getActivity();
+        View rootView = inflater.inflate(R.layout.fragment_places_map, container, false);
 
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
@@ -77,8 +78,8 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         googleMap = mMapView.getMap();
 
 
-        double latitude = activity.location == null ? 0 : activity.location.getLatitude();
-        double longitude = activity.location == null ? 0 : activity.location.getLongitude();
+        double latitude = avaliaBrasilApplication.getLocation() == null ? 0 : avaliaBrasilApplication.getLocation() .getLatitude();
+        double longitude = avaliaBrasilApplication.getLocation()  == null ? 0 : avaliaBrasilApplication.getLocation() .getLongitude();
 
         if (!(latitude == 0 || longitude == 0)) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -127,8 +128,8 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
     public synchronized void update(Cursor cursor) {
         googleMap.clear();
 
-        double latitude = activity.location == null ? 0 : activity.location.getLatitude();
-        double longitude = activity.location == null ? 0 : activity.location.getLongitude();
+        double latitude = avaliaBrasilApplication.getLocation()  == null ? 0 : avaliaBrasilApplication.getLocation() .getLatitude();
+        double longitude = avaliaBrasilApplication.getLocation() == null ? 0 : avaliaBrasilApplication.getLocation() .getLongitude();
 
         if (!(latitude == 0 || longitude == 0)) {
             CameraPosition cameraPosition = new CameraPosition.Builder()
@@ -184,7 +185,7 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         placeLocation.setLongitude(marker.getPosition().longitude);
 
         intent.putExtra("placeid", marker.getTitle());
-        intent.putExtra("distance", (int) (activity.location == null ? 0 : activity.location.distanceTo(placeLocation)) + "m");
+        intent.putExtra("distance", (int) (avaliaBrasilApplication.getLocation()  == null ? 0 : avaliaBrasilApplication.getLocation() .distanceTo(placeLocation)) + "m");
         intent.putExtra("name", marker.getSnippet());
 
         startActivity(intent);

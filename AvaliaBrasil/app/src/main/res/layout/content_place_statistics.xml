@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".avb.PlaceStatisticsActivity"
+    tools:context=".avb.activity.PlaceStatisticsActivity"
     tools:showIn="@layout/activity_place_statistics">
 
     <android.support.v4.widget.NestedScrollView
@@ -113,25 +113,25 @@
 
             <include layout="@layout/divider"></include>
 
-            <org.avaliabrasil.avaliabrasil.view.RankingView
+            <org.avaliabrasil.avaliabrasil.avb.view.RankingView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rvNacional"></org.avaliabrasil.avaliabrasil.view.RankingView>
+                android:id="@+id/rvNacional"></org.avaliabrasil.avaliabrasil.avb.view.RankingView>
 
-            <org.avaliabrasil.avaliabrasil.view.RankingView
+            <org.avaliabrasil.avaliabrasil.avb.view.RankingView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rvRegional"></org.avaliabrasil.avaliabrasil.view.RankingView>
+                android:id="@+id/rvRegional"></org.avaliabrasil.avaliabrasil.avb.view.RankingView>
 
-            <org.avaliabrasil.avaliabrasil.view.RankingView
+            <org.avaliabrasil.avaliabrasil.avb.view.RankingView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rvEstadual"></org.avaliabrasil.avaliabrasil.view.RankingView>
+                android:id="@+id/rvEstadual"></org.avaliabrasil.avaliabrasil.avb.view.RankingView>
 
-            <org.avaliabrasil.avaliabrasil.view.RankingView
+            <org.avaliabrasil.avaliabrasil.avb.view.RankingView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rvMunicipal"></org.avaliabrasil.avaliabrasil.view.RankingView>
+                android:id="@+id/rvMunicipal"></org.avaliabrasil.avaliabrasil.avb.view.RankingView>
 
             <include layout="@layout/divider"></include>
 

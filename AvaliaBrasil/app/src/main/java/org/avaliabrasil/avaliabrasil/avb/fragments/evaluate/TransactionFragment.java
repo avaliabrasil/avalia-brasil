@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.widget.Button;
 
-import org.avaliabrasil.avaliabrasil.rest.javabeans.Question;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.Question;
 
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>

@@ -10,7 +10,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.EvaluationActivity;
+import org.avaliabrasil.avaliabrasil.avb.activity.EvaluationActivity;
 
 import java.util.ArrayList;
 import java.util.List;

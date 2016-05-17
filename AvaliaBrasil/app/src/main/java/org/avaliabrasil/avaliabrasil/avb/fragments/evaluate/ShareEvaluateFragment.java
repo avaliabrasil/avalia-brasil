@@ -19,7 +19,7 @@ import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareButton;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.EvaluationActivity;
+import org.avaliabrasil.avaliabrasil.avb.activity.EvaluationActivity;
 
 /**
  * Created by Developer on 04/04/2016.
