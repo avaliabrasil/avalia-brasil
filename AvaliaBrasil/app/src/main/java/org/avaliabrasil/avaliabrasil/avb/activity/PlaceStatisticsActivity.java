@@ -28,7 +28,7 @@ import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.adapters.CommentAdapter;
 import org.avaliabrasil.avaliabrasil.avb.adapters.DividerItemDecoration;
 import org.avaliabrasil.avaliabrasil.avb.rest.AvaliaBrasilAPIClient;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.PlaceStatistics;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.ranking.PlaceStatistics;
 import org.avaliabrasil.avaliabrasil.avb.util.Utils;
 import org.avaliabrasil.avaliabrasil.avb.view.RankingView;
 

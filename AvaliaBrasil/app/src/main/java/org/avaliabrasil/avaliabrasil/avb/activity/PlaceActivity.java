@@ -35,26 +35,35 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.data.AvBContract;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.GroupQuestionDAOImpl;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.InstrumentDAOImpl;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.PlaceCategoryDAOImpl;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.PlaceTypeDAOImpl;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.QuestionDAOImpl;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.SurveyDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
+import org.avaliabrasil.avaliabrasil.avb.dao.InstrumentDAO;
+import org.avaliabrasil.avaliabrasil.avb.dao.PlaceDetailsDAO;
+import org.avaliabrasil.avaliabrasil.avb.dao.PlacePeriodDAO;
+import org.avaliabrasil.avaliabrasil.avb.impl.AnwserDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.GroupQuestionDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.InstrumentDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.NewPlaceDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.PlaceCategoryDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.PlaceDetailsDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.PlacePeriodDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.PlaceTypeDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.QuestionDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.SurveyDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.google.places.Period;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.place.placedetail.PlaceDetails;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.place.placedetail.ResultDetails;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.ranking.PlaceStatistics;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.Instrument;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.Survey;
 import org.avaliabrasil.avaliabrasil.avb.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.avb.rest.GooglePlacesAPIClient;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.Survey;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.Period;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.place.placedetail.object.PlaceDetails;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.PlaceStatistics;
 import org.avaliabrasil.avaliabrasil.avb.util.Utils;
 
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PlaceActivity extends AppCompatActivity {
@@ -69,9 +78,10 @@ public class PlaceActivity extends AppCompatActivity {
     private Button ranking_position;
     private ImageView ivRankingStatus;
     private PlaceStatistics placeStats;
-    /**
-     *
-     */
+    private PlaceDetailsDAO placeDetailsDAO;
+    private PlacePeriodDAO placePeriodDAO;
+    private SurveyDAOImpl surveyDAO;
+    private InstrumentDAO instrumentDAO;
     private ProgressDialog progress;
 
 
@@ -106,6 +116,16 @@ public class PlaceActivity extends AppCompatActivity {
 
             mMapView.onResume();// needed to get the map to display immediately
 
+            placeDetailsDAO = new PlaceDetailsDAOImpl(PlaceActivity.this);
+            placePeriodDAO = new PlacePeriodDAOImpl(PlaceActivity.this);
+            surveyDAO = new SurveyDAOImpl(PlaceActivity.this,new InstrumentDAOImpl(PlaceActivity.this,
+                    new GroupQuestionDAOImpl(PlaceActivity.this)),
+                    new GroupQuestionDAOImpl(PlaceActivity.this),
+                    new QuestionDAOImpl(PlaceActivity.this),
+                    new NewPlaceDAOImpl(PlaceActivity.this),
+                    new AnwserDAOImpl(PlaceActivity.this));
+            instrumentDAO = new InstrumentDAOImpl(PlaceActivity.this, new GroupQuestionDAOImpl(PlaceActivity.this));
+
             try {
                 MapsInitializer.initialize(getApplicationContext());
             } catch (Exception e) {
@@ -116,84 +136,15 @@ public class PlaceActivity extends AppCompatActivity {
 
             placesInfo = (LinearLayout) findViewById(R.id.placesInfo);
 
-            Cursor cursor = getContentResolver().query(
-                    AvBContract.PlaceEntry.getPlaceDetails(getIntent().getExtras().getString("placeid")), null, null, null, null);
+            ResultDetails details = placeDetailsDAO.getPlaceDetailsByPlaceId(place_id);
 
             distance = getIntent().getExtras().getString("distance");
 
-            if (cursor.getCount() <= 0) {
+            if (details == null) {
                 getPlaceDetails(true);
             } else {
                 getPlaceDetails(false);
-                cursor.moveToFirst();
-
-                View view = null;
-
-                if (cursor.getString(cursor.getColumnIndex("vicinity")) != null) {
-                    View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
-                    ((TextView) place.findViewById(R.id.place_name_text_view)).setText(cursor.getString(cursor.getColumnIndex("name")));
-                    ((TextView) place.findViewById(R.id.place_address_text_view)).setText(cursor.getString(cursor.getColumnIndex("vicinity")));
-                    ((TextView) place.findViewById(R.id.place_distance_text_view)).setText(distance);
-                    placesInfo.addView(place);
-                }
-
-                if (cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")) != null) {
-                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
-
-                    ((TextView) view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("formattedPhoneNumber")));
-                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
-
-                    placesInfo.addView(view);
-                }
-
-                if (cursor.getString(cursor.getColumnIndex("website")) != null) {
-                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
-
-                    ((TextView) view.findViewById(R.id.text)).setText(cursor.getString(cursor.getColumnIndex("website")));
-                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
-
-                    placesInfo.addView(view);
-                }
-
-                toolbarLayout.setTitle(cursor.getString(cursor.getColumnIndex("name")));
-
-                MarkerOptions marker;
-
-                marker = new MarkerOptions().position(
-                        new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).title(cursor.getString(cursor.getColumnIndex("name")));
-
-                // Changing marker icon
-                marker.icon(BitmapDescriptorFactory
-                        .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-
-
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(cursor.getDouble(cursor.getColumnIndex("latitude")), cursor.getDouble(cursor.getColumnIndex("longitude")))).zoom(16).build();
-                googleMap.animateCamera(CameraUpdateFactory
-                        .newCameraPosition(cameraPosition));
-
-                googleMap.addMarker(marker);
-
-                cursor = getContentResolver().query(
-                        AvBContract.PlacePeriodEntry.buildPlacePeriodUri(place_id), null, null, null, null);
-
-                Log.d("Teste", DatabaseUtils.dumpCursorToString(cursor));
-
-                if (cursor.moveToNext()) {
-
-                    view = getLayoutInflater().inflate(R.layout.image_and_text, null);
-                    HashMap<String, String> openAndClose = new HashMap<String, String>();
-                    openAndClose.put("open", "");
-                    openAndClose.put("close", "");
-                    openAndClose.put(cursor.getString(cursor.getColumnIndex("status")), Utils.formatTime(cursor.getString(cursor.getColumnIndex("time"))));
-                    if (cursor.moveToNext()) {
-                        openAndClose.put(cursor.getString(cursor.getColumnIndex("status")), Utils.formatTime(cursor.getString(cursor.getColumnIndex("time"))));
-                    }
-
-                    ((TextView) view.findViewById(R.id.text)).setText("Aberto hoje " + openAndClose.get("open") + " - " + openAndClose.get("close"));
-                    ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_schedule_black_24dp));
-                    placesInfo.addView(view);
-                }
+                toolbarLayout.setTitle(details.getName());
             }
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getPlaceStatistics(place_id),
@@ -240,7 +191,65 @@ public class PlaceActivity extends AppCompatActivity {
         }
     }
 
-    private void getPlaceDetails(final boolean update) {
+    private void prepareDependencyUI(ResultDetails details) {
+        View view = null;
+
+        if(details == null){
+            return;
+        }
+
+        if (details.getVicinity() != null) {
+            View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
+            ((TextView) place.findViewById(R.id.place_name_text_view)).setText(details.getName());
+            ((TextView) place.findViewById(R.id.place_address_text_view)).setText(details.getVicinity());
+            ((TextView) place.findViewById(R.id.place_distance_text_view)).setText(distance);
+            placesInfo.addView(place);
+        }
+
+        if (details.getFormattedPhoneNumber() != null) {
+            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+            ((TextView) view.findViewById(R.id.text)).setText(details.getFormattedPhoneNumber());
+            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
+
+            placesInfo.addView(view);
+        }
+
+        if (details.getWebsite() != null) {
+            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+
+            ((TextView) view.findViewById(R.id.text)).setText(details.getWebsite());
+            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
+
+            placesInfo.addView(view);
+        }
+
+        Period p = placePeriodDAO.getTodayPeriod(place_id);
+
+        if (p != null) {
+            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
+            ((TextView) view.findViewById(R.id.text)).setText("Aberto hoje " + Utils.formatTime(p.getIsOpen().getTime()) + " - " + Utils.formatTime(p.getIsClose().getTime()));
+            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_schedule_black_24dp));
+            placesInfo.addView(view);
+        }
+
+        MarkerOptions marker;
+        marker = new MarkerOptions().position(
+                details.getLatlng()).title(details.getName());
+
+        marker.icon(BitmapDescriptorFactory
+                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
+
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(details.getLatlng()).zoom(16).build();
+        googleMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(cameraPosition));
+
+        googleMap.addMarker(marker);
+    }
+
+    private void getPlaceDetails(final boolean insert) {
         progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
                 getResources().getString(R.string.progress_dialog_message), true);
 
@@ -251,122 +260,12 @@ public class PlaceActivity extends AppCompatActivity {
                         Log.d("Teste", "onResponse: " + response);
                         Gson gson = new Gson();
                         PlaceDetails placeDetails = gson.fromJson(response, PlaceDetails.class);
-
-                        ArrayList<String> placeInfoList = new ArrayList<String>();
-
-                        placeInfoList.add("Address: " + placeDetails.getResult().getVicinity());
                         View view = null;
 
-                        ContentValues value = new ContentValues();
-                        value.put("place_id", place_id);
-                        value.put("website", placeDetails.getResult().getWebsite());
-                        value.put("formattedPhoneNumber", placeDetails.getResult().getFormattedPhoneNumber());
-                        value.put("photo_reference", placeDetails.getResult().getPhotos().size() > 0 ? placeDetails.getResult().getPhotos().get(0).getPhotoReference() : "");
-
-                        value.put("city", placeDetails.getResult().getCity());
-                        value.put("state", placeDetails.getResult().getState());
-                        value.put("country", placeDetails.getResult().getCountry());
-
-                        if (update) {
-                            getContentResolver().insert(
-                                    AvBContract.PlaceDetailsEntry.PLACE_DETAILS_URI, value);
-                        } else {
-                            getContentResolver().update(
-                                    AvBContract.PlaceDetailsEntry.PLACE_DETAILS_URI, value, "place_id = ?", new String[]{place_id});
-                        }
-
-                        if (placeDetails.getResult().getVicinity() != null) {
-                            View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
-                            ((TextView) place.findViewById(R.id.place_name_text_view)).setText(placeDetails.getResult().getName());
-                            ((TextView) place.findViewById(R.id.place_address_text_view)).setText(placeDetails.getResult().getVicinity());
-                            ((TextView) place.findViewById(R.id.place_distance_text_view)).setText(distance);
-                            placesInfo.addView(place);
-                        }
-
-                        if (placeDetails.getResult().getFormattedPhoneNumber() != null) {
-                            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
-
-                            ((TextView) view.findViewById(R.id.text)).setText(placeDetails.getResult().getFormattedPhoneNumber());
-                            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.mipmap.ic_call_black_24dp));
-
-                            placesInfo.addView(view);
-                        }
-
-                        if (placeDetails.getResult().getWebsite() != null) {
-                            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
-
-                            ((TextView) view.findViewById(R.id.text)).setText(placeDetails.getResult().getWebsite());
-                            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_http_black_24dp));
-
-                            placesInfo.addView(view);
-                        }
-
-                        if (placeDetails.getResult().getOpeningHour() != null) {
-
-                            Calendar c = Calendar.getInstance();
-
-                            if (placeDetails.getResult().getOpeningHour().getPeriods().size() > 0) {
-
-                                ContentValues[] values = new ContentValues[placeDetails.getResult().getOpeningHour().getPeriods().size() * 2];
-
-                                for (int i = 0, j = 0; i < placeDetails.getResult().getOpeningHour().getPeriods().size(); i++) {
-                                    value = null;
-                                    Period p = placeDetails.getResult().getOpeningHour().getPeriods().get(i);
-                                    if (p.getIsClose() != null) {
-                                        value = new ContentValues();
-                                        value.put("place_id", place_id);
-                                        value.put("day", p.getIsClose().getDay());
-                                        value.put("time", p.getIsClose().getTime());
-                                        value.put("status", "close");
-                                    }
-
-                                    values[j++] = value;
-                                    value = null;
-
-                                    if (p.getIsOpen() != null) {
-                                        value = new ContentValues();
-                                        value.put("place_id", place_id);
-                                        value.put("day", p.getIsOpen().getDay());
-                                        value.put("time", p.getIsOpen().getTime());
-                                        value.put("status", "open");
-
-                                    }
-                                    values[j++] = value;
-
-                                    if (p.getIsClose() != null && p.getIsOpen() != null) {
-                                        if (p.getIsOpen().getDay() == c.get(Calendar.DAY_OF_WEEK) && p.getIsClose().getDay() == c.get(Calendar.DAY_OF_WEEK)) {
-                                            view = getLayoutInflater().inflate(R.layout.image_and_text, null);
-                                            ((TextView) view.findViewById(R.id.text)).setText("Aberto hoje " + Utils.formatTime(p.getIsOpen().getTime()) + " - " + Utils.formatTime(p.getIsClose().getTime()));
-                                            ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_schedule_black_24dp));
-                                            placesInfo.addView(view);
-                                        }
-                                    }
-
-                                }
-                                getContentResolver().bulkInsert(
-                                        AvBContract.PlacePeriodEntry.PLACE_PERIOD_URI, values);
-                            }
-                        }
-
-                        toolbarLayout.setTitle(placeDetails.getResult().getName());
-
-
-                        MarkerOptions marker;
-
-                        marker = new MarkerOptions().position(
-                                new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(), placeDetails.getResult().getGeometry().getLocation().getLng())).title(placeDetails.getResult().getName());
-
-                        // Changing marker icon
-                        marker.icon(BitmapDescriptorFactory
-                                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-
-
-                        CameraPosition cameraPosition = new CameraPosition.Builder()
-                                .target(new LatLng(placeDetails.getResult().getGeometry().getLocation().getLat(), placeDetails.getResult().getGeometry().getLocation().getLng())).zoom(16).build();
-                        googleMap.animateCamera(CameraUpdateFactory
-                                .newCameraPosition(cameraPosition));
-                        // adding marker
-                        googleMap.addMarker(marker);
+                        placeDetailsDAO.insertOrUpdatePlaceDetails(place_id,placeDetails.getResult(),insert);
+                        placePeriodDAO.bulkInsertPeriods(place_id,placeDetails.getResult().getOpeningHour() == null ? null : placeDetails.getResult().getOpeningHour().getPeriods());
+                        ResultDetails details = placeDetailsDAO.getPlaceDetailsByPlaceId(place_id);
+                        prepareDependencyUI(details);
                         progress.dismiss();
 
                     }
@@ -375,6 +274,8 @@ public class PlaceActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
                 View view = null;
+                ResultDetails details = placeDetailsDAO.getPlaceDetailsByPlaceId(place_id);
+                prepareDependencyUI(details);
                 view = getLayoutInflater().inflate(R.layout.image_and_text, null);
                 ((TextView) view.findViewById(R.id.text)).setText("Não foi possível buscar as informações deste local, verifique sua internet");
                 ((ImageView) view.findViewById(R.id.icon)).setImageDrawable(getResources().getDrawable(R.drawable.ic_search_white_24dp));
@@ -420,27 +321,25 @@ public class PlaceActivity extends AppCompatActivity {
     public void fetchData(String response) throws SQLException {
         Survey survey = null;
 
-        SurveyDAOImpl surveyDAO = new SurveyDAOImpl(PlaceActivity.this);
-
-        if(response == null){
-            survey = surveyDAO.findSurveyByPlaceId(new InstrumentDAOImpl(PlaceActivity.this),new GroupQuestionDAOImpl(PlaceActivity.this),place_id);
-            if(survey != null){
+        if (response == null) {
+            survey = surveyDAO.findSurveyByPlaceId(place_id);
+            if (survey.getInstruments().size() > 0) {
                 prepareHolder(survey);
-            }else{
+            } else {
                 throw new SQLException(getResources().getString(R.string.internet_connection_error));
             }
-        }else{
+        } else {
             Gson gson = new Gson();
 
             survey = gson.fromJson(Utils.normalizeAvaliaBrasilResponse(response), Survey.class);
 
-            surveyDAO.bulkAddInstrument(new InstrumentDAOImpl(PlaceActivity.this),survey);
+            surveyDAO.bulkAddInstrument(survey);
 
-            surveyDAO.boundPlaceAndInstrument(place_id,survey);
+            surveyDAO.boundPlaceAndInstrument(place_id, survey);
 
-            surveyDAO.bulkAddQuestionGroup(new GroupQuestionDAOImpl(PlaceActivity.this),survey);
+            surveyDAO.bulkAddQuestionGroup(survey);
 
-            surveyDAO.bulkAddQuestion(new QuestionDAOImpl(PlaceActivity.this),survey);
+            surveyDAO.bulkAddQuestion(survey);
 
             PlaceCategoryDAOImpl placeCategoryDAO = new PlaceCategoryDAOImpl(PlaceActivity.this);
 
@@ -491,18 +390,16 @@ public class PlaceActivity extends AppCompatActivity {
 
                 JsonObject jsonObject = new JsonObject();
                 JsonArray availableInstruments = new JsonArray();
-                Cursor c = getContentResolver().query(AvBContract.InstrumentEntry.findSurveyByPlaceUri(place_id), null, null, null, null);
 
-                JsonObject objs = null;
-                while (c.moveToNext()) {
-
-                    objs = new JsonObject();
-
-                    objs.addProperty("id", c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.INSTRUMENT_ID)));
-                    objs.addProperty("updated_at", c.getString(c.getColumnIndex(AvBContract.InstrumentEntry.UPDATED_AT)));
-
-                    availableInstruments.add(objs);
+                try {
+                    List<Instrument> instruments = instrumentDAO.getInstrumentByPlace(place_id);
+                    for(Instrument instrument : instruments){
+                        availableInstruments.add(instrument.instrumentLastUpdated());
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
+
                 jsonObject.add("availableInstruments", availableInstruments);
 
                 //TODO get the user token to send into the request
@@ -518,12 +415,12 @@ public class PlaceActivity extends AppCompatActivity {
 
 
     private void prepareHolder(Survey survey) {
-            Intent intent = new Intent(PlaceActivity.this, EvaluationActivity.class);
-            intent.putExtra("holder", (Serializable) survey);
-            intent.putExtra("name", getIntent().getExtras().getString("name"));
-            intent.putExtra("placeid", place_id);
-            startActivity(intent);
-            finish();
+        Intent intent = new Intent(PlaceActivity.this, EvaluationActivity.class);
+        intent.putExtra("holder", (Serializable) survey);
+        intent.putExtra("name", getIntent().getExtras().getString("name"));
+        intent.putExtra("placeid", place_id);
+        startActivity(intent);
+        finish();
     }
 
     public void startStatisticsActivity(View view) {

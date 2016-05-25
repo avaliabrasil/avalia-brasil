@@ -36,11 +36,11 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.data.AvBContract;
-import org.avaliabrasil.avaliabrasil.avb.data.AvaliaBrasilApplication;
+import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
+import org.avaliabrasil.avaliabrasil.avb.util.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil.avb.rest.AvaliaBrasilAPIClient;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.User;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.UserToken;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.etc.User;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.etc.UserToken;
 import org.avaliabrasil.avaliabrasil.avb.sync.Constant;
 import org.avaliabrasil.avaliabrasil.avb.util.LocationPermission;
 import org.json.JSONException;

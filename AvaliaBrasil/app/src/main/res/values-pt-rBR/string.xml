@@ -60,6 +60,7 @@
     <!-- MainActivity -->
     <string name="fetching_provider_location">Buscando novo local!</string>
     <string name="evaluation_not_completed">Há um questionário pendente, deseja finaliza-lo?</string>
+    <string name="evaluation_not_completed_error">Erro ao buscar avaliação</string>
 
     <!-- PlaceActivity -->
     <string name="isOpen">Abre ás</string>

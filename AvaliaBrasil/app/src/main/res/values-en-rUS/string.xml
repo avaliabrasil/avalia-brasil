@@ -69,6 +69,7 @@
     <!-- MainActivity -->
     <string name="fetching_provider_location">Fetching location!</string>
     <string name="evaluation_not_completed">Evaluation not completed, want to return?</string>
+    <string name="evaluation_not_completed_error">Error while retrieving the evaluation</string>
 
     <!-- PlaceActivity -->
     <string name="isOpen">Open</string>

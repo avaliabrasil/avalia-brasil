@@ -14,7 +14,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.data.AvaliaBrasilApplication;
+import org.avaliabrasil.avaliabrasil.avb.util.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil.avb.rest.GooglePlacesAPIClient;
 import org.avaliabrasil.avaliabrasil.avb.util.Utils;
 
@@ -64,6 +64,7 @@ public class GPSService extends Service implements LocationListener , SharedPref
                     if (providerLocation != null) {
                         if (Utils.isBetterLocation(providerLocation, avaliaBrasilApplication.getLocation())) {
                             avaliaBrasilApplication.setLocation(providerLocation);
+                            GooglePlacesAPIClient.getNearlyPlaces(GPSService.this, providerLocation);
                         }
                     }
                 }

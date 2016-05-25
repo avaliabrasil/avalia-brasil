@@ -25,9 +25,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.ui.IconGenerator;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.activity.MainActivity;
 import org.avaliabrasil.avaliabrasil.avb.activity.PlaceActivity;
-import org.avaliabrasil.avaliabrasil.avb.data.AvaliaBrasilApplication;
+import org.avaliabrasil.avaliabrasil.avb.util.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil.avb.sync.Observer;
 
 /**
@@ -90,7 +89,12 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
         }
 
 
-        googleMap.setOnMarkerClickListener(this);
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                return false;
+            }
+        });
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return new View(getContext());

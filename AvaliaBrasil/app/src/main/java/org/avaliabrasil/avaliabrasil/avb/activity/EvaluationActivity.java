@@ -29,20 +29,21 @@ import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.NewPlaceFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.NumberFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.ShareEvaluateFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.TransactionFragment;
-import org.avaliabrasil.avaliabrasil.avb.data.AvBContract;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.dao.AnwserDAO;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.dao.AnwserService;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.dao.NewPlaceDAO;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.dao.SurveyService;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.NewPlace;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.AnwserDAOImpl;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.AnwserServiceImpl;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.NewPlaceDAOImpl;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.service.SurveyCursor;
+import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
+import org.avaliabrasil.avaliabrasil.avb.dao.AnwserDAO;
+import org.avaliabrasil.avaliabrasil.avb.dao.AnwserService;
+import org.avaliabrasil.avaliabrasil.avb.dao.NewPlaceDAO;
+import org.avaliabrasil.avaliabrasil.avb.dao.SurveyService;
+import org.avaliabrasil.avaliabrasil.avb.impl.PlaceDetailsDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.NewPlace;
+import org.avaliabrasil.avaliabrasil.avb.impl.AnwserDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.AnwserServiceImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.NewPlaceDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.SurveyCursor;
 import org.avaliabrasil.avaliabrasil.avb.rest.AvaliaBrasilAPIClient;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.Anwser;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.Survey;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.Question;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.Anwser;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.Survey;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.Question;
 import org.avaliabrasil.avaliabrasil.avb.util.ImageLoader;
 import org.avaliabrasil.avaliabrasil.avb.util.Utils;
 
@@ -97,11 +98,6 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
     /**
      *
      */
-    private JsonObject response = new JsonObject();
-
-    /**
-     *
-     */
     private CallbackManager callbackManager;
     /**
      *
@@ -147,7 +143,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
             anwserDAO = new AnwserDAOImpl(EvaluationActivity.this);
             newPlaceDAO = new NewPlaceDAOImpl(EvaluationActivity.this);
             place_id = getIntent().getExtras().getString("placeid");
-            anwserService = new AnwserServiceImpl();
+            anwserService = new AnwserServiceImpl(newPlaceDAO,anwserDAO,new PlaceDetailsDAOImpl(EvaluationActivity.this));
 
             if (getIntent().getExtras().getBoolean("pendingSurvey", false)) {
                 surveyService.preparePendingSurvey();
@@ -275,31 +271,8 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
         }) {
             @Override
             public byte[] getBody() {
-               response.addProperty("userId", "1");
-                Cursor c;
-                NewPlace newPlace = newPlaceDAO.findNewPlaceByPlaceId(place_id);
 
-                if (newPlace != null) {
-                    response.addProperty("newPlace", true);
-                    response.addProperty("placeTypeId", newPlace.getPlaceType());
-
-                    c = getContentResolver().query(
-                            AvBContract.PlaceEntry.getPlaceDetails(getIntent().getExtras().getString("placeid")), null, null, null, null);
-
-                    c.moveToNext();
-
-                    response.addProperty("address", c.getString(c.getColumnIndex(AvBContract.PlaceEntry.VICINITY)));
-                    response.addProperty("name", c.getString(c.getColumnIndex(AvBContract.PlaceEntry.NAME)));
-                    response.addProperty("cityName", c.getString(c.getColumnIndex(AvBContract.PlaceDetailsEntry.CITY)));
-                    response.addProperty("stateLetter", c.getString(c.getColumnIndex(AvBContract.PlaceDetailsEntry.STATE)));
-
-                    c.close();
-
-                } else {
-                    response.addProperty("newPlace", false);
-                }
-
-                response.add("answers", anwserService.prepareForSendAnwser(anwserDAO));
+                JsonObject response = anwserService.prepareForSendAnwser("1",place_id);
 
                 Log.d(TAG, "getBody: " + response.toString());
 

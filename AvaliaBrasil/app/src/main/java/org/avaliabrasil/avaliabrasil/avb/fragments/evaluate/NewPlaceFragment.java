@@ -17,9 +17,9 @@ import org.avaliabrasil.avaliabrasil.avb.activity.EvaluationActivity;
 import org.avaliabrasil.avaliabrasil.avb.adapters.CategoryAdapter;
 import org.avaliabrasil.avaliabrasil.avb.adapters.DividerItemDecoration;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlaceTypeAdapter;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.AvaliaBrasilCategory;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.AvaliaBrasilPlaceType;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.NewPlace;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.AvaliaBrasilCategory;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.AvaliaBrasilPlaceType;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.NewPlace;
 
 import java.util.ArrayList;
 

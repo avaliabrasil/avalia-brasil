@@ -9,7 +9,7 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.object.AvaliaBrasilCategory;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.AvaliaBrasilCategory;
 
 import java.util.List;
 

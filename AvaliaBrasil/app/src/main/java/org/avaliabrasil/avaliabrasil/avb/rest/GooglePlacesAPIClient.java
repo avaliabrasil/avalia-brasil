@@ -21,9 +21,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.data.AvBContract;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.place.placedetail.object.PlaceDetails;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.PlaceSearch;
+import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.place.placedetail.PlaceDetails;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.place.search.PlaceSearch;
 
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>

@@ -12,10 +12,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.activity.MainActivity;
 import org.avaliabrasil.avaliabrasil.avb.activity.PlaceActivity;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlacesListAdapter;
-import org.avaliabrasil.avaliabrasil.avb.data.AvaliaBrasilApplication;
+import org.avaliabrasil.avaliabrasil.avb.util.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil.avb.sync.Observer;
 
 /**

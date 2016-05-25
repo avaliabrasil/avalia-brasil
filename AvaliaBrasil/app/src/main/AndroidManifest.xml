@@ -32,7 +32,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".avb.data.AvaliaBrasilApplication">
+        android:name=".avb.util.AvaliaBrasilApplication">
 
         <!-- Needed for facebook -->
         <meta-data
@@ -148,7 +148,7 @@
 
         <provider
             android:authorities="org.avaliabrasil.avaliabrasil"
-            android:name=".avb.data.AvBProvider"
+            android:name=".avb.dao.AvBProvider"
             android:syncable="true" />
 
         <!-- SyncAdapter's dummy authentication service -->

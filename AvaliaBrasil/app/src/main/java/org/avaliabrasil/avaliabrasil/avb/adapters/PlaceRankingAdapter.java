@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
-import org.avaliabrasil.avaliabrasil.avb.javabeans.PlaceRanking;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.ranking.PlaceRanking;
 
 import java.util.ArrayList;
 import java.util.List;
