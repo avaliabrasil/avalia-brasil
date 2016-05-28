@@ -78,16 +78,12 @@ public class AvBDBHelper extends SQLiteOpenHelper {
             "                                                              ON UPDATE CASCADE" +
             ");";
 
-    private static final String createSurvey = " CREATE TABLE survey (" +
+    private static final String createSurvey = "CREATE TABLE survey (" +
             "    _id             INTEGER PRIMARY KEY" +
             "                            NOT NULL," +
-            "    instrument_id   INTEGER REFERENCES instrument (instrument_id)," +
-            "    group_id        INTEGER REFERENCES group_question (group_id)," +
-            "    question_id     INTEGER REFERENCES question (question_id)," +
-            "    question_type   TEXT," +
             "    place_id        INTEGER REFERENCES place (place_id)," +
-            "    anwser          TEXT    NOT NULL," +
-            "    survey_finished BOOLEAN DEFAULT false" +
+            "    survey_finished BOOLEAN DEFAULT false," +
+            "    survey_sended   BOOLEAN DEFAULT false" +
             ");";
 
     private static final String createNewPlace = " CREATE TABLE newPlace (" +
@@ -126,11 +122,14 @@ public class AvBDBHelper extends SQLiteOpenHelper {
             ");";
     
     private static final String createAnwser = "CREATE TABLE anwser (" +
-            "    _id         INTEGER        PRIMARY KEY" +
-            "                               NOT NULL," +
-            "    question_id    INTEGER     NOT NULL," +
-            "    survey_id      INTEGER     REFERENCES survey (_id)," +
-            "    anwser      TEXT    NOT NULL" +
+            "    _id           INTEGER PRIMARY KEY" +
+            "                          NOT NULL," +
+            "    question_id   INTEGER NOT NULL," +
+            "    survey_id     INTEGER REFERENCES survey (_id) ON DELETE CASCADE," +
+            "    anwser        TEXT    NOT NULL," +
+            "    instrument_id INTEGER REFERENCES instrument (instrument_id)," +
+            "    group_id      INTEGER REFERENCES group_question (group_id)," +
+            "    question_type TEXT " +
             ");";
 
 
@@ -175,7 +174,6 @@ public class AvBDBHelper extends SQLiteOpenHelper {
                 db.execSQL("alter table place_detail add column city TEXT ");
             case 9:
                 db.execSQL(createAnwser);
-                db.execSQL("alter table place_detail add column survey_id INTEGER REFERENCES survey (_id)");
 
         }
     }

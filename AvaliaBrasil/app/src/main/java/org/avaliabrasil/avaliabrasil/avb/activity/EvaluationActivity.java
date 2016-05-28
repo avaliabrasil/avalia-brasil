@@ -23,18 +23,23 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.dao.SurveyDAO;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.CommentFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.LikertFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.NewPlaceFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.NumberFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.ShareEvaluateFragment;
 import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.TransactionFragment;
-import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil.avb.dao.AnwserDAO;
 import org.avaliabrasil.avaliabrasil.avb.dao.AnwserService;
 import org.avaliabrasil.avaliabrasil.avb.dao.NewPlaceDAO;
 import org.avaliabrasil.avaliabrasil.avb.dao.SurveyService;
+import org.avaliabrasil.avaliabrasil.avb.impl.GroupQuestionDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.InstrumentDAOImpl;
 import org.avaliabrasil.avaliabrasil.avb.impl.PlaceDetailsDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.QuestionDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.SurveyDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.place.placedetail.ResultDetails;
 import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.NewPlace;
 import org.avaliabrasil.avaliabrasil.avb.impl.AnwserDAOImpl;
 import org.avaliabrasil.avaliabrasil.avb.impl.AnwserServiceImpl;
@@ -117,6 +122,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
      */
     private AnwserService anwserService;
 
+    private SurveyDAO surveyDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,24 +145,46 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
         getSupportActionBar().setTitle(getIntent().getExtras().getString("name"));
 
         if (savedInstanceState == null) {
-            surveyService = new SurveyCursor(EvaluationActivity.this,(Survey) getIntent().getSerializableExtra("holder"));
+
             anwserDAO = new AnwserDAOImpl(EvaluationActivity.this);
+
+            surveyService = new SurveyCursor(EvaluationActivity.this,(Survey) getIntent().getSerializableExtra("holder"),anwserDAO);
+
             newPlaceDAO = new NewPlaceDAOImpl(EvaluationActivity.this);
+
             place_id = getIntent().getExtras().getString("placeid");
+
             anwserService = new AnwserServiceImpl(newPlaceDAO,anwserDAO,new PlaceDetailsDAOImpl(EvaluationActivity.this));
+
+            surveyDAO = new SurveyDAOImpl(EvaluationActivity.this,new InstrumentDAOImpl(EvaluationActivity.this,
+                    new GroupQuestionDAOImpl(EvaluationActivity.this)),
+                    new GroupQuestionDAOImpl(EvaluationActivity.this),
+                    new QuestionDAOImpl(EvaluationActivity.this),
+                    new NewPlaceDAOImpl(EvaluationActivity.this),
+                    new AnwserDAOImpl(EvaluationActivity.this));
+
+            surveyService.getSurvey().setPlaceId(place_id);
+
+            ResultDetails details = new PlaceDetailsDAOImpl(EvaluationActivity.this).getPlaceDetailsByPlaceId(place_id);
 
             if (getIntent().getExtras().getBoolean("pendingSurvey", false)) {
                 surveyService.preparePendingSurvey();
                 newFragment = getNextQuestionFragment();
             } else if (surveyService.getSurvey().isNewPlace()) {
+                surveyDAO.addSurvey(surveyService.getSurvey());
+
                 newFragment = new NewPlaceFragment();
                 args.putSerializable("question", new Question(getResources().getString(R.string.new_place_dialog)));
                 args.putSerializable("categoriess", (Serializable) surveyService.getSurvey().getCategories());
                 args.putSerializable("types", (Serializable) surveyService.getSurvey().getPlaceTypes());
                 args.putString("placeId", place_id);
+                args.putString("city", details.getCityName());
+                args.putString("state", details.getStateLetter());
+
 
                 newFragment.setArguments(args);
             } else {
+                surveyDAO.addSurvey(surveyService.getSurvey());
                 newFragment = getNextQuestionFragment();
             }
 
@@ -170,6 +198,12 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                         .add(R.id.fragment_container, new ShareEvaluateFragment()).commit();
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        surveyDAO.removeSurvey(surveyService.getSurvey());
     }
 
     @Override
@@ -196,13 +230,13 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 if (newFragment.isAnwser()) {
                     Anwser anw;
                     if (newFragment instanceof LikertFragment) {
-                        anw = new Anwser(place_id,surveyService.peekInstrument().getId(), surveyService.peekGroup().getId(),newFragment.getQuestion().getId(), (String) newFragment.getAnwser(), null, null);
+                        anw = new Anwser(surveyService.getSurvey().getSurveyId(),surveyService.peekInstrument().getId(), surveyService.peekGroup().getId(),newFragment.getQuestion().getId(), (String) newFragment.getAnwser(), null, null);
                         anwserDAO.insertAnwser(anw);
                     } else if (newFragment instanceof CommentFragment) {
-                        anw = new Anwser(place_id,surveyService.peekInstrument().getId(), surveyService.peekGroup().getId(),newFragment.getQuestion().getId(), null, (String) newFragment.getAnwser(), null);
+                        anw = new Anwser(surveyService.getSurvey().getSurveyId(),surveyService.peekInstrument().getId(), surveyService.peekGroup().getId(),newFragment.getQuestion().getId(), null, (String) newFragment.getAnwser(), null);
                         anwserDAO.insertAnwser(anw);
                     } else if (newFragment instanceof NumberFragment) {
-                        anw = new Anwser(place_id,surveyService.peekInstrument().getId(), surveyService.peekGroup().getId(),newFragment.getQuestion().getId(), null, null, (String) newFragment.getAnwser());
+                        anw = new Anwser(surveyService.getSurvey().getSurveyId(),surveyService.peekInstrument().getId(), surveyService.peekGroup().getId(),newFragment.getQuestion().getId(), null, null, (String) newFragment.getAnwser());
                         anwserDAO.insertAnwser(anw);
                     } else if (newFragment instanceof NewPlaceFragment) {
                         NewPlace newPlace = (NewPlace) newFragment.getAnwser();
@@ -266,13 +300,16 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 error.printStackTrace();
 
                 Toast.makeText(EvaluationActivity.this, getResources().getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
+
                 progress.dismiss();
+
+                finish();
             }
         }) {
             @Override
             public byte[] getBody() {
 
-                JsonObject response = anwserService.prepareForSendAnwser("1",place_id);
+                JsonObject response = anwserService.prepareForSendAnwser("1",place_id,surveyService.getSurvey().getSurveyId());
 
                 Log.d(TAG, "getBody: " + response.toString());
 

@@ -12,6 +12,8 @@ import java.util.List;
  */
 public class Survey implements Serializable {
 
+    private String surveyId;
+
     @SerializedName("instruments")
     @Expose
     private List<Instrument> instruments = new ArrayList<Instrument>();
@@ -69,5 +71,13 @@ public class Survey implements Serializable {
 
     public void setPlaceTypes(List<AvaliaBrasilPlaceType> placeTypes) {
         this.placeTypes = placeTypes;
+    }
+
+    public String getSurveyId() {
+        return surveyId;
+    }
+
+    public void setSurveyId(String surveyId) {
+        this.surveyId = surveyId;
     }
 }

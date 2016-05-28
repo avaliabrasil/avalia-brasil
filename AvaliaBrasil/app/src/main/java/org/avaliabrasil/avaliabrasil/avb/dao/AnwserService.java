@@ -8,5 +8,5 @@ import com.google.gson.JsonObject;
  */
 public interface AnwserService {
 
-    public JsonObject prepareForSendAnwser(String userId,String placeId);
+    public JsonObject prepareForSendAnwser(String userId,String placeId, String surveyId);
 }

@@ -251,6 +251,7 @@ public class ResultDetails {
         for(AddressComponent addressComponent : addressComponents){
             for(String type : addressComponent.getTypes()){
                 if(type.contains("locality")){
+                    setCityName(addressComponent.getLongName());
                     return addressComponent.getLongName();
                 }
             }

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -79,5 +80,21 @@ public class PlaceDetailsDAOImpl implements PlaceDetailsDAO {
             context.getContentResolver().update(
                     AvBContract.PlaceDetailsEntry.PLACE_DETAILS_URI, value, "place_id = ?", new String[]{placeId});
         }
+    }
+
+    @Override
+    public void updateCityAndState(String placeId, String city, String state) {
+        ContentValues value = new ContentValues();
+
+        Log.d("DAO", "updateCityAndState: chamando...");
+        Log.d("DAO", "updateCityAndState: placeId: " + placeId);
+        Log.d("DAO", "updateCityAndState: city:" + city);
+        Log.d("DAO", "updateCityAndState: state:" + state);
+
+        value.put("city", city);
+        value.put("state", state);
+
+        context.getContentResolver().update(
+                AvBContract.PlaceDetailsEntry.PLACE_DETAILS_URI, value, "place_id = ?", new String[]{placeId});
     }
 }

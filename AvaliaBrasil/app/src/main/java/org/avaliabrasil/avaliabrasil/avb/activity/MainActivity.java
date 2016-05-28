@@ -46,6 +46,7 @@ import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil.avb.impl.GroupQuestionDAOImpl;
 import org.avaliabrasil.avaliabrasil.avb.impl.InstrumentDAOImpl;
 import org.avaliabrasil.avaliabrasil.avb.impl.QuestionDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.sync.ServiceAnwserSync;
 import org.avaliabrasil.avaliabrasil.avb.util.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil.avb.dao.PlaceDetailsDAO;
 import org.avaliabrasil.avaliabrasil.avb.impl.PlaceDetailsDAOImpl;
@@ -213,6 +214,11 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private void createSyncAnwserService(){
+        Intent startSyncAnwserService = new Intent(MainActivity.this, ServiceAnwserSync.class);
+        startService(startSyncAnwserService);
+    }
+
     private void createLocationService() {
         Intent startLocationService = new Intent(MainActivity.this, GPSService.class);
         startService(startLocationService);
@@ -260,6 +266,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private void checkIfThereIsPendingSurvey() {
         if (surveyDAO.checkIfThereIsPendingSurvey()) {
+            final Survey survey = surveyDAO.findPendingSurvey();
+
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -268,11 +276,9 @@ public class MainActivity extends AppCompatActivity implements
 
                             Intent intent = new Intent(MainActivity.this, EvaluationActivity.class);
 
-                            Survey survey = surveyDAO.findPendingSurvey();
 
                             if(survey == null){
                                 Toast.makeText(MainActivity.this, getResources().getString(R.string.evaluation_not_completed_error), Toast.LENGTH_SHORT).show();
-                                surveyDAO.removePendingSurvey();
                                 return;
                             }
 
@@ -286,7 +292,7 @@ public class MainActivity extends AppCompatActivity implements
 
                         case DialogInterface.BUTTON_NEGATIVE:
 
-                            surveyDAO.removePendingSurvey();
+                            surveyDAO.removeSurvey(survey);
 
                             break;
                     }
@@ -348,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements
 
                     initUI();
                     createLocationService();
+                    createSyncAnwserService();
                     checkIfThereIsPendingSurvey();
                 }
             } else {

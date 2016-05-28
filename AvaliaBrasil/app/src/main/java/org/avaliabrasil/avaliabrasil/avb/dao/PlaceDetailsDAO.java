@@ -13,4 +13,5 @@ public interface PlaceDetailsDAO {
 
     public void insertOrUpdatePlaceDetails(String placeId,ResultDetails resultDetails, boolean insert);
 
+    public void updateCityAndState(String placeId,String city, String state);
 }

@@ -3,6 +3,9 @@ package org.avaliabrasil.avaliabrasil.avb.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil.avb.dao.AnwserDAO;
@@ -25,16 +28,14 @@ public class AnwserDAOImpl implements AnwserDAO{
     @Override
     public void insertAnwser(Anwser anwser) {
         ContentValues cv = new ContentValues();
+        cv.put(AvBContract.AnwserEntry.SURVEY_ID, anwser.getSurveyId());
+        cv.put(AvBContract.AnwserEntry.INSTRUMENT_ID, anwser.getInstrumentId());
+        cv.put(AvBContract.AnwserEntry.GROUP_ID, anwser.getGroupId());
+        cv.put(AvBContract.AnwserEntry.QUESTION_ID, anwser.getQuestion_id());
+        cv.put(AvBContract.AnwserEntry.QUESTION_TYPE, !anwser.getNumber().isEmpty() ? "number" : !anwser.getComment().isEmpty() ? "comment" : "likert");
+        cv.put(AvBContract.AnwserEntry.ANWSER, !anwser.getNumber().isEmpty() ? anwser.getNumber() : !anwser.getComment().isEmpty() ? anwser.getComment() : anwser.getLikert());
 
-        cv.put(AvBContract.SurveyEntry.PLACE_ID, anwser.getPlaceId());
-        cv.put(AvBContract.SurveyEntry.INSTRUMENT_ID, anwser.getInstrumentId());
-        cv.put(AvBContract.SurveyEntry.GROUP_ID, anwser.getGroupId());
-
-        cv.put(AvBContract.SurveyEntry.QUESTION_ID, anwser.getQuestion_id());
-        cv.put(AvBContract.SurveyEntry.QUESTION_TYPE, !anwser.getNumber().isEmpty() ? "number" : !anwser.getComment().isEmpty() ? "comment" : "likert");
-        cv.put(AvBContract.SurveyEntry.ANWSER, !anwser.getNumber().isEmpty() ? anwser.getNumber() : !anwser.getComment().isEmpty() ? anwser.getComment() : anwser.getLikert());
-
-        context.getContentResolver().insert(AvBContract.SurveyEntry.SURVEY_URI, cv);
+        context.getContentResolver().insert(AvBContract.AnwserEntry.ANWSER_URI, cv);
     }
 
     @Override
@@ -57,10 +58,11 @@ public class AnwserDAOImpl implements AnwserDAO{
     }
 
     @Override
-    public List<Anwser> getUnsendedAnwsers() {
+    public List<Anwser> getUnsendedAnwsersBySurveyId(String surveyId) {
         ArrayList<Anwser> anwsers = new ArrayList<>();
 
-        Cursor c = context.getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, null, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?", new String[]{"false"}, "_id asc");
+        Cursor c = context.getContentResolver().query(AvBContract.AnwserEntry.ANWSER_URI, null, "survey_id = ?", new String[]{surveyId}, null);
+
         Anwser anwser;
         while(c.moveToNext()){
             anwser = new Anwser(c);
@@ -69,5 +71,16 @@ public class AnwserDAOImpl implements AnwserDAO{
 
         c.close();
         return anwsers;
+    }
+
+    @Override
+    @Nullable
+    public Anwser getLastAnwserBySurveyId(String surveyId){
+        Cursor c = context.getContentResolver().query(AvBContract.AnwserEntry.ANWSER_URI, null, "survey_id = ?", new String[]{surveyId}, "_id desc");
+
+        if(c.moveToNext()){
+            return new Anwser(c);
+        }
+        return null;
     }
 }

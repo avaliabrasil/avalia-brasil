@@ -10,16 +10,16 @@ import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
 public class Anwser {
 
     private String question_id;
-    private String placeId;
     private String likert = "";
     private String comment = "";
     private String number = "";
+    private String surveyId = "";
     private String instrumentId;
     private String groupId;
 
-    public Anwser(String placeId, String instrumentId ,String groupId ,String question_id, String likert, String comment, String number) {
+    public Anwser(String surveyId, String instrumentId ,String groupId ,String question_id, String likert, String comment, String number) {
+        this.surveyId = surveyId;
         this.question_id = question_id;
-        this.placeId = placeId;
         this.instrumentId = instrumentId;
         this.groupId = groupId;
 
@@ -35,30 +35,25 @@ public class Anwser {
     }
 
     public Anwser(Cursor c){
-        question_id = c.getString(c.getColumnIndex(AvBContract.SurveyEntry.QUESTION_ID));
-        String type = c.getString(c.getColumnIndex(AvBContract.SurveyEntry.QUESTION_TYPE));
+        this.question_id = c.getString(c.getColumnIndex(AvBContract.AnwserEntry.QUESTION_ID));
+        this.instrumentId = c.getString(c.getColumnIndex(AvBContract.AnwserEntry.INSTRUMENT_ID));
+        this.groupId = c.getString(c.getColumnIndex(AvBContract.AnwserEntry.GROUP_ID));
+
+        String type = c.getString(c.getColumnIndex(AvBContract.AnwserEntry.QUESTION_TYPE));
 
         if (type.contentEquals(Question.QuestionTypes.IS_COMMENT.getType())) {
             comment =
-                    c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER));
+                    c.getString(c.getColumnIndex(AvBContract.AnwserEntry.ANWSER));
         } else if (type.contentEquals(Question.QuestionTypes.IS_LIKERT.getType())) {
             likert =
-                    c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER));
+                    c.getString(c.getColumnIndex(AvBContract.AnwserEntry.ANWSER));
 
         } else if (type.contentEquals(Question.QuestionTypes.IS_NUMBER.getType())) {
             number =
-                    c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER));
+                    c.getString(c.getColumnIndex(AvBContract.AnwserEntry.ANWSER));
 
         }
 
-    }
-
-    public void setPlaceId(String placeId) {
-        this.placeId = placeId;
-    }
-
-    public String getPlaceId() {
-        return placeId;
     }
 
     public String getInstrumentId() {
@@ -109,4 +104,11 @@ public class Anwser {
         this.number = number;
     }
 
+    public String getSurveyId() {
+        return surveyId;
+    }
+
+    public void setSurveyId(String surveyId) {
+        this.surveyId = surveyId;
+    }
 }

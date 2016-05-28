@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
@@ -56,6 +57,7 @@ public class AvBProvider extends ContentProvider {
         uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_PLACE_PERIODS, AvBContract.PLACE_PERIODS);
 
         uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_ANWSER, AvBContract.ANWSER);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_ANWSERS, AvBContract.ANWSERS);
     }
 
     @Override
@@ -96,7 +98,6 @@ public class AvBProvider extends ContentProvider {
                         "where instrument.instrument_id = ? ", new String[]{uri.getPathSegments().get(1)});
                 break;
             case AvBContract.SURVEY:
-
                 c = db.query(AvBContract.SurveyEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
 
@@ -119,7 +120,10 @@ public class AvBProvider extends ContentProvider {
                 break;
 
             case AvBContract.ANWSER:
-                c = db.rawQuery("select * from anwser where survey_id = ?", new String[]{uri.getPathSegments().get(1)});
+
+                c = db.query("anwser", projection, selection, selectionArgs, null, null, sortOrder);
+
+
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);

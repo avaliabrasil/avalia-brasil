@@ -2,9 +2,12 @@ package org.avaliabrasil.avaliabrasil.avb.impl;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
+import org.avaliabrasil.avaliabrasil.avb.dao.AnwserDAO;
 import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil.avb.dao.SurveyService;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.Anwser;
 import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.GroupQuestion;
 import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.Instrument;
 import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.Question;
@@ -18,7 +21,7 @@ public class SurveyCursor implements SurveyService{
     /**
      *
      */
-    private int questionCursor = 0;
+    private int questionCursor = -1;
 
     /**
      *
@@ -40,12 +43,15 @@ public class SurveyCursor implements SurveyService{
      */
     private Context context;
 
-    public SurveyCursor(Context context,Survey survey) throws IllegalArgumentException{
+    private AnwserDAO anwserDAO;
+
+    public SurveyCursor(Context context,Survey survey , AnwserDAO anwserDAO) throws IllegalArgumentException{
         if(survey == null){
             throw new IllegalArgumentException("Survey can't be null");
         }
         this.survey = survey;
         this.context = context;
+        this.anwserDAO = anwserDAO;
     }
 
     @Override
@@ -61,7 +67,7 @@ public class SurveyCursor implements SurveyService{
                     questionCursor++;
                     return survey.getInstruments().get(instrumentCursor).getGroupQuestions().get(groupCursor).getQuestions().get(questionCursor);
                 } else {
-                    questionCursor = 0;
+                    questionCursor = -1;
                     groupCursor++;
                     return getNextQuestion();
                 }
@@ -78,33 +84,29 @@ public class SurveyCursor implements SurveyService{
 
     @Override
     public void preparePendingSurvey(){
-        Cursor c = context.getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, null, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?", new String[]{"false"}, "_id desc");
+        Anwser lastAnwser = anwserDAO.getLastAnwserBySurveyId(survey.getSurveyId());
 
-        c.moveToNext();
+        if(lastAnwser != null){
 
-        String lastInstrument_id = c.getString(c.getColumnIndex("instrument_id"));
-        String lastGroup_id = c.getString(c.getColumnIndex("group_id"));
-        String lastQuestion_id = c.getString(c.getColumnIndex("question_id"));
+            for (int i = 0; i < survey.getInstruments().size(); i++, instrumentCursor++) {
+                if (survey.getInstruments().get(i).getId().contains(lastAnwser.getInstrumentId())) {
+                    break;
+                }
+            }
 
-        for (int i = 0; i < survey.getInstruments().size(); i++, instrumentCursor++) {
-            if (survey.getInstruments().get(i).getId().contains(lastInstrument_id)) {
-                break;
+            for (int i = 0; i < survey.getInstruments().get(instrumentCursor).getGroupQuestions().size(); i++, groupCursor++) {
+                if (survey.getInstruments().get(instrumentCursor).getGroupQuestions().get(i).getId().contains(lastAnwser.getGroupId())) {
+                    break;
+                }
+            }
+
+            for (int i = 0; i < survey.getInstruments().get(instrumentCursor).getGroupQuestions().get(groupCursor).getQuestions().size(); i++, questionCursor++) {
+                if (survey.getInstruments().get(instrumentCursor).getGroupQuestions().get(groupCursor).getQuestions().get(i).getId().contains(lastAnwser.getQuestion_id())) {
+                    ++questionCursor;
+                    break;
+                }
             }
         }
-
-        for (int i = 0; i < survey.getInstruments().get(instrumentCursor).getGroupQuestions().size(); i++, groupCursor++) {
-            if (survey.getInstruments().get(instrumentCursor).getGroupQuestions().get(i).getId().contains(lastGroup_id)) {
-                break;
-            }
-        }
-
-        for (int i = 0; i < survey.getInstruments().get(instrumentCursor).getGroupQuestions().get(groupCursor).getQuestions().size(); i++, questionCursor++) {
-            if (survey.getInstruments().get(instrumentCursor).getGroupQuestions().get(groupCursor).getQuestions().get(i).getId().contains(lastQuestion_id)) {
-                 break;
-            }
-        }
-
-        c.close();
     }
 
     @Override

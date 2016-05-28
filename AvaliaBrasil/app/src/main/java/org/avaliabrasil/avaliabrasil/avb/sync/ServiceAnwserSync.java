@@ -4,6 +4,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.IBinder;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -12,12 +14,33 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import org.avaliabrasil.avaliabrasil.R;
+import org.avaliabrasil.avaliabrasil.avb.activity.EvaluationActivity;
+import org.avaliabrasil.avaliabrasil.avb.activity.MainActivity;
+import org.avaliabrasil.avaliabrasil.avb.dao.AnwserDAO;
+import org.avaliabrasil.avaliabrasil.avb.dao.AnwserService;
 import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
+import org.avaliabrasil.avaliabrasil.avb.dao.NewPlaceDAO;
+import org.avaliabrasil.avaliabrasil.avb.dao.SurveyDAO;
+import org.avaliabrasil.avaliabrasil.avb.fragments.evaluate.ShareEvaluateFragment;
+import org.avaliabrasil.avaliabrasil.avb.impl.AnwserDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.AnwserServiceImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.GroupQuestionDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.InstrumentDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.NewPlaceDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.PlaceDetailsDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.QuestionDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.impl.SurveyDAOImpl;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.Survey;
 import org.avaliabrasil.avaliabrasil.avb.rest.AvaliaBrasilAPIClient;
+import org.avaliabrasil.avaliabrasil.avb.util.Utils;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,91 +48,81 @@ import java.util.Map;
  */
 public class ServiceAnwserSync extends Service {
 
+    private String TAG = this.getClass().getSimpleName();
+    /**
+     *
+     */
+    private NewPlaceDAO newPlaceDAO;
+
+    /**
+     *
+     */
+    private AnwserDAO anwserDAO;
+    /**
+     *
+     */
+    private AnwserService anwserService;
+    /**
+     *
+     */
+    private SurveyDAO surveyDAO;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
-    //TODO FIXME: 09/05/2016
     @Override
     public void onCreate() {
         super.onCreate();
+        Log.d(TAG, "onCreate: Starting ServiceAnwserSync");
 
-        Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, new String[]{AvBContract.SurveyEntry.PLACE_ID}, null, null, null);
+        surveyDAO = new SurveyDAOImpl(ServiceAnwserSync.this,new InstrumentDAOImpl(ServiceAnwserSync.this,
+                new GroupQuestionDAOImpl(ServiceAnwserSync.this)),
+                new GroupQuestionDAOImpl(ServiceAnwserSync.this),
+                new QuestionDAOImpl(ServiceAnwserSync.this),
+                new NewPlaceDAOImpl(ServiceAnwserSync.this),
+                new AnwserDAOImpl(ServiceAnwserSync.this));
 
-        ArrayList<String> ids = new ArrayList<>();
+        newPlaceDAO = new NewPlaceDAOImpl(ServiceAnwserSync.this);
 
-        while (c.moveToNext()) {
-            if (!ids.contains(c.getString(c.getColumnIndex(AvBContract.SurveyEntry.PLACE_ID)))) {
-                ids.add(c.getString(c.getColumnIndex(AvBContract.SurveyEntry.PLACE_ID)));
-            }
-        }
+        anwserDAO = new AnwserDAOImpl(ServiceAnwserSync.this);
 
-        for (final String place_id : ids) {
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.postAnwsers(place_id),
+        anwserService = new AnwserServiceImpl(newPlaceDAO,anwserDAO,new PlaceDetailsDAOImpl(ServiceAnwserSync.this));
+
+        List<Survey> unsendedSurveyList = surveyDAO.getAllUnsendedSurvey();
+
+        for(final Survey survey : unsendedSurveyList){
+            StringRequest stringRequest = new StringRequest(Request.Method.POST, AvaliaBrasilAPIClient.postAnwsers(survey.getPlaceId()),
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-
-                            getContentResolver().delete(AvBContract.NewPlaceEntry.NEWPLACE_URI, AvBContract.NewPlaceEntry.PLACE_ID + " = ?", new String[]{place_id});
-                            getContentResolver().delete(AvBContract.SurveyEntry.SURVEY_URI, AvBContract.SurveyEntry.PLACE_ID + " = ?", new String[]{place_id});
-
+                            surveyDAO.removeSurvey(survey);
                         }
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    anwserDAO.setSurveyAsCompleted();
+
+                    error.printStackTrace();
+
+                    Toast.makeText(ServiceAnwserSync.this, getResources().getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
+
                 }
             }) {
                 @Override
-                protected Map<String, String> getParams() {
-                    Map<String, String> params = new HashMap<String, String>();
-                    //TODO ADD THE USER TOKEN
-                    JsonObject response = new JsonObject();
+                public byte[] getBody() {
+                    JsonObject response = anwserService.prepareForSendAnwser("1",survey.getPlaceId(),survey.getSurveyId());
 
-                    response.addProperty("userID", "");
+                    Log.d(TAG, "body: " + response.toString());
 
-                    JsonArray anwserArray = new JsonArray();
-
-                    Cursor c = getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, null, AvBContract.SurveyEntry.PLACE_ID + " = ?", new String[]{place_id}, "_id asc");
-
-                    while (c.moveToNext()) {
-                        JsonObject obj = new JsonObject();
-
-                        obj.addProperty("question_id", c.getString(c.getColumnIndex(AvBContract.SurveyEntry.QUESTION_ID)));
-
-                        JsonArray anwsers = new JsonArray();
-
-                        String type = c.getString(c.getColumnIndex(AvBContract.SurveyEntry.QUESTION_TYPE));
-
-                        JsonObject anwser = new JsonObject();
-
-                        if (type.contains("number")) {
-                            anwser.addProperty("number", c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
-                            anwser.addProperty("likert", "");
-                            anwser.addProperty("comment", "");
-
-                        } else if (type.contains("comment")) {
-                            anwser.addProperty("comment", c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
-                            anwser.addProperty("likert", "");
-                            anwser.addProperty("number", "");
-
-                        } else if (type.contains("likert")) {
-                            anwser.addProperty("likert", c.getString(c.getColumnIndex(AvBContract.SurveyEntry.ANWSER)));
-                            anwser.addProperty("number", "");
-                            anwser.addProperty("comment", "");
-                        }
-
-                        anwsers.add(anwser);
-
-                        obj.add("answer", anwsers);
-
-                        anwserArray.add(obj);
-                    }
-                    return params;
+                    return response == null ? null : response.toString().getBytes(Charset.forName("UTF-8"));
                 }
             };
+            Log.d(TAG, "Sending survey: " + survey.getSurveyId());
             Volley.newRequestQueue(ServiceAnwserSync.this).add(stringRequest);
         }
+        unsendedSurveyList.clear();
         stopSelf();
     }
 }

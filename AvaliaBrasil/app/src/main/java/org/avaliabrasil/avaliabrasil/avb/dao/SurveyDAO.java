@@ -3,6 +3,7 @@ package org.avaliabrasil.avaliabrasil.avb.dao;
 import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.Survey;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by Developer on 09/05/2016.
@@ -17,11 +18,15 @@ public interface SurveyDAO {
 
     public boolean bulkAddQuestion(Survey survey) throws SQLException;
 
+    public void addSurvey(Survey survey);
+
     public Survey findSurveyByPlaceId(String placeId) throws SQLException;
 
     public boolean checkIfThereIsPendingSurvey();
 
-    public void removePendingSurvey();
+    public void removeSurvey(Survey survey);
 
     public Survey findPendingSurvey();
+
+    public List<Survey> getAllUnsendedSurvey();
 }

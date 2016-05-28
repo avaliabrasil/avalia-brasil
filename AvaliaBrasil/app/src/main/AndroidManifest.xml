@@ -162,7 +162,10 @@
         </service>
 
         <!-- Location service to update the user current location -->
-        <service android:name=".avb.gps.GPSService"></service>
+        <service android:name=".avb.gps.GPSService"/>
+
+        <!-- Used to send the user left behind data to server -->
+        <service android:name=".avb.sync.ServiceAnwserSync"/>
 
         <receiver android:name=".avb.gps.GpsLocationReceiver">
             <intent-filter>

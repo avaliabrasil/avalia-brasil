@@ -8,8 +8,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil.R;
@@ -17,6 +20,8 @@ import org.avaliabrasil.avaliabrasil.avb.activity.EvaluationActivity;
 import org.avaliabrasil.avaliabrasil.avb.adapters.CategoryAdapter;
 import org.avaliabrasil.avaliabrasil.avb.adapters.DividerItemDecoration;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlaceTypeAdapter;
+import org.avaliabrasil.avaliabrasil.avb.dao.PlaceDetailsDAO;
+import org.avaliabrasil.avaliabrasil.avb.impl.PlaceDetailsDAOImpl;
 import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.AvaliaBrasilCategory;
 import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.AvaliaBrasilPlaceType;
 import org.avaliabrasil.avaliabrasil.avb.javabeans.survey.NewPlace;
@@ -46,6 +51,12 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
      */
     private TextView tvType;
 
+    private RelativeLayout rlPlaceCityAndState;
+
+    private EditText etCity;
+
+    private EditText etState;
+
     /**
      *
      */
@@ -71,6 +82,8 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
      */
     private String placeId;
 
+    private PlaceDetailsDAO placeDetailsDAO;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,11 +92,20 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
 
         View rootView = inflater.inflate(R.layout.fragment_new_place, container, false);
 
+        getActivity().getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         tvQuestion = (TextView) rootView.findViewById(R.id.tvQuestion);
 
         tvCategory = (TextView) rootView.findViewById(R.id.tvCategory);
 
         tvType = (TextView) rootView.findViewById(R.id.tvType);
+
+        rlPlaceCityAndState = (RelativeLayout) rootView.findViewById(R.id.rlPlaceCityAndState);
+
+        etCity = (EditText) rootView.findViewById(R.id.etCity);
+
+        etState = (EditText) rootView.findViewById(R.id.etState);
 
         rcCategory = (RecyclerView) rootView.findViewById(R.id.rcCategory);
 
@@ -101,7 +123,17 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
 
         placeId = getArguments().getString("placeId");
 
+        etCity.setText(getArguments().getString("city",""));
+
+        etState.setText(getArguments().getString("state",""));
+
+        etCity.setEnabled(etCity.getText().toString().isEmpty());
+
+        etState.setEnabled(etState.getText().toString().isEmpty());
+
         btnSubmit.setVisibility(View.GONE);
+
+        placeDetailsDAO = new PlaceDetailsDAOImpl(getContext());
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
         rcCategory.setLayoutManager(mLayoutManager);
@@ -119,7 +151,7 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
 
     @Override
     public boolean isAnwser() {
-        return isCategorySelected && isPlaceSelected;
+        return isCategorySelected && isPlaceSelected && !etCity.getText().toString().isEmpty() && !etState.getText().toString().isEmpty();
     }
 
     @Override
@@ -127,6 +159,8 @@ public class NewPlaceFragment extends TransactionFragment implements AdapterView
         if (!isAnwser()) {
             return null;
         }
+
+        placeDetailsDAO.updateCityAndState(placeId,etCity.getText().toString(),etState.getText().toString());
 
         NewPlace newPlace = new NewPlace(placeId,category_pos,type_pos);
 

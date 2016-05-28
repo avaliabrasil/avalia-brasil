@@ -30,22 +30,22 @@ public class AnwserServiceImpl implements AnwserService{
     }
 
     @Override
-    public JsonObject prepareForSendAnwser(String userId,String placeId) {
+    public JsonObject prepareForSendAnwser(String userId,String placeId, String surveyId) {
         JsonObject response = new JsonObject();
 
         response.addProperty("userId", "1");
 
         checkIfNewPlace(placeId, response);
 
-        response.add("answers", checkForAnwsers());
+        response.add("answers", checkForAnwsers(surveyId));
 
         return response;
     }
 
-    private JsonArray checkForAnwsers() {
+    private JsonArray checkForAnwsers(String surveyId) {
         JsonArray anwserArray = new JsonArray();
 
-        List<Anwser> anwsers = anwserDAO.getUnsendedAnwsers();
+        List<Anwser> anwsers = anwserDAO.getUnsendedAnwsersBySurveyId(surveyId);
 
         for(Anwser awn : anwsers){
             JsonObject obj = new JsonObject();
@@ -70,7 +70,8 @@ public class AnwserServiceImpl implements AnwserService{
             if(details != null){
                 response.addProperty("address", details.getVicinity());
                 response.addProperty("name", details.getName());
-                response.addProperty("cityName", details.getCity());
+                details.getCity();
+                response.addProperty("cityName", details.getCityName());
                 response.addProperty("stateLetter", details.getStateLetter());
             }
         } else {

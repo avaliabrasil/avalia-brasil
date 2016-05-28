@@ -72,6 +72,7 @@ public class AvBContract {
     public static final int PLACE_PERIOD = 16;
     public static final int PLACE_PERIODS = 17;
     public static final int ANWSER = 18;
+    public static final int ANWSERS = 19;
 
     public static final class PlaceEntry implements BaseColumns {
 
@@ -249,20 +250,11 @@ public class AvBContract {
         // Place Table Name
         public static final String TABLE_NAME = "survey";
 
-        // Table Columns
-        public static final String INSTRUMENT_ID = "instrument_id";
-
-        public static final String GROUP_ID = "group_id";
-
-        public static final String QUESTION_ID = "question_id";
-
-        public static final String QUESTION_TYPE = "question_type";
-
         public static final String PLACE_ID = "place_id";
 
-        public static final String ANWSER = "anwser";
-
         public static final String SURVEY_FINISHED = "survey_finished";
+
+        public static final String SURVEY_SENDED = "survey_sended";
 
     }
 
@@ -356,12 +348,16 @@ public class AvBContract {
 
         public static final String TABLE_NAME = "anwser";
 
+        public static final String INSTRUMENT_ID = "instrument_id";
+        public static final String GROUP_ID = "group_id";
         public static final String QUESTION_ID = "question_id";
+        public static final String QUESTION_TYPE = "question_type";
         public static final String SURVEY_ID = "survey_id";
         public static final String ANWSER  = "anwser";
 
         public static Uri getAnwserBySurveyId(String surveyId) {
-            return  AnwserEntry.ANWSER_URI.parse(surveyId);
+            Uri uri = Uri.parse("content://" + CONTENT_AUTHORITY + "/anwser/" + surveyId);
+            return uri;
         }
     }
 

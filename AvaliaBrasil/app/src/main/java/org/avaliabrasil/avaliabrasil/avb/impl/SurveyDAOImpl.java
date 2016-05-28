@@ -3,10 +3,15 @@ package org.avaliabrasil.avaliabrasil.avb.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil.avb.dao.AnwserDAO;
+import org.avaliabrasil.avaliabrasil.avb.dao.AvBProvider;
 import org.avaliabrasil.avaliabrasil.avb.dao.GroupQuestionDAO;
 import org.avaliabrasil.avaliabrasil.avb.dao.InstrumentDAO;
 import org.avaliabrasil.avaliabrasil.avb.dao.NewPlaceDAO;
@@ -61,6 +66,15 @@ public class SurveyDAOImpl implements SurveyDAO {
     }
 
     @Override
+    public void addSurvey(Survey survey) {
+        ContentValues cv = new ContentValues();
+        cv.put(AvBContract.SurveyEntry.PLACE_ID,survey.getPlaceId());
+        Log.d("DAO", "addSurvey: placeId: " + survey.getPlaceId());
+        Uri uri = context.getContentResolver().insert(AvBContract.SurveyEntry.SURVEY_URI,cv);
+        survey.setSurveyId(uri.getPathSegments().get(1));
+    }
+
+    @Override
     public boolean bulkAddInstrument(Survey survey) throws SQLException {
         return instrumentDAO.bulkAddInstrument(survey.getInstruments());
     }
@@ -94,6 +108,7 @@ public class SurveyDAOImpl implements SurveyDAO {
         List<Instrument> instruments = new ArrayList<Instrument>();
         survey.setInstruments(instruments);
         if (c.moveToNext()) {
+            survey.setSurveyId(c.getString(c.getColumnIndex(AvBContract.SurveyEntry._ID)));
             List<String> listOfInstrumentIds = instrumentDAO.getInstrumentIdListByPlace(placeId);
 
             for (String instrumentId : listOfInstrumentIds) {
@@ -105,17 +120,9 @@ public class SurveyDAOImpl implements SurveyDAO {
     }
 
     @Override
-    public void removePendingSurvey() {
-        Cursor c = context.getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, null, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?", new String[]{"false"}, "_id desc");
-
-        if(c.moveToNext()){
-            if(newPlaceDAO == null){
-                throw new IllegalArgumentException("NewPlaceDAO can't be null!");
-            }
-            newPlaceDAO.deleteNewPlaceByPlaceId(c.getString(c.getColumnIndex(AvBContract.SurveyEntry.PLACE_ID)));
-            anwserDAO.deleteSendedSurvey();
-        }
-        c.close();
+    public void removeSurvey(Survey survey) {
+        context.getContentResolver().delete(AvBContract.SurveyEntry.SURVEY_URI, AvBContract.SurveyEntry._ID + " = ?", new String[]{survey.getSurveyId()});
+        newPlaceDAO.deleteNewPlaceByPlaceId(survey.getPlaceId());
     }
 
     private Cursor getPendingSurveyCursor(){
@@ -138,18 +145,56 @@ public class SurveyDAOImpl implements SurveyDAO {
     @Override
     @Nullable
     public Survey findPendingSurvey() {
-        Cursor c = context.getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, null, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?", new String[]{"false"}, "_id desc");
+        try{
+            Cursor c = context.getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, null, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?", new String[]{"false"}, "_id desc");
+            if(c != null){
+                if(c.moveToNext()){
+                    return getSurveyByCursor(c);
+                }
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-        c.moveToNext();
+    private Survey getSurveyByCursor(Cursor c) throws SQLException {
+        Survey survey = new Survey();
+        survey.setPlaceId(c.getString(c.getColumnIndex(AvBContract.SurveyEntry.PLACE_ID)));
+        survey.setSurveyId(c.getString(c.getColumnIndex(AvBContract.SurveyEntry._ID)));
 
-        String placeId = c.getString(c.getColumnIndex(AvBContract.SurveyEntry.PLACE_ID));
         c.close();
 
-        try {
-            return findSurveyByPlaceId(placeId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+        c = context.getContentResolver().query(
+                AvBContract.PlaceEntry.getPlaceDetails(survey.getPlaceId()), null, null, null, null);
+
+        List<Instrument> instruments = new ArrayList<Instrument>();
+        survey.setInstruments(instruments);
+        if (c.moveToNext()) {
+            List<String> listOfInstrumentIds = instrumentDAO.getInstrumentIdListByPlace(survey.getPlaceId());
+
+            for (String instrumentId : listOfInstrumentIds) {
+                instruments.add(new Instrument(instrumentId,"", groupQuestionDAO.findGroupByInstrumentId(instrumentId)));
+            }
         }
+        c.close();
+        return survey;
+    }
+
+    @Override
+    public List<Survey> getAllUnsendedSurvey() {
+        ArrayList<Survey> unsendedSurveyList = new ArrayList<>();
+
+        Cursor c = context.getContentResolver().query(AvBContract.SurveyEntry.SURVEY_URI, null, AvBContract.SurveyEntry.SURVEY_FINISHED + " = ?", new String[]{"1"},null);
+
+        while(c.moveToNext()){
+            try {
+                unsendedSurveyList.add(getSurveyByCursor(c));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return unsendedSurveyList;
     }
 }
