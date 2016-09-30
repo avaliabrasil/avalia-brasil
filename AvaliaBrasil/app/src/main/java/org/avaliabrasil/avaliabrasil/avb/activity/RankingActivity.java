@@ -18,10 +18,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -33,10 +35,14 @@ import com.google.gson.Gson;
 import org.avaliabrasil.avaliabrasil.R;
 import org.avaliabrasil.avaliabrasil.avb.adapters.CategoryCursorAdapter;
 import org.avaliabrasil.avaliabrasil.avb.adapters.DividerItemDecoration;
+import org.avaliabrasil.avaliabrasil.avb.adapters.LocationAdapter;
+import org.avaliabrasil.avaliabrasil.avb.dao.LocationDAO;
+import org.avaliabrasil.avaliabrasil.avb.impl.LocationDAOTestImpl;
 import org.avaliabrasil.avaliabrasil.avb.impl.NavigatorViewImpl;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlaceRankingAdapter;
 import org.avaliabrasil.avaliabrasil.avb.adapters.PlaceTypeCursorAdapter;
 import org.avaliabrasil.avaliabrasil.avb.dao.AvBContract;
+import org.avaliabrasil.avaliabrasil.avb.javabeans.ranking.Location;
 import org.avaliabrasil.avaliabrasil.avb.util.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil.avb.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil.avb.javabeans.ranking.PlaceRankingSearch;
@@ -97,6 +103,11 @@ public class RankingActivity extends AppCompatActivity{
      */
     private ProgressDialog progress;
 
+    private LocationAdapter locationAdapter;
+
+
+    private LocationDAOTestImpl locationDAO;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,6 +118,8 @@ public class RankingActivity extends AppCompatActivity{
         toolbar.setTitle("Classificação de Instituições");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        locationDAO = new LocationDAOTestImpl();
 
         manager = AccountManager.get(RankingActivity.this);
 
@@ -125,11 +138,27 @@ public class RankingActivity extends AppCompatActivity{
         TextView tvName = (TextView) navigationView.getHeaderView(0).findViewById(R.id.tvName);
         ImageView ivProfilePhoto = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.ivProfilePhoto);
         tvName.setText(name);
+
         if (photo != null) {
             ivProfilePhoto.setImageBitmap(new CircleTransform().transform(photo));
         }
 
         actvPlace = (AutoCompleteTextView) findViewById(R.id.actvPlace);
+
+        locationAdapter = new LocationAdapter(RankingActivity.this,locationDAO);
+
+        actvPlace.setAdapter(locationAdapter);
+
+        actvPlace.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Location clickedLocation = locationAdapter.getLocation(position);
+
+                System.out.println(clickedLocation);
+
+                Toast.makeText(RankingActivity.this, "clicado em: " + (clickedLocation == null ? "nulo": clickedLocation.toString()), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         rvRankingList = (RecyclerView) findViewById(R.id.rvRankingList);
 

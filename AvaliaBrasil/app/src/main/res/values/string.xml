@@ -69,6 +69,7 @@
     <!-- MainActivity -->
     <string name="fetching_provider_location">Fetching location!</string>
     <string name="evaluation_not_completed">Evaluation not completed, want to return?</string>
+    <string name="evaluation_not_completed_error">Error while retrieving the evaluation</string>
 
 
     <!-- EvaluationActivity -->
@@ -103,6 +104,13 @@
     <string name="likert_neutral">Neutro</string>
     <string name="likert_disagree">Discordo</string>
     <string name="likert_fully_disagree">Discordo Totalmente</string>
+
+    <!-- PlaceActivity -->
+    <string name="isOpen">Open</string>
+    <string name="isClose">Close</string>
+
+        <string name="cityName">City:</string>
+        <string name="stateLatter">State:</string>
 
 
     <string name="help_text">
