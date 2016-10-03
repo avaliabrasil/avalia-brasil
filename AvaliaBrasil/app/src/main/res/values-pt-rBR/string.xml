@@ -2,7 +2,7 @@
 <resources>
 
     <string name="login_with_facebook">Faça login com o facebook</string>
-    <string name="anonymous_login"><u>Ou login anônimo</u></string>
+    <string name="anonymous_login"><u>Ou Entre sem se Identificar</u></string>
 
     <string name="navigation_drawer_open">Abrir Painel Lateral</string>
     <string name="navigation_drawer_close">Fechar painel lateral</string>
@@ -12,12 +12,26 @@
     <string name="title_activity_place"></string>
     <string name="action_settings">Configurações</string>
     <string name="help_text">
-        "Obrigado por utilizar o Avalia Brasil. Veja a seguir algumas informações úteis.\n\n"
+"Obrigado por utilizar o Avalia Brasil! Veja a seguir respostas à algumas perguntas importantes.\n\n"
 
-        "Busca de Locais\n\n"
-        "O Avalia Brasil utiliza a API do Google Maps para mostrar locais próximos a você."
-        "Se o estabelecimento que você está tentando procurar não aparece, é possível que ele não esteja cadastrado no Google com o nome que estás procurando."
-        "Tente realizar sua busca de manerias diferentes. Também é possivel que o local não esteja cadastrado no Google. "
+"Para que serve o Avalia Brasil?\n\n"
+"O Avalia Brasil foi criado para que usuários de serviços públicos possam dar feedback sobre o serviço prestado aos administradores destes serviços. "
+"Isto é feito por meio de uma plataforma independente e isenta. Esperamos que os gestores destes serviços usem a informação obtida pelo aplicativo. "
+
+"O Avalia Brasil é do Governo?\n\n"
+"Não. Ainda assim, o Avalia Brasil é um App que foi premiado pelo InovApps 2015, um concurso do Governo Federal.
+
+"Como o índice de Qualidade é Calculado?\n\n"
+"Cada resposta às perguntas objetivas do Avalia Brasil são levadas em consideração para o calculo do índice de qualidade, que vai de 0 a 100."
+"Para o calculo do índice, o app leva em consideração as respostas dos últimos 60 dias aos estabelecimento, e sempre é re-calculado à medida que novas respostas são enviadas pelo app."
+
+"Não acho um estabelecimento. O que faço?\n\n"
+"O Avalia Brasil utiliza a API do Google Maps para mostrar locais próximos a você."
+"Se o estabelecimento que você está tentando procurar não aparece, é possível que ele não esteja cadastrado no Google com o nome que você está procurando."
+"Tente realizar sua busca de manerias diferentes. Também é possível que o local não esteja cadastrado no Google Maps. Neste caso, você deve tentar cadastrá-lo com o App do Google Maps, e em alguns dias o local deve aparecer no Avalia Brasil."
+
+"Vejo no App estabelecimentos que não prestam serviço público. Porque isso acontece?\n\n"
+"O Google Maps não nos diz que Apps são ou não estabelecimentos de serviço público. Usamos um filtro para procurar lugares com mais chances de serem estabelecimentos públicos (ex.: estabelecimentos de saúde, educação), mas mesmo assim isto não garante que apenas apareçam estabelecimentos públicos."
 
     </string>
     <string name="title_activity_evaluation">Avaliação</string>
@@ -32,9 +46,9 @@
     <string name="state_ranking_position_label">Posição no ranking estadual</string>
     <string name="temp_place_name">UPA Zona Norte</string>
     <string name="temp_place_adress">Praça Ernest Herman</string>
-    <string name="temp_place_phone">(51) 3212-2015</string>
+    <string name="temp_place_phone">(51) 3212 2015</string>
     <string name="temp_place_mail">email@site.com.br</string>
-    <string name="temp_place_open_hours">Aberto hoje 08:00 - 21:00</string>
+    <string name="temp_place_open_hours">Aberto hoje 08:00 às 21:00</string>
     <string name="submit_answer">Responder</string>
     <string name="local">Local</string>
     <string name="category">Categoria: </string>
@@ -44,22 +58,22 @@
 
 
     <!-- General Dialogs -->
-    <string name="location_access_needed">É necessário o privilégio de acesso a localidade para o correto funcionamento do app</string>
-    <string name="internet_connection_error">Não foi possível conectar-se, verifique sua internet</string>
+    <string name="location_access_needed">É necessário o privilégio de acesso à sua localização para o correto funcionamento do app.</string>
+    <string name="internet_connection_error">Não foi possível conectar-se, verifique sua internet.</string>
     <string name="location_error">Não foi possível localiza-lo, verifique se o GPS está ligado.</string>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
     <string name="progress_dialog_title">Aguarde....</string>
     <string name="progress_dialog_message">Buscando informações no servidor</string>
     <string name="anwser_dialog_title">Enviando dados</string>
-    <string name="anwser_dialog_message">Encaminhando ao servidor as suas respostas...</string>
+    <string name="anwser_dialog_message">Encaminhando suas respostas ao servidor.</string>
 
     <!-- LoginActivity -->
     <string name="user_already_logged">Um usuário já está logado!</string>
 
     <!-- MainActivity -->
     <string name="fetching_provider_location">Buscando novo local!</string>
-    <string name="evaluation_not_completed">Há um questionário pendente, deseja finaliza-lo?</string>
+    <string name="evaluation_not_completed">Há um questionário pendente, deseja finalizá-lo?</string>
     <string name="evaluation_not_completed_error">Erro ao buscar avaliação</string>
 
     <!-- PlaceActivity -->
@@ -67,8 +81,8 @@
     <string name="isClose">Fecha ás</string>
 
     <!-- EvaluationActivity -->
-    <string name="new_place_dialog">Você é o primeiro a avaliar este local, por favor nos de algumas informações adicionais</string>
-    <string name="question_not_anwsered">Você não respondeu a questão</string>
+    <string name="new_place_dialog">Você é o primeiro a avaliar este local, por favor nos dê algumas informações adicionais.</string>
+    <string name="question_not_anwsered">Você não respondeu a questão!</string>
     <string name="submit_button_text">Enviar</string>
 
     <!-- ShareEvaluateFragment -->
