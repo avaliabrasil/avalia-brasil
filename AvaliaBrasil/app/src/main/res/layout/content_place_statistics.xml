@@ -113,25 +113,25 @@
 
             <include layout="@layout/divider"></include>
 
-            <org.avaliabrasil.avaliabrasil.avb.view.RankingView
+            <org.avaliabrasil.avaliabrasil2.avb.view.RankingView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rvNacional"></org.avaliabrasil.avaliabrasil.avb.view.RankingView>
+                android:id="@+id/rvNacional"></org.avaliabrasil.avaliabrasil2.avb.view.RankingView>
 
-            <org.avaliabrasil.avaliabrasil.avb.view.RankingView
+            <org.avaliabrasil.avaliabrasil2.avb.view.RankingView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rvRegional"></org.avaliabrasil.avaliabrasil.avb.view.RankingView>
+                android:id="@+id/rvRegional"></org.avaliabrasil.avaliabrasil2.avb.view.RankingView>
 
-            <org.avaliabrasil.avaliabrasil.avb.view.RankingView
+            <org.avaliabrasil.avaliabrasil2.avb.view.RankingView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rvEstadual"></org.avaliabrasil.avaliabrasil.avb.view.RankingView>
+                android:id="@+id/rvEstadual"></org.avaliabrasil.avaliabrasil2.avb.view.RankingView>
 
-            <org.avaliabrasil.avaliabrasil.avb.view.RankingView
+            <org.avaliabrasil.avaliabrasil2.avb.view.RankingView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/rvMunicipal"></org.avaliabrasil.avaliabrasil.avb.view.RankingView>
+                android:id="@+id/rvMunicipal"></org.avaliabrasil.avaliabrasil2.avb.view.RankingView>
 
             <include layout="@layout/divider"></include>
 

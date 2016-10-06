@@ -3,8 +3,8 @@
     <string name="app_name" translatable="false">Avalia Brasil</string>
     <!-- SyncAdapter related -->
     <string name="api_url" translatable="false">http://api.avaliabrasil.org</string>
-    <string name="sync_account_type" translatable="false">org.avaliabrasil.avaliabrasil</string>
-    <string name="content_authority" translatable="false">org.avaliabrasil.avaliabrasil</string>
+    <string name="sync_account_type" translatable="false">org.avaliabrasil.avaliabrasil2</string>
+    <string name="content_authority" translatable="false">org.avaliabrasil.avaliabrasil2</string>
     <string name="pref_gps_status_key" translatable="false">gpsStatusKey</string>
 
     <!-- Facebook id -->

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.avaliabrasil.avaliabrasil">
+    package="org.avaliabrasil.avaliabrasil2">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -147,7 +147,7 @@
             android:value="AIzaSyCBq-qetL_jdUUhM0TepfVZ5EYxJvw6ct0" />
 
         <provider
-            android:authorities="org.avaliabrasil.avaliabrasil"
+            android:authorities="org.avaliabrasil.avaliabrasil2"
             android:name=".avb.dao.AvBProvider"
             android:syncable="true" />
 
