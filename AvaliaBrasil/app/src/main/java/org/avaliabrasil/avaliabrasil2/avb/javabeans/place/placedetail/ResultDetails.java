@@ -250,7 +250,10 @@ public class ResultDetails {
     public String getCity(){
         for(AddressComponent addressComponent : addressComponents){
             for(String type : addressComponent.getTypes()){
-                if(type.contains("locality")){
+                if(type.contentEquals("locality")){
+                    setCityName(addressComponent.getLongName());
+                    return addressComponent.getLongName();
+                }else if(type.contentEquals("administrative_area_level_2")){
                     setCityName(addressComponent.getLongName());
                     return addressComponent.getLongName();
                 }
