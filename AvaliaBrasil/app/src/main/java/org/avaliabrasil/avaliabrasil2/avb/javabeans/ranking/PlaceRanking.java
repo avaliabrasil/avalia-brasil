@@ -19,6 +19,9 @@ public class PlaceRanking {
     @SerializedName("qualityIndex")
     @Expose
     private Double qualityIndex;
+    @SerializedName("googleId")
+    @Expose
+    private String placeId;
 
     /**
      * @return The rankingPosition
@@ -78,4 +81,11 @@ public class PlaceRanking {
         this.qualityIndex = qualityIndex;
     }
 
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
+    }
+
+    public String getPlaceId() {
+        return placeId;
+    }
 }

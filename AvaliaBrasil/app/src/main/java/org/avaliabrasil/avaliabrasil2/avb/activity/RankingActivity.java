@@ -2,6 +2,7 @@ package org.avaliabrasil.avaliabrasil2.avb.activity;
 
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.location.Address;
@@ -43,6 +44,8 @@ import org.avaliabrasil.avaliabrasil2.avb.adapters.PlaceRankingAdapter;
 import org.avaliabrasil.avaliabrasil2.avb.adapters.PlaceTypeCursorAdapter;
 import org.avaliabrasil.avaliabrasil2.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.Location;
+import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.PlaceRanking;
+import org.avaliabrasil.avaliabrasil2.avb.mvp.RankingActivityPresenter;
 import org.avaliabrasil.avaliabrasil2.avb.util.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil2.avb.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.PlaceRankingSearch;
@@ -56,7 +59,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class RankingActivity extends AppCompatActivity{
+public class RankingActivity extends AppCompatActivity implements RankingActivityPresenter {
 
     /**
      *
@@ -308,10 +311,19 @@ public class RankingActivity extends AppCompatActivity{
 
     private void fetchData(String response) {
         Gson gson = new Gson();
+        System.out.println(response);
         PlaceRankingSearch placeRanking = gson.fromJson(response, PlaceRankingSearch.class);
 
-        rvRankingList.setAdapter(new PlaceRankingAdapter(RankingActivity.this, placeRanking.getPlaceRankings()));
+        rvRankingList.setAdapter(new PlaceRankingAdapter(rvRankingList,RankingActivity.this, placeRanking.getPlaceRankings(),RankingActivity.this));
 
         rvRankingList.setHasFixedSize(true);
+    }
+
+    @Override
+    public void OnRankingClickListener(PlaceRanking placeRanking) {
+        Intent intent = new Intent(this,PlaceStatisticsActivity.class);
+        intent.putExtra("placeid",placeRanking.getPlaceId());
+        intent.putExtra("name",placeRanking.getName());
+        startActivity(intent);
     }
 }

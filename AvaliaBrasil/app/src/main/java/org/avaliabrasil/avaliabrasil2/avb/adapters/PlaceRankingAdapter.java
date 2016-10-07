@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil2.R;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.PlaceRanking;
+import org.avaliabrasil.avaliabrasil2.avb.mvp.RankingActivityPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,28 +27,43 @@ public class PlaceRankingAdapter extends RecyclerView.Adapter<PlaceRankingAdapte
      */
     private Context context;
 
-    public PlaceRankingAdapter(Context context, List<PlaceRanking> items) {
+    private RankingActivityPresenter rankingActivityPresenter;
+    private RecyclerView recyclerView;
 
+    public PlaceRankingAdapter(RecyclerView recyclerView,Context context, List<PlaceRanking> items , RankingActivityPresenter rankingActivityPresenter) {
+
+        this.recyclerView = recyclerView;
         this.items = items;
         this.context = context;
+        this.rankingActivityPresenter = rankingActivityPresenter;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.content_place_ranking_card_view, null);
-
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int itemPosition = recyclerView.getChildLayoutPosition(v);
+                final PlaceRanking placeRanking = items.get(itemPosition);
+                rankingActivityPresenter.OnRankingClickListener(placeRanking);
+            }
+        });
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        PlaceRanking placeRanking = items.get(position);
+        final PlaceRanking placeRanking = items.get(position);
 
         holder.tvRankingPosition.setText(String.valueOf(placeRanking.getRankingPosition()));
         holder.tvName.setText(placeRanking.getName());
         holder.tvAdress.setText(placeRanking.getAddress());
         holder.tvQualityIndex.setText(String.valueOf(placeRanking.getQualityIndex()));
+
+
+
     }
 
     @Override
@@ -68,6 +84,7 @@ public class PlaceRankingAdapter extends RecyclerView.Adapter<PlaceRankingAdapte
             tvName = (TextView) view.findViewById(R.id.tvName);
             tvAdress = (TextView) view.findViewById(R.id.tvAdress);
             tvQualityIndex = (TextView) view.findViewById(R.id.tvQualityIndex);
+
         }
     }
 
