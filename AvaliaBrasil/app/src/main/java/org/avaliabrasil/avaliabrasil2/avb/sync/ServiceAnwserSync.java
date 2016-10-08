@@ -105,9 +105,6 @@ public class ServiceAnwserSync extends Service {
                     anwserDAO.setSurveyAsCompleted();
 
                     error.printStackTrace();
-
-                    Toast.makeText(ServiceAnwserSync.this, getResources().getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
-
                 }
             }) {
                 @Override

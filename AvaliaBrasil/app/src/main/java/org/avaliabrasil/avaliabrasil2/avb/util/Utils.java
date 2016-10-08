@@ -6,8 +6,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+
+import org.avaliabrasil.avaliabrasil2.R;
 
 import java.io.FileInputStream;
 import java.util.HashMap;
@@ -24,7 +29,7 @@ public abstract class Utils {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder
                 .setMessage(
-                        "GPS está desativado em seu dispositivo. Deseja ativa-lo?")
+                        context.getString(R.string.gps_off))
                 .setCancelable(false)
                 .setPositiveButton("Configurações de ativação do GPS",
                         new DialogInterface.OnClickListener() {
@@ -42,6 +47,27 @@ public abstract class Utils {
                 });
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
+    }
+
+    /**
+     * Check whatever is network available, if so, return true.
+     * @param context
+     * @return true if has network connection
+     */
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
+    /**
+     * Check whatever is GPS available, if so, return true.
+     * @param context
+     * @return true if has GPS connection
+     */
+    public static boolean isGPSAvailable(Context context){
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
     /**

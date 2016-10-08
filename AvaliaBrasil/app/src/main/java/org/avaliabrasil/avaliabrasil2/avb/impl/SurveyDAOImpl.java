@@ -163,21 +163,20 @@ public class SurveyDAOImpl implements SurveyDAO {
         survey.setPlaceId(c.getString(c.getColumnIndex(AvBContract.SurveyEntry.PLACE_ID)));
         survey.setSurveyId(c.getString(c.getColumnIndex(AvBContract.SurveyEntry._ID)));
 
-        c.close();
 
-        c = context.getContentResolver().query(
+        Cursor cursor = context.getContentResolver().query(
                 AvBContract.PlaceEntry.getPlaceDetails(survey.getPlaceId()), null, null, null, null);
 
         List<Instrument> instruments = new ArrayList<Instrument>();
         survey.setInstruments(instruments);
-        if (c.moveToNext()) {
+        if (cursor.moveToNext()) {
             List<String> listOfInstrumentIds = instrumentDAO.getInstrumentIdListByPlace(survey.getPlaceId());
 
             for (String instrumentId : listOfInstrumentIds) {
                 instruments.add(new Instrument(instrumentId,"", groupQuestionDAO.findGroupByInstrumentId(instrumentId)));
             }
         }
-        c.close();
+        cursor.close();
         return survey;
     }
 

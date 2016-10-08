@@ -171,8 +171,6 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 surveyService.preparePendingSurvey();
                 newFragment = getNextQuestionFragment();
             } else if (surveyService.getSurvey().isNewPlace()) {
-                surveyDAO.addSurvey(surveyService.getSurvey());
-
                 newFragment = new NewPlaceFragment();
                 args.putSerializable("question", new Question(getResources().getString(R.string.new_place_dialog)));
                 args.putSerializable("categoriess", (Serializable) surveyService.getSurvey().getCategories());
@@ -239,6 +237,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                         anw = new Anwser(surveyService.getSurvey().getSurveyId(),surveyService.peekInstrument().getId(), surveyService.peekGroup().getId(),newFragment.getQuestion().getId(), null, null, (String) newFragment.getAnwser());
                         anwserDAO.insertAnwser(anw);
                     } else if (newFragment instanceof NewPlaceFragment) {
+                        surveyDAO.addSurvey(surveyService.getSurvey());
                         NewPlace newPlace = (NewPlace) newFragment.getAnwser();
                         newPlaceDAO.insertNewPlace(newPlace);
                     }
@@ -256,7 +255,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 }
                 break;
             case R.id.tvSkip:
-                Intent intent = new Intent(EvaluationActivity.this, org.avaliabrasil.avaliabrasil2.avb.activity.PlaceStatisticsActivity.class);
+                Intent intent = new Intent(EvaluationActivity.this,PlaceStatisticsActivity.class);
                 intent.putExtra("placeid", place_id);
                 intent.putExtra("name", getIntent().getExtras().getString("name"));
                 startActivity(intent);

@@ -51,10 +51,7 @@ public class GPSService extends Service implements LocationListener , SharedPref
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         try{
-            if (!locationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-
-            } else {
+            if(Utils.isGPSAvailable(GPSService.this)) {
                 Location providerLocation;
                 for (String provider : locationManager.getAllProviders()) {
 

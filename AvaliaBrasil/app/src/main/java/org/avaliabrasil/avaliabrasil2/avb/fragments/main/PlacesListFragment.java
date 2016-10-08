@@ -1,8 +1,10 @@
 package org.avaliabrasil.avaliabrasil2.avb.fragments.main;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,12 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.avaliabrasil.avaliabrasil2.R;
 import org.avaliabrasil.avaliabrasil2.avb.activity.PlaceActivity;
 import org.avaliabrasil.avaliabrasil2.avb.adapters.PlacesListAdapter;
 import org.avaliabrasil.avaliabrasil2.avb.util.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil2.avb.sync.Observer;
+import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 
 /**
  * Created by Pedro on 29/02/2016.
@@ -30,6 +34,8 @@ public class PlacesListFragment extends Fragment implements Observer {
     private int mPosition = ListView.INVALID_POSITION;
 
     private static final String SELECTED_place = "selected_place";
+
+    private TextView tvEmpty;
 
 
     public static PlacesListFragment newInstance(int sectionNumber, Location location) {
@@ -53,11 +59,20 @@ public class PlacesListFragment extends Fragment implements Observer {
 
         View rootView = inflater.inflate(R.layout.fragment_places_list, container, false);
 
+        tvEmpty = (TextView) rootView.findViewById(R.id.tvEmpty);
+
         mListView = (ListView) rootView.findViewById(R.id.listview_places);
 
         mPlacesListAdapter = new PlacesListAdapter(getContext(), null, 0, ((AvaliaBrasilApplication)getActivity().getApplication()).getLocation());
 
-        mListView.setEmptyView(rootView.findViewById(R.id.tvEmpty));
+        LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        if (Utils.isGPSAvailable(getContext())) {
+            tvEmpty.setText(getContext().getString(R.string.gps_off));
+        }else if(!Utils.isNetworkAvailable(getContext())){
+            tvEmpty.setText(getContext().getString(R.string.internet_connection_error));
+        }
+
+        mListView.setEmptyView(tvEmpty);
 
         mListView.setAdapter(mPlacesListAdapter);
 

@@ -2,4 +2,5 @@
 <resources>
     <string name="cityName">City:</string>
     <string name="stateLatter">State:</string>
+    <string name="gps_off">GPS its disabled.</string>
 </resources>
