@@ -8,6 +8,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +22,10 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.PointsGraphSeries;
 
 import org.avaliabrasil.avaliabrasil2.R;
 import org.avaliabrasil.avaliabrasil2.avb.adapters.CommentAdapter;
@@ -33,6 +36,8 @@ import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 import org.avaliabrasil.avaliabrasil2.avb.view.RankingView;
 
 import java.nio.charset.Charset;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -154,7 +159,10 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
         graph = (GraphView) findViewById(R.id.graph);
 
-        graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.NONE);
+        graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.BOTH);
+        graph.getGridLabelRenderer().setHumanRounding(false);
+        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(PlaceStatisticsActivity.this));
+        graph.getGridLabelRenderer().setNumHorizontalLabels(3);
 
         rvComments = (RecyclerView) findViewById(R.id.rvComments);
 
@@ -194,14 +202,37 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
         graph.removeAllSeries();
 
         DataPoint[] points = new DataPoint[placeStats.getQualityIndex().size()];
+        String month;
+        String year;
 
         for (int i = 0; i < placeStats.getQualityIndex().size(); i++) {
-            points[i] = new DataPoint(i, placeStats.getQualityIndex().get(i).getValue());
+            Calendar calendar = Calendar.getInstance();
+
+            month = placeStats.getQualityIndex().get(i).getMonth();
+
+            Log.d("PlaceStatistics", "fetchData: " + month);
+
+            year = month.substring(0,4);
+            Log.d("PlaceStatistics", "fetchData: " + year);
+            month = month.substring(5);
+
+            calendar.set(Calendar.MONTH,Integer.valueOf(month) + i);
+            calendar.set(Calendar.YEAR,Integer.valueOf(year));
+            points[i] = new DataPoint(calendar.getTime(), placeStats.getQualityIndex().get(i).getValue());
         }
 
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(points);
+        if(points.length == 1){
+            PointsGraphSeries<DataPoint> series = new PointsGraphSeries<DataPoint>(points);
 
-        graph.addSeries(series);
+            series.setShape(PointsGraphSeries.Shape.POINT);
+            series.setSize(5);
+
+            graph.addSeries(series);
+        }else{
+            LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(points);
+
+            graph.addSeries(series);
+        }
 
         rvComments.setAdapter(new CommentAdapter(PlaceStatisticsActivity.this, placeStats.getComments()));
 
