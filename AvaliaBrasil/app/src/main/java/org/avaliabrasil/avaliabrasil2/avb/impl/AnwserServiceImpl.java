@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 
 import org.avaliabrasil.avaliabrasil2.avb.dao.AnwserDAO;
 import org.avaliabrasil.avaliabrasil2.avb.dao.AnwserService;
-import org.avaliabrasil.avaliabrasil2.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil2.avb.dao.NewPlaceDAO;
 import org.avaliabrasil.avaliabrasil2.avb.dao.PlaceDetailsDAO;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.place.placedetail.ResultDetails;
@@ -50,7 +49,7 @@ public class AnwserServiceImpl implements AnwserService{
         for(Anwser awn : anwsers){
             JsonObject obj = new JsonObject();
 
-            obj.addProperty("questionId", awn.getQuestion_id());
+            obj.addProperty("questionId", awn.getQuestionId());
             obj.addProperty("questionType", !awn.getNumber().isEmpty() ? "number" : !awn.getComment().isEmpty() ? "comment" : "likert");
             obj.addProperty("answer", !awn.getNumber().isEmpty() ? awn.getNumber() : !awn.getComment().isEmpty() ? awn.getComment() : awn.getLikert());
 

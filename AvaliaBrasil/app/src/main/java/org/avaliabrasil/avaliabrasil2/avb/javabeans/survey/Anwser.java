@@ -9,7 +9,7 @@ import org.avaliabrasil.avaliabrasil2.avb.dao.AvBContract;
  */
 public class Anwser {
 
-    private String question_id;
+    private String questionId;
     private String likert = "";
     private String comment = "";
     private String number = "";
@@ -17,9 +17,9 @@ public class Anwser {
     private String instrumentId;
     private String groupId;
 
-    public Anwser(String surveyId, String instrumentId ,String groupId ,String question_id, String likert, String comment, String number) {
+    public Anwser(String surveyId, String instrumentId , String groupId , String questionId, String likert, String comment, String number) {
         this.surveyId = surveyId;
-        this.question_id = question_id;
+        this.questionId = questionId;
         this.instrumentId = instrumentId;
         this.groupId = groupId;
 
@@ -35,7 +35,7 @@ public class Anwser {
     }
 
     public Anwser(Cursor c){
-        this.question_id = c.getString(c.getColumnIndex(AvBContract.AnwserEntry.QUESTION_ID));
+        this.questionId = c.getString(c.getColumnIndex(AvBContract.AnwserEntry.QUESTION_ID));
         this.instrumentId = c.getString(c.getColumnIndex(AvBContract.AnwserEntry.INSTRUMENT_ID));
         this.groupId = c.getString(c.getColumnIndex(AvBContract.AnwserEntry.GROUP_ID));
 
@@ -72,12 +72,12 @@ public class Anwser {
         this.groupId = groupId;
     }
 
-    public String getQuestion_id() {
-        return question_id;
+    public String getQuestionId() {
+        return questionId;
     }
 
-    public void setQuestion_id(String question_id) {
-        this.question_id = question_id;
+    public void setQuestionId(String questionId) {
+        this.questionId = questionId;
     }
 
     public String getLikert() {
@@ -110,5 +110,21 @@ public class Anwser {
 
     public void setSurveyId(String surveyId) {
         this.surveyId = surveyId;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        b.append("SurveyId: ");
+        b.append(surveyId);
+        b.append("\nQuestionId: ");
+        b.append(questionId);
+        b.append("\nNumber: ");
+        b.append(number);
+        b.append("\nComment: ");
+        b.append(comment);
+        b.append("\nLikert: ");
+        b.append(likert);
+        return b.toString();
     }
 }

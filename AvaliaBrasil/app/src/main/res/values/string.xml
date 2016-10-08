@@ -57,7 +57,7 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="progress_dialog_title">Fetching Data</string>
-    <string name="progress_dialog_message">Where are fetching data from server...</string>
+    <string name="progress_dialog_message">We are fetching data from server...</string>
     <string name="location_error">Couldnt location you, check if GPS is on.</string>
 
     <string name="anwser_dialog_title">Sending Data</string>

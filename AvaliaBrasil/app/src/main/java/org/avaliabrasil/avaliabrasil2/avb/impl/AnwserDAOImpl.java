@@ -3,9 +3,7 @@ package org.avaliabrasil.avaliabrasil2.avb.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import org.avaliabrasil.avaliabrasil2.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil2.avb.dao.AnwserDAO;
@@ -31,7 +29,7 @@ public class AnwserDAOImpl implements AnwserDAO{
         cv.put(AvBContract.AnwserEntry.SURVEY_ID, anwser.getSurveyId());
         cv.put(AvBContract.AnwserEntry.INSTRUMENT_ID, anwser.getInstrumentId());
         cv.put(AvBContract.AnwserEntry.GROUP_ID, anwser.getGroupId());
-        cv.put(AvBContract.AnwserEntry.QUESTION_ID, anwser.getQuestion_id());
+        cv.put(AvBContract.AnwserEntry.QUESTION_ID, anwser.getQuestionId());
         cv.put(AvBContract.AnwserEntry.QUESTION_TYPE, !anwser.getNumber().isEmpty() ? "number" : !anwser.getComment().isEmpty() ? "comment" : "likert");
         cv.put(AvBContract.AnwserEntry.ANWSER, !anwser.getNumber().isEmpty() ? anwser.getNumber() : !anwser.getComment().isEmpty() ? anwser.getComment() : anwser.getLikert());
 
