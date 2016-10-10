@@ -8,8 +8,8 @@ android {
         applicationId "org.avaliabrasil.avaliabrasil2"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 6
-        versionName "1.07"
+        versionCode 8
+        versionName "1.08"
     }
     buildTypes {
         release {

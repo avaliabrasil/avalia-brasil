@@ -40,13 +40,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.avaliabrasil.avaliabrasil2.R;
+import org.avaliabrasil.avaliabrasil2.avb.dao.PlaceCategoryDAO;
+import org.avaliabrasil.avaliabrasil2.avb.dao.PlaceTypeDAO;
 import org.avaliabrasil.avaliabrasil2.avb.impl.NavigatorViewImpl;
 import org.avaliabrasil.avaliabrasil2.avb.fragments.main.PlacesListFragment;
 import org.avaliabrasil.avaliabrasil2.avb.fragments.main.PlacesMapFragment;
 import org.avaliabrasil.avaliabrasil2.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil2.avb.impl.GroupQuestionDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.InstrumentDAOImpl;
+import org.avaliabrasil.avaliabrasil2.avb.impl.PlaceCategoryDAOImpl;
+import org.avaliabrasil.avaliabrasil2.avb.impl.PlaceTypeDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.QuestionDAOImpl;
+import org.avaliabrasil.avaliabrasil2.avb.javabeans.survey.AvaliaBrasilCategory;
+import org.avaliabrasil.avaliabrasil2.avb.javabeans.survey.AvaliaBrasilPlaceType;
 import org.avaliabrasil.avaliabrasil2.avb.sync.ServiceAnwserSync;
 import org.avaliabrasil.avaliabrasil2.avb.util.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil2.avb.dao.PlaceDetailsDAO;
@@ -66,6 +72,8 @@ import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity implements
@@ -311,8 +319,62 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    private List<AvaliaBrasilCategory> getPlaceCategories(){
+        List<AvaliaBrasilCategory> avaliaBrasilCategoryList = new ArrayList<>();
+        avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("1","Saúde"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("2","Educação"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("3","Segurança"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("4","Transporte"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("5","Poder Judiciário"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("6","Poder Legislativo"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("7","Poder Executivo"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("8","Outro"));
+        return avaliaBrasilCategoryList;
+    }
+
+    private List<AvaliaBrasilPlaceType> getAvaliaBrasilPlaceTypes(){
+        List<AvaliaBrasilPlaceType> avaliaBrasilCategoryList = new ArrayList<>();
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("101","Posto de Saúde","1"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("102","Unidade Básica de Saúde","1"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("103","Policlínica","1"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("104","Hospital","1"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("105","Unidade Mista","1"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("106","Pronto Socorro","1"));
+
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("107","Creche","2"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("108","Escola","2"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("109","Instituição de Ensino Superior","2"));
+
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("110","Policia Municipal","3"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("111","Policia Militar","3"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("112","Policia Civil","3"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("113","Policia Federal","3"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("114","Quartel Militar","3"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("115","Exercíto Brasileiro","3"));
+
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("116","Rodoviária","4"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("117","Aeroporto","4"));
+
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("118","Tabelionato","5"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("119","Fórum Municipal","5"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("120","Fórum Estadual","5"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("121","Fórum Federal","5"));
+
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("122","Câmara de Vereadores","6"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("123","Câmara de Deputados","6"));
+
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("124","Prefeitura Municipal","7"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("125","Governo Estadual","7"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("126","Planalto Federal","7"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("127","Ministério Federal","7"));
+
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("128","Outro","8"));
+
+        return avaliaBrasilCategoryList;
+    }
+
     /**
-     * {@link AsyncTask} class to act has a splash screen
+     * {@link AsyncTask} class to act as an splash screen
      */
     private class Loading extends AsyncTask<Void, Void, Void> {
 
@@ -325,6 +387,10 @@ public class MainActivity extends AppCompatActivity implements
                 if (getIntent().getExtras() != null) {
                     if (getIntent().getExtras().getBoolean("showSplash", true)) {
                         Thread.sleep(3000);
+                        PlaceCategoryDAO placeCategoryDAO = new PlaceCategoryDAOImpl(MainActivity.this);
+                        PlaceTypeDAO placeTypeDAO = new PlaceTypeDAOImpl(MainActivity.this);
+                        placeCategoryDAO.bulkInsertPlaceCategory(getPlaceCategories());
+                        placeTypeDAO.bulkInsertPlaceType(getAvaliaBrasilPlaceTypes());
                     }
                 }
             } catch (InterruptedException e) {

@@ -3,4 +3,5 @@
     <string name="cityName">City:</string>
     <string name="stateLatter">State:</string>
     <string name="gps_off">GPS its disabled.</string>
+    <string name="no_statistics_error">There is no statistics over this place to be showed</string>
 </resources>

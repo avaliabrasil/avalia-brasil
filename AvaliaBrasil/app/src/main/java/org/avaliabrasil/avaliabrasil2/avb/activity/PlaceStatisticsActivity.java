@@ -244,12 +244,20 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
         Intent rankingIntent = new Intent(PlaceStatisticsActivity.this, RankingActivity.class);
 
+        StringBuilder builder = new StringBuilder();
         if (placeStats != null) {
             rankingIntent.putExtra("name", placeStats.getName());
             rankingIntent.putExtra("city", placeStats.getCity());
             rankingIntent.putExtra("state", placeStats.getState());
             rankingIntent.putExtra("category", placeStats.getCategory());
             rankingIntent.putExtra("type", placeStats.getType());
+
+            builder.append("name" + placeStats.getName());
+            builder.append("\ncity" + placeStats.getCity());
+            builder.append("\nstate" + placeStats.getState());
+            builder.append("\ncategory" + placeStats.getCategory());
+            builder.append("\ntype" + placeStats.getType());
+
         }
 
         switch (v.getId()) {
@@ -272,6 +280,8 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
                 break;
 
         }
+        builder.append("\nrankingType"+rankingIntent.getExtras().getString("rankingType"));
+        Log.d("PlaceStatisticsActivity", "onClick: " + builder.toString());
 
         startActivity(rankingIntent);
     }

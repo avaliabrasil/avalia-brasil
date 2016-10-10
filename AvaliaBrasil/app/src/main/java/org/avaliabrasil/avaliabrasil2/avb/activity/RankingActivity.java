@@ -17,6 +17,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -111,6 +112,8 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
 
     private LocationDAOTestImpl locationDAO;
 
+    boolean isFirstSelected = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -175,30 +178,12 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
 
         spCategory = (Spinner) findViewById(R.id.spCategory);
 
-        categoryCursorAdapter = new CategoryCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceCategoryEntry.PLACE_CATEGORY_URI, null, null, null, null));
-
+        Cursor query = getContentResolver().query(AvBContract.PlaceCategoryEntry.PLACE_CATEGORY_URI, null, null, null, null);
+        categoryCursorAdapter = new CategoryCursorAdapter(RankingActivity.this, query);
+        query.moveToFirst();
         spCategory.setAdapter(categoryCursorAdapter);
 
         spPlaceType = (Spinner) findViewById(R.id.spPlaceType);
-
-        spCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-
-                Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
-                cur.moveToPosition(position);
-
-                placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));
-
-                spPlaceType.setAdapter(placeTypeCursorAdapter);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // your code here
-            }
-
-        });
 
         geocoder = new Geocoder(this, Locale.getDefault());
 
@@ -216,6 +201,30 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
                 e.printStackTrace();
             }
         }
+
+        spCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                int prevPos = 0;
+                Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
+                cur.moveToPosition(position);
+                if(placeTypeCursorAdapter != null){
+                    prevPos = placeTypeCursorAdapter.getCursor().getPosition();
+                }
+                placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));
+                spPlaceType.setAdapter(placeTypeCursorAdapter);
+
+                if(prevPos < placeTypeCursorAdapter.getCursor().getCount()){
+                    placeTypeCursorAdapter.getCursor().moveToPosition(prevPos);
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+
+            }
+        });
     }
 
     @Override
@@ -240,25 +249,33 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
 
         //TODO set {#link spCategory} by category string
         Cursor cur = categoryCursorAdapter.getCursor();
+        final Cursor placeTypeCursor;
 
         while (cur.moveToNext()) {
             if (cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)).contains(category)) {
+                Log.d("RankingActivity", "setted category: " + cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)));
+
                 spCategory.setSelection(cur.getPosition());
 
-                placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));
+                placeTypeCursor = getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null);
+
+                placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this,placeTypeCursor );
 
                 spPlaceType.setAdapter(placeTypeCursorAdapter);
 
-                while (cur.moveToNext()) {
-                    if (cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)).contains(placeType)) {
-                        spPlaceType.setSelection(cur.getPosition());
+
+                while (placeTypeCursor.moveToNext()) {
+                    Log.d("RankingActivity", "setted placeType: " + placeTypeCursor.getString(placeTypeCursor.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)));
+
+                    if (placeTypeCursor.getString(placeTypeCursor.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)).contains(placeType)) {
+                        Log.d("RankingActivity", "position cursor: " + placeTypeCursor.getPosition());
+                        spPlaceType.setSelection(placeTypeCursor.getPosition());
                         break;
                     }
                 }
                 break;
             }
         }
-
         //TODO send the rankingType to the query.
         HashMap<String, String> params = new HashMap<>();
 
@@ -311,7 +328,7 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
 
     private void fetchData(String response) {
         Gson gson = new Gson();
-        System.out.println(response);
+        Log.d("RankingActivity", "Response: " + response);
         PlaceRankingSearch placeRanking = gson.fromJson(response, PlaceRankingSearch.class);
 
         rvRankingList.setAdapter(new PlaceRankingAdapter(rvRankingList,RankingActivity.this, placeRanking.getPlaceRankings(),RankingActivity.this));

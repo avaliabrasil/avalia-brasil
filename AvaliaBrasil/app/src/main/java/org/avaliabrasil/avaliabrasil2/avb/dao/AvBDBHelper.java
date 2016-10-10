@@ -98,7 +98,7 @@ public class AvBDBHelper extends SQLiteOpenHelper {
     private static final String createPlaceCategory = "CREATE TABLE place_category (" +
             "    _id         INTEGER PRIMARY KEY" +
             "                        NOT NULL," +
-            "    category_id INTEGER NOT NULL," +
+            "    category_id INTEGER NOT NULL UNIQUE," +
             "    name        TEXT    NOT NULL" +
             ");";
 
@@ -107,7 +107,7 @@ public class AvBDBHelper extends SQLiteOpenHelper {
             "                        NOT NULL," +
             "    category_id INTEGER REFERENCES place_category (category_id) " +
             "                        NOT NULL," +
-            "    name        TEXT    NOT NULL" +
+            "    name        TEXT    NOT NULL UNIQUE" +
             ");";
 
 

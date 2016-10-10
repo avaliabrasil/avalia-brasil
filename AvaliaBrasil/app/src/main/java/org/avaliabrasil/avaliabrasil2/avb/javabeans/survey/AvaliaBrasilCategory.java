@@ -18,6 +18,15 @@ public class AvaliaBrasilCategory implements Serializable {
     @Expose
     private String category;
 
+    public AvaliaBrasilCategory(){
+
+    }
+
+    public AvaliaBrasilCategory(String idCategory,String category){
+        this.idCategory = idCategory;
+        this.category = category;
+    }
+
     public String getIdCategory() {
         return idCategory;
     }

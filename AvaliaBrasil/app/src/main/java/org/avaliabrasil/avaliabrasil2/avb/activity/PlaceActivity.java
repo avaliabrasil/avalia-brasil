@@ -425,7 +425,7 @@ public class PlaceActivity extends AppCompatActivity {
 
     public void startStatisticsActivity(View view) {
         if (placeStats == null) {
-            Toast.makeText(PlaceActivity.this, getResources().getString(R.string.internet_connection_error), Toast.LENGTH_SHORT).show();
+            Toast.makeText(PlaceActivity.this, getResources().getString(R.string.no_statistics_error), Toast.LENGTH_SHORT).show();
             return;
         }
         Intent intent = new Intent(PlaceActivity.this, PlaceStatisticsActivity.class);

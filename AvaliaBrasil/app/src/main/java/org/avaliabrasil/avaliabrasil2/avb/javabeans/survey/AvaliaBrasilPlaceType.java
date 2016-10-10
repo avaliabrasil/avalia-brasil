@@ -22,6 +22,16 @@ public class AvaliaBrasilPlaceType implements Serializable {
     @Expose
     private String category;
 
+    public AvaliaBrasilPlaceType(){
+
+    }
+
+    public AvaliaBrasilPlaceType(String id, String category,String idCategory){
+        this.id = id;
+        this.idCategory = idCategory;
+        this.category = category;
+    }
+
     public String getIdCategory() {
         return idCategory;
     }

@@ -54,6 +54,7 @@
     <!-- General Dialogs -->
     <string name="location_access_needed">This application need the access location to work property</string>
     <string name="internet_connection_error">Could not login,verify your internet</string>
+    <string name="no_statistics_error">There is no statistics over this place to be showed</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="progress_dialog_title">Fetching Data</string>

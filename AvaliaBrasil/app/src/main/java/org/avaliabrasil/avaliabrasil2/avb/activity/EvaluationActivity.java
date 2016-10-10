@@ -182,7 +182,6 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
                 newFragment.setArguments(args);
             } else {
-                surveyDAO.addSurvey(surveyService.getSurvey());
                 newFragment = getNextQuestionFragment();
             }
 
@@ -223,6 +222,9 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View v) {
+        if(surveyService.getSurvey().getSurveyId() == null || surveyService.getSurvey().getSurveyId() == ""){
+            surveyDAO.addSurvey(surveyService.getSurvey());
+        }
         switch (v.getId()) {
             case R.id.btnSubmit:
                 if (newFragment.isAnwser()) {

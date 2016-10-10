@@ -86,9 +86,8 @@ public class SurveyCursor implements SurveyService{
     public void preparePendingSurvey(){
         Anwser lastAnswer = anwserDAO.getLastAnwserBySurveyId(survey.getSurveyId());
 
-        Log.d("preparePendingSurvey", "preparePendingSurvey lastAnswer: " + lastAnswer.toString());
-
         if(lastAnswer != null){
+            Log.d("preparePendingSurvey", "preparePendingSurvey lastAnswer: " + lastAnswer.toString());
 
             for (int i = 0; i < survey.getInstruments().size(); i++, instrumentCursor++) {
                 if (survey.getInstruments().get(i).getId().contains(lastAnswer.getInstrumentId())) {
