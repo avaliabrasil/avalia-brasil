@@ -10,18 +10,13 @@
             android:title="@string/drawer_classification" />
     </group>
 
-    <item android:title="Etc">
-        <menu>
-            <item
-                android:id="@+id/btnLogout"
-                android:title="@string/drawer_logout" />
-            <item
-                android:id="@+id/btnHelp"
-                android:title="@string/drawer_help" />
-            <item
-                android:id="@+id/btnTermsOfUse"
-                android:title="@string/drawer_terms_of_use" />
-        </menu>
-    </item>
-
+    <item
+        android:id="@+id/btnHelp"
+        android:title="@string/drawer_help" />
+    <item
+        android:id="@+id/btnTermsOfUse"
+        android:title="@string/drawer_terms_of_use" />
+    <item
+        android:id="@+id/btnLogout"
+        android:title="@string/drawer_logout" />
 </menu>
