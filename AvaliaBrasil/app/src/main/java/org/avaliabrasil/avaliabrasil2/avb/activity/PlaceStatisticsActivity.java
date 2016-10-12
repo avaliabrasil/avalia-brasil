@@ -32,6 +32,7 @@ import org.avaliabrasil.avaliabrasil2.avb.adapters.CommentAdapter;
 import org.avaliabrasil.avaliabrasil2.avb.adapters.DividerItemDecoration;
 import org.avaliabrasil.avaliabrasil2.avb.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.PlaceStatistics;
+import org.avaliabrasil.avaliabrasil2.avb.util.DateAsXAxisLabel;
 import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 import org.avaliabrasil.avaliabrasil2.avb.view.RankingView;
 
@@ -160,8 +161,12 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
         graph = (GraphView) findViewById(R.id.graph);
 
         graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.BOTH);
-        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(PlaceStatisticsActivity.this));
-        graph.getGridLabelRenderer().setNumHorizontalLabels(3);
+
+        graph.getViewport().setMinY(0);
+        graph.getViewport().setMaxY(100);
+
+        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabel(PlaceStatisticsActivity.this));
+        graph.getGridLabelRenderer().setNumHorizontalLabels(6);
         graph.getGridLabelRenderer().setHumanRounding(false);
 
         rvComments = (RecyclerView) findViewById(R.id.rvComments);
@@ -208,7 +213,7 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
         for (int i = 0; i < points.length; i++) {
             Calendar calendar = Calendar.getInstance();
-            month = calendar.get(Calendar.MONTH) + i - 4;
+            month = calendar.get(Calendar.MONTH) + i - 5;
             year = calendar.get(Calendar.YEAR);
             calendar.set(Calendar.DATE , 1);
             calendar.set(Calendar.HOUR , 1);
