@@ -1,10 +1,7 @@
 package org.avaliabrasil.avaliabrasil2.avb.activity;
 
 import android.app.ProgressDialog;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -28,14 +25,12 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.avaliabrasil.avaliabrasil2.R;
-import org.avaliabrasil.avaliabrasil2.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil2.avb.dao.InstrumentDAO;
 import org.avaliabrasil.avaliabrasil2.avb.dao.PlaceDetailsDAO;
 import org.avaliabrasil.avaliabrasil2.avb.dao.PlacePeriodDAO;
@@ -61,7 +56,6 @@ import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +151,7 @@ public class PlaceActivity extends AppCompatActivity {
 
                             if (placeStats == null) {
                                 ranking_position.setText("-- º");
-                                quality_index.setText("0");
+                                quality_index.setText("-");
                                 ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
                             } else {
                                 ranking_position.setText(String.valueOf(placeStats.getRankingPosition().getNational()) + "º");
@@ -182,7 +176,7 @@ public class PlaceActivity extends AppCompatActivity {
                 public void onErrorResponse(VolleyError error) {
                     error.printStackTrace();
                     ranking_position.setText("-- º");
-                    quality_index.setText("0");
+                    quality_index.setText("-");
                     ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
 
                 }
