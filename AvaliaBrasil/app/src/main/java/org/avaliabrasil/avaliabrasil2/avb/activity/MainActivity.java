@@ -437,12 +437,7 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         protected void onPreExecute() {
             try {
-                ImageView view = new ImageView(MainActivity.this);
-                view.setImageResource(R.drawable.retangular_logo);
-                ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT
-                        , ViewGroup.LayoutParams.FILL_PARENT);
-                view.setLayoutParams(layoutParams);
-                setContentView(view);
+                setContentView(R.layout.splash_screen);
             } catch (Exception e) {
                 e.printStackTrace();
             }

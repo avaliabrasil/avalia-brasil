@@ -45,6 +45,7 @@
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/facebookBlue</item>
+        <item name="android:textAllCaps">false</item>
     </style>
 
     <style name="DefaultText">
