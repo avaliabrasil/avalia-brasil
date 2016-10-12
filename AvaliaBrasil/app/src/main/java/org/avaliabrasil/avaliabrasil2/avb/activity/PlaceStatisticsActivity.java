@@ -22,7 +22,6 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.PointsGraphSeries;
@@ -30,15 +29,14 @@ import com.jjoe64.graphview.series.PointsGraphSeries;
 import org.avaliabrasil.avaliabrasil2.R;
 import org.avaliabrasil.avaliabrasil2.avb.adapters.CommentAdapter;
 import org.avaliabrasil.avaliabrasil2.avb.adapters.DividerItemDecoration;
-import org.avaliabrasil.avaliabrasil2.avb.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.PlaceStatistics;
+import org.avaliabrasil.avaliabrasil2.avb.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil2.avb.util.DateAsXAxisLabel;
 import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 import org.avaliabrasil.avaliabrasil2.avb.view.RankingView;
 
 import java.nio.charset.Charset;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
