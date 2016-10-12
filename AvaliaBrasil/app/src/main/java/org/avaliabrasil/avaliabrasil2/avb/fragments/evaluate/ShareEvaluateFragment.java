@@ -68,7 +68,7 @@ public class ShareEvaluateFragment extends Fragment {
         tvSkip.setOnClickListener((EvaluationActivity) getActivity());
 
         shareLinkContent = new ShareLinkContent.Builder()
-                .setContentUrl(Uri.parse("https://www.facebook.com/avaliabrasil.org/"))
+                .setContentUrl(Uri.parse("avaliabrasil.org"))
                 .setContentDescription(shareString)
                 .build();
 
