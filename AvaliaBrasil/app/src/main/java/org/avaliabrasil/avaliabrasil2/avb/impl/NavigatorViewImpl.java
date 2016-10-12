@@ -119,9 +119,11 @@ public class NavigatorViewImpl implements NavigationView.OnNavigationItemSelecte
             case R.id.btnHelp:
                 activity.startActivity(new Intent(activity, HelpActivity.class));
                 break;
+            /** Retirando termos de uso do app. Vai estar no site.
             case R.id.btnTermsOfUse:
                 activity.startActivity(new Intent(activity, TermsOfUseActivity.class));
                 break;
+             **/
         }
 
         DrawerLayout drawer = (DrawerLayout) activity.findViewById(R.id.drawer_layout);

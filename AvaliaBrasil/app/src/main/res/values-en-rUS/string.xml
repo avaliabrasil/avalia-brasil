@@ -54,13 +54,26 @@
 
 
     <string name="help_text">
-        "Obrigado por utilizar o Avalia Brasil. Veja a seguir algumas informações úteis.\n\n"
+"Obrigado por utilizar o Avalia Brasil! Veja a seguir respostas à algumas perguntas importantes.\n\n"
 
-        "Busca de Locais\n\n"
-        "O Avalia Brasil utiliza a API do Google Maps para mostrar locais próximos a você."
-        "Se o estabelecimento que você está tentando procurar não aparece, é possível que ele não esteja cadastrado no Google com o nome que estás procurando."
-        "Tente realizar sua busca de manerias diferentes. Também é possivel que o local não esteja cadastrado no Google. "
+"Para que serve o Avalia Brasil?\n"
+"O Avalia Brasil foi criado para que usuários de serviços públicos possam dar feedback aos administradores públicos de maneira transparente e estruturada."
+"O objetivo é que os cidadãos tenham uma maneira adequada de expressar sua percepção sobre a qualidade do serviço, e os administradores públicos tem mais informações para cumprir seu papel, melhorando a qualidade do serviço público.\n\n"
 
+"Como surgiu esta iniciativa?\n"
+"O projeto do app Avalia Brasil foi submetido e selecionado no InovApps 2015, um concurso do Ministério da Ciência, Tecnologia, Inovações e Comunicações do Governo Federal, que visou promover o desenvolvimento de apps de interesse público.\n\n"
+
+"Como o índice de Qualidade é Calculado?\n"
+"Cada resposta às perguntas objetivas do Avalia Brasil é levada em consideração para o calculo do índice de qualidade, que vai de 0 a 100."
+"Para o calculo do índice, o app leva em consideração as respostas dos últimos 60 dias aos estabelecimento, e sempre é re-calculado à medida que novas respostas são enviadas pelo app. Utilizamos a escala SERVPERF como referência.\n\n"
+
+"Não acho um estabelecimento. O que faço?\n"
+"O Avalia Brasil utiliza a API do Google Maps para mostrar locais próximos a você."
+"Se o estabelecimento que você está tentando procurar não aparece, é possível que ele não esteja cadastrado no Google com o nome que você está procurando."
+"Tente realizar sua busca de manerias diferentes. Também é possível que o local não esteja cadastrado no Google Maps. Neste caso, você deve tentar cadastrá-lo com o App do Google Maps, e em alguns dias o local deve aparecer no Avalia Brasil.\n\n"
+
+"Vejo no App estabelecimentos que não prestam serviço público. Porque isso acontece?\n"
+"O Google Maps não nos diz que Apps são ou não estabelecimentos de serviço público. Usamos um filtro para procurar lugares com mais chances de serem estabelecimentos públicos (ex.: estabelecimentos de saúde, educação), mas mesmo assim isto não garante que apenas apareçam estabelecimentos públicos.\n\n"
     </string>
 
     <!-- LoginActivity -->
