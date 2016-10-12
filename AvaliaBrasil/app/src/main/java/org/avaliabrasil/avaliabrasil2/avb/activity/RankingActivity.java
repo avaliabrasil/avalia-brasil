@@ -202,22 +202,33 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
             }
         }
 
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         spCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                int prevPos = 0;
-                Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
-                cur.moveToPosition(position);
-                if(placeTypeCursorAdapter != null){
-                    prevPos = placeTypeCursorAdapter.getCursor().getPosition();
-                }
-                placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));
-                spPlaceType.setAdapter(placeTypeCursorAdapter);
+                Log.d("RankingActivity", "onItemSelected: LastSelected: " + lastSettedOption + " | View: " + ((TextView)selectedItemView).getText().toString());
+                if(!lastSettedOption.isEmpty()){
+                    if(!((TextView)selectedItemView).getText().toString().contains(lastSettedOption)){
+                        Log.d("RankingActivity", "onItemSelected: LastSelected: Modificando...");
 
-                if(prevPos < placeTypeCursorAdapter.getCursor().getCount()){
-                    placeTypeCursorAdapter.getCursor().moveToPosition(prevPos);
-                }
+                        Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
+                        cur.moveToPosition(position);
+                        placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));
+                        spPlaceType.setAdapter(placeTypeCursorAdapter);
+                    }
+                }else{
+                    Log.d("RankingActivity", "onItemSelected: LastSelected: Modificando...");
 
+                    Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
+                    cur.moveToPosition(position);
+                    placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));
+                    spPlaceType.setAdapter(placeTypeCursorAdapter);
+                }
             }
 
             @Override
@@ -237,6 +248,8 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
         }
     }
 
+    private String lastSettedOption = "";
+
     private void getIntentInfo() {
         String name = getIntent().getExtras().getString("name", "");
         String city = getIntent().getExtras().getString("city", "");
@@ -254,7 +267,7 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
         while (cur.moveToNext()) {
             if (cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)).contains(category)) {
                 Log.d("RankingActivity", "setted category: " + cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)));
-
+                lastSettedOption = cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME));
                 spCategory.setSelection(cur.getPosition());
 
                 placeTypeCursor = getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null);
@@ -264,6 +277,7 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
                 spPlaceType.setAdapter(placeTypeCursorAdapter);
 
 
+                Log.d("RankingActivity", "PlaceType: " + placeType);
                 while (placeTypeCursor.moveToNext()) {
                     Log.d("RankingActivity", "setted placeType: " + placeTypeCursor.getString(placeTypeCursor.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)));
 

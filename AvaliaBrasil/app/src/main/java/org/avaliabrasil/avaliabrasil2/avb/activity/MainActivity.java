@@ -345,10 +345,10 @@ public class MainActivity extends AppCompatActivity implements
         avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("108","Escola","2"));
         avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("109","Instituição de Ensino Superior","2"));
 
-        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("110","Policia Municipal","3"));
-        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("111","Policia Militar","3"));
-        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("112","Policia Civil","3"));
-        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("113","Policia Federal","3"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("110","Polícia Municipal","3"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("111","Polícia Militar","3"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("112","Polícia Civil","3"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("113","Polícia Federal","3"));
         avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("114","Quartel Militar","3"));
         avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("115","Exercíto Brasileiro","3"));
 
@@ -387,15 +387,15 @@ public class MainActivity extends AppCompatActivity implements
                 if (getIntent().getExtras() != null) {
                     if (getIntent().getExtras().getBoolean("showSplash", true)) {
                         Thread.sleep(3000);
-                        PlaceCategoryDAO placeCategoryDAO = new PlaceCategoryDAOImpl(MainActivity.this);
-                        PlaceTypeDAO placeTypeDAO = new PlaceTypeDAOImpl(MainActivity.this);
-                        placeCategoryDAO.bulkInsertPlaceCategory(getPlaceCategories());
-                        placeTypeDAO.bulkInsertPlaceType(getAvaliaBrasilPlaceTypes());
                     }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            PlaceCategoryDAO placeCategoryDAO = new PlaceCategoryDAOImpl(MainActivity.this);
+            PlaceTypeDAO placeTypeDAO = new PlaceTypeDAOImpl(MainActivity.this);
+            placeCategoryDAO.bulkInsertPlaceCategory(getPlaceCategories());
+            placeTypeDAO.bulkInsertPlaceType(getAvaliaBrasilPlaceTypes());
             return null;
         }
 
