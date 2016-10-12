@@ -63,14 +63,19 @@ public class AnwserServiceImpl implements AnwserService{
 
         if (newPlace != null) {
             response.addProperty("newPlace", true);
+            //TODO modificar parapegar  a category também
+            response.addProperty("category",2);
             response.addProperty("placeTypeId", newPlace.getPlaceType());
             ResultDetails details = placeDetailsDAO.getPlaceDetailsByPlaceId(placeId);
 
             if(details != null){
-                response.addProperty("address", details.getVicinity());
-                response.addProperty("name", details.getName());
+                //response.addProperty("address", details.getVicinity());
+                response.addProperty("address", "blablala");
+                //response.addProperty("name", details.getName());
+                response.addProperty("name", "Sao leopoldo");
                 details.getCity();
-                response.addProperty("cityName", details.getCityName());
+                response.addProperty("cityName", "Sao leopoldo");
+                //response.addProperty("cityName", details.getCityName());
                 response.addProperty("stateLetter", details.getStateLetter());
             }
         } else {
