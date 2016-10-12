@@ -160,9 +160,9 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
         graph = (GraphView) findViewById(R.id.graph);
 
         graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.BOTH);
-        graph.getGridLabelRenderer().setHumanRounding(false);
         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(PlaceStatisticsActivity.this));
         graph.getGridLabelRenderer().setNumHorizontalLabels(3);
+        graph.getGridLabelRenderer().setHumanRounding(false);
 
         rvComments = (RecyclerView) findViewById(R.id.rvComments);
 
@@ -201,38 +201,83 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
         graph.removeAllSeries();
 
-        DataPoint[] points = new DataPoint[placeStats.getQualityIndex().size()];
-        String month;
-        String year;
 
+        DataPoint[] points = new DataPoint[6];
+        int month;
+        int year;
+
+        for (int i = 0; i < points.length; i++) {
+            Calendar calendar = Calendar.getInstance();
+            month = calendar.get(Calendar.MONTH) + i - 4;
+            year = calendar.get(Calendar.YEAR);
+            calendar.set(Calendar.DATE , 1);
+            calendar.set(Calendar.HOUR , 1);
+            calendar.set(Calendar.MINUTE , 1);
+            calendar.set(Calendar.SECOND , 1);
+
+            Log.d("PlaceStatisticsActivity", "B Month/year: " + month + "/" + year);
+            if(month <= 0){
+                calendar.set(Calendar.YEAR,year - 1);
+                calendar.set(Calendar.MONTH,11 + month);
+                month = calendar.get(Calendar.MONTH);
+                year = calendar.get(Calendar.YEAR);
+            }else if(month > 11){
+                calendar.set(Calendar.YEAR,year + 1);
+                calendar.set(Calendar.MONTH,(month - 12));
+                month = calendar.get(Calendar.MONTH);
+                year = calendar.get(Calendar.YEAR);
+            }else{
+                calendar.set(Calendar.MONTH,month + 1);
+                month = calendar.get(Calendar.MONTH);
+            }
+            Log.d("PlaceStatisticsActivity", "A Month/year: " + month + "/" + year + "\n");
+            points[i] = new DataPoint(calendar.getTime(), 0);
+        }
+
+        DataPoint newDp;
         for (int i = 0; i < placeStats.getQualityIndex().size(); i++) {
             Calendar calendar = Calendar.getInstance();
 
-            month = placeStats.getQualityIndex().get(i).getMonth();
+            String requestMonth = placeStats.getQualityIndex().get(i).getMonth();
 
-            Log.d("PlaceStatistics", "fetchData: " + month);
+            Log.d("PlaceStatistics", "fetchData: " + requestMonth);
 
-            year = month.substring(0,4);
-            Log.d("PlaceStatistics", "fetchData: " + year);
-            month = month.substring(5);
+            String requestYear = requestMonth.substring(0,4);
+            Log.d("PlaceStatistics", "fetchData: " + requestYear);
+            requestMonth = requestMonth.substring(5);
 
-            calendar.set(Calendar.MONTH,Integer.valueOf(month) + i);
-            calendar.set(Calendar.YEAR,Integer.valueOf(year));
-            points[i] = new DataPoint(calendar.getTime(), placeStats.getQualityIndex().get(i).getValue());
+            calendar.set(Calendar.MONTH,Integer.valueOf(requestMonth) + i);
+            calendar.set(Calendar.YEAR,Integer.valueOf(requestYear));
+            calendar.set(Calendar.DATE , 1);
+            calendar.set(Calendar.HOUR , 1);
+            calendar.set(Calendar.MINUTE , 1);
+            calendar.set(Calendar.SECOND , 1);
+
+            for (int j = 0; j < points.length; j++) {
+                DataPoint dp = (DataPoint) points[j];
+                newDp =  new DataPoint(calendar.getTime(), placeStats.getQualityIndex().get(i).getValue());
+
+                Calendar c2 = Calendar.getInstance();
+                c2.setTimeInMillis((long) dp.getX());
+
+                Log.d("PlaceStatistics", "m1: " + calendar.get(Calendar.MONTH) + " | m2: " + c2.get(Calendar.MONTH));
+
+                if(calendar.get(Calendar.MONTH) == c2.get(Calendar.MONTH)){
+                    points[j] = newDp;
+                }
+            }
+            Log.d("PlaceStatistics", "value: " + points[i].getY());
         }
 
-        if(points.length == 1){
-            PointsGraphSeries<DataPoint> series = new PointsGraphSeries<DataPoint>(points);
-
-            series.setShape(PointsGraphSeries.Shape.POINT);
-            series.setSize(5);
-
-            graph.addSeries(series);
-        }else{
+        for (int i = 0; i < points.length; i++) {
+            Log.d("PlaceStatistics", "x: " + points[i].getX() + " | y: " + points[i].getY());
+        }
             LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(points);
-
+        PointsGraphSeries<DataPoint> series2 = new PointsGraphSeries<DataPoint>(points);
+        series2.setSize(7);
             graph.addSeries(series);
-        }
+        graph.addSeries(series2);
+
 
         rvComments.setAdapter(new CommentAdapter(PlaceStatisticsActivity.this, placeStats.getComments()));
 
