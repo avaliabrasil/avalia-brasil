@@ -223,7 +223,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                     public void onResponse(String response) {
                         Gson gson = new Gson();
                         JsonParser jsonParser = new JsonParser();
-                        JsonObject jo = (JsonObject) jsonParser.parse("{userId:userid}}"/*response*/);
+                        JsonObject jo = (JsonObject) jsonParser.parse("{\"data\":{\"token\":\"token\",\"expires\":\"4ever\"}}"/*response*/);
 
                         UserToken userToken = gson.fromJson(jo.get("data").getAsJsonObject(), UserToken.class);
 

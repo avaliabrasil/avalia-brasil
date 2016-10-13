@@ -45,6 +45,6 @@ public class LocationState extends Location {
 
     @Override
     public String toString() {
-        return location.concat(" ,").concat(region);
+        return location;
     }
 }

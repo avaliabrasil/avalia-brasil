@@ -43,6 +43,8 @@ public class PlaceDetailsDAOImpl implements PlaceDetailsDAO {
             resultDetails.setLatlng(new LatLng(c.getDouble(c.getColumnIndex("latitude")), c.getDouble(c.getColumnIndex("longitude"))));
             resultDetails.setCityName(c.getString(c.getColumnIndex(AvBContract.PlaceDetailsEntry.CITY)));
             resultDetails.setStateLetter(c.getString(c.getColumnIndex(AvBContract.PlaceDetailsEntry.STATE)));
+            resultDetails.setPhotoRef(c.getString(c.getColumnIndex(AvBContract.PlaceDetailsEntry.PHOTO_REFERENCE)));
+
         }
         c.close();
 
@@ -68,6 +70,7 @@ public class PlaceDetailsDAOImpl implements PlaceDetailsDAO {
         value.put("website", resultDetails.getWebsite());
         value.put("formattedPhoneNumber", resultDetails.getFormattedPhoneNumber());
         value.put("photo_reference", resultDetails.getPhotos().size() > 0 ? resultDetails.getPhotos().get(0).getPhotoReference() : "");
+        resultDetails.setPhotoRef(resultDetails.getPhotos().size() > 0 ? resultDetails.getPhotos().get(0).getPhotoReference():"");
 
         value.put("city", resultDetails.getCity());
         value.put("state", resultDetails.getState());

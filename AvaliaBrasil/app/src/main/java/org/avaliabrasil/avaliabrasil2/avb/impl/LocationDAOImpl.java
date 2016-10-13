@@ -92,6 +92,9 @@ public class LocationDAOImpl implements LocationDAO<LocationResponse> {
 
     @Override
     public Location findLocationByWebID(String webId) {
+        if(webId.isEmpty()){
+            webId = "31";
+        }
         Cursor c = context.getContentResolver().query(AvBContract.LocationEntry.getById(webId), null, null, null, null);
         return locationFactory.getLocationByType(c);
     }

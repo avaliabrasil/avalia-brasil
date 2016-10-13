@@ -77,6 +77,7 @@ public class PlaceActivity extends AppCompatActivity {
     private SurveyDAOImpl surveyDAO;
     private InstrumentDAO instrumentDAO;
     private ProgressDialog progress;
+    private String photoRef;
 
 
     @Override
@@ -191,6 +192,8 @@ public class PlaceActivity extends AppCompatActivity {
         if(details == null){
             return;
         }
+
+        photoRef = details.getPhotoRef();
 
         if (details.getVicinity() != null) {
             View place = getLayoutInflater().inflate(R.layout.list_item_place_info, null);
@@ -413,6 +416,7 @@ public class PlaceActivity extends AppCompatActivity {
         intent.putExtra("holder", (Serializable) survey);
         intent.putExtra("name", getIntent().getExtras().getString("name"));
         intent.putExtra("placeid", place_id);
+        intent.putExtra("photo_reference",photoRef);
         startActivity(intent);
         finish();
     }

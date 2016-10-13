@@ -316,14 +316,17 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
                 break;
             case R.id.rvRegional:
                 rankingIntent.putExtra("rankingType", "regional");
+                rankingIntent.putExtra("webId",placeStats.getId_region());
 
                 break;
             case R.id.rvEstadual:
                 rankingIntent.putExtra("rankingType", "estadual");
+                rankingIntent.putExtra("webId",placeStats.getId_state());
 
                 break;
             case R.id.rvMunicipal:
                 rankingIntent.putExtra("rankingType", "municipal");
+                rankingIntent.putExtra("webId",placeStats.getId_city());
 
                 break;
 
