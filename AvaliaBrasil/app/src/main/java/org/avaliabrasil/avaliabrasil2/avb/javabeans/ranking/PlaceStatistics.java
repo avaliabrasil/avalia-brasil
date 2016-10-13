@@ -41,6 +41,15 @@ public class PlaceStatistics {
     @SerializedName("comments")
     @Expose
     private List<Comment> comments = new ArrayList<Comment>();
+    @SerializedName("id_city")
+    @Expose
+    private String id_city;
+    @SerializedName("id_state")
+    @Expose
+    private String id_state;
+    @SerializedName("id_region")
+    @Expose
+    private String id_region;
 
     /**
      * @return The id
@@ -196,4 +205,27 @@ public class PlaceStatistics {
         this.comments = comments;
     }
 
+    public String getId_city() {
+        return id_city;
+    }
+
+    public void setId_city(String id_city) {
+        this.id_city = id_city;
+    }
+
+    public String getId_state() {
+        return id_state;
+    }
+
+    public void setId_state(String id_state) {
+        this.id_state = id_state;
+    }
+
+    public String getId_region() {
+        return id_region;
+    }
+
+    public void setId_region(String id_region) {
+        this.id_region = id_region;
+    }
 }

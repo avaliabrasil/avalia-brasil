@@ -317,7 +317,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 user.setAndroid_id(android_id);
                 Map<String, String> params = new HashMap<String, String>();
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.add("userId", new JsonPrimitive(android_id));
+                jsonObject.add("deviceId", new JsonPrimitive(android_id));
                 params.put("", jsonObject.toString());
 
                 return params;

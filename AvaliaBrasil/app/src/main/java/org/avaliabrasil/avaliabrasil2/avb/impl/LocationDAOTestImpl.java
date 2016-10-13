@@ -12,10 +12,12 @@ import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationState;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.facebook.GraphRequest.TAG;
+
 /**
  * Created by Developer on 10/06/2016.
  */
-public class LocationDAOTestImpl implements LocationDAO {
+public class LocationDAOTestImpl implements LocationDAO<Location> {
 
     private List<Location> locationList;
 
@@ -72,5 +74,16 @@ public class LocationDAOTestImpl implements LocationDAO {
         Log.d("LocationDAO","size: "  + findedLocations.size());
 
         return findedLocations;
+    }
+
+    @Override
+    public Location findLocationByWebID(String webId) {
+        return locationList.get(0);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        Log.d(TAG, "isEmpty: " + locationList.isEmpty());
+        return locationList.isEmpty();
     }
 }

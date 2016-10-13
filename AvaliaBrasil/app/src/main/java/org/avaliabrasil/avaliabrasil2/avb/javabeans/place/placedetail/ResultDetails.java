@@ -54,11 +54,21 @@ public class ResultDetails {
     @Expose
     private Geometry geometry;
 
+    private String photoRef;
+
     private LatLng latlng;
 
     private String cityName;
 
     private String stateLetter;
+
+    public void setPhotoRef(String photoRef) {
+        this.photoRef = photoRef;
+    }
+
+    public String getPhotoRef() {
+        return photoRef;
+    }
 
     public String getCityName() {
         return cityName;

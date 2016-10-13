@@ -1,6 +1,10 @@
 package org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking;
 
+import android.database.Cursor;
+
 import com.google.gson.JsonObject;
+
+import org.avaliabrasil.avaliabrasil2.avb.dao.AvBContract;
 
 /**
  * Created by Developer on 10/06/2016.
@@ -16,6 +20,10 @@ public class LocationState extends Location {
         this.countryId = countryId;
         this.regionId = regionId;
         this.region = region;
+    }
+
+    public LocationState(Cursor c) {
+        super(c.getString(c.getColumnIndex(AvBContract.LocationEntry.IDWEB)),c.getString(c.getColumnIndex(AvBContract.LocationEntry.DESCRIPTION)), LocationType.STATE);
     }
 
     public String getCountryId() {
@@ -37,6 +45,6 @@ public class LocationState extends Location {
 
     @Override
     public String toString() {
-        return location.concat(" ,").concat(region);
+        return location;
     }
 }

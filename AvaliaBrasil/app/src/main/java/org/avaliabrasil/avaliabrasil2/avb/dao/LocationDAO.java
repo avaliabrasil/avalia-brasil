@@ -7,11 +7,11 @@ import java.util.List;
 /**
  * Created by Developer on 10/06/2016.
  */
-public interface LocationDAO {
+public interface LocationDAO<T> {
 
-    public void bulkAddLocation(List<Location> locationList);
+    public void bulkAddLocation(List<T> locationList);
     public void addLocation(Location location);
     public List<Location> findLocationByName(String name);
-
-
+    public Location findLocationByWebID(String webId);
+    public boolean isEmpty();
 }

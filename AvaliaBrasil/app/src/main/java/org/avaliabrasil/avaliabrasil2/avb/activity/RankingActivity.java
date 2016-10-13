@@ -39,6 +39,9 @@ import org.avaliabrasil.avaliabrasil2.avb.adapters.CategoryCursorAdapter;
 import org.avaliabrasil.avaliabrasil2.avb.adapters.DividerItemDecoration;
 import org.avaliabrasil.avaliabrasil2.avb.adapters.LocationAdapter;
 import org.avaliabrasil.avaliabrasil2.avb.dao.LocationDAO;
+import org.avaliabrasil.avaliabrasil2.avb.factory.LocationFactory;
+import org.avaliabrasil.avaliabrasil2.avb.factory.LocationFactoryImpl;
+import org.avaliabrasil.avaliabrasil2.avb.impl.LocationDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.LocationDAOTestImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.NavigatorViewImpl;
 import org.avaliabrasil.avaliabrasil2.avb.adapters.PlaceRankingAdapter;
@@ -110,7 +113,8 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
     private LocationAdapter locationAdapter;
 
 
-    private LocationDAOTestImpl locationDAO;
+    private LocationDAO locationDAO;
+    private LocationFactory locationFactory;
 
     boolean isFirstSelected = true;
 
@@ -125,7 +129,8 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        locationDAO = new LocationDAOTestImpl();
+        locationFactory = new LocationFactoryImpl(RankingActivity.this);
+        locationDAO = new LocationDAOImpl(RankingActivity.this,locationFactory);
 
         manager = AccountManager.get(RankingActivity.this);
 
@@ -161,9 +166,41 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
                 Location clickedLocation = locationAdapter.getLocation(position);
 
                 System.out.println(clickedLocation);
+                HashMap<String, String> params = new HashMap<>();
 
-                Toast.makeText(RankingActivity.this, "clicado em: " + (clickedLocation == null ? "nulo": clickedLocation.toString()), Toast.LENGTH_SHORT).show();
-            }
+                switch(clickedLocation.getLocationType()){
+
+                    case COUNTRY:
+
+                        break;
+                    case REGION:
+                        params.put("regionId", clickedLocation.getId());
+
+                        break;
+                    case STATE:
+                        params.put("idState", clickedLocation.getId());
+
+                        break;
+                    case CITY:
+                        params.put("idCity", clickedLocation.getId());
+
+                        break;
+
+                }
+
+                String category = ((TextView)spCategory.getSelectedView()).getText().toString();
+                String placeType = ((TextView)spPlaceType.getSelectedView()).getText().toString();
+
+                if(!(category.contains("Todos"))){
+                    Cursor cur = (Cursor) categoryCursorAdapter.getItem(spCategory.getSelectedItemPosition());
+                    params.put("categoryId",cur.getString(cur.getColumnIndex("category_id")));
+                    cur.close();
+                    cur = (Cursor) placeTypeCursorAdapter.getItem(spPlaceType.getSelectedItemPosition());
+                    params.put("typeId",cur.getString(cur.getColumnIndex("category_id")));
+                    cur.close();
+                }
+                requestRankingUpdate(params);
+             }
         });
 
         rvRankingList = (RecyclerView) findViewById(R.id.rvRankingList);
@@ -185,24 +222,14 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
 
         spPlaceType = (Spinner) findViewById(R.id.spPlaceType);
 
-        geocoder = new Geocoder(this, Locale.getDefault());
-
         if (getIntent().hasExtra("rankingType")) {
             getIntentInfo();
         } else {
-            try {
-                if (getIntent().getExtras().getDouble("latitude") != 0) {
-                    List<Address> addresses = geocoder.getFromLocation(getIntent().getExtras().getDouble("latitude"), getIntent().getExtras().getDouble("longitude"), 5);
-                    actvPlace.setText(
-                            addresses.get(0).getLocality() + "," + addresses.get(0).getCountryName() + " " + addresses.get(0).getAdminArea());
-                }
-                requestRankingUpdate(null);
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (getIntent().getExtras().getDouble("latitude") != 0) {
+                actvPlace.setText("");
             }
+            requestRankingUpdate(null);
         }
-
-
     }
 
     @Override
@@ -214,7 +241,6 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
                 Log.d("RankingActivity", "onItemSelected: LastSelected: " + lastSettedOption + " | View: " + ((TextView)selectedItemView).getText().toString());
                 if(!lastSettedOption.isEmpty()){
                     if(!((TextView)selectedItemView).getText().toString().contains(lastSettedOption)){
-                        Log.d("RankingActivity", "onItemSelected: LastSelected: Modificando...");
 
                         Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
                         cur.moveToPosition(position);
@@ -222,7 +248,6 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
                         spPlaceType.setAdapter(placeTypeCursorAdapter);
                     }
                 }else{
-                    Log.d("RankingActivity", "onItemSelected: LastSelected: Modificando...");
 
                     Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
                     cur.moveToPosition(position);
@@ -257,6 +282,7 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
         String category = getIntent().getExtras().getString("category", "");
         String placeType = getIntent().getExtras().getString("type", "");
         String rankingType = getIntent().getExtras().getString("rankingType", "");
+        String webId = getIntent().getExtras().getString("webId", "");
 
         actvPlace.setText(name + "," + city + " " + state);
 
@@ -293,8 +319,27 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
         //TODO send the rankingType to the query.
         HashMap<String, String> params = new HashMap<>();
 
-        params.put("name", name);
+        Location loc = locationDAO.findLocationByWebID(webId);
 
+            switch (rankingType) {
+
+                case "nacional":
+                   actvPlace.setText("Brasil");
+                    break;
+                case "regional":
+                    actvPlace.setText(loc.getLocation());
+                    break;
+                case "estadual":
+                    actvPlace.setText(loc.getLocation());
+                    break;
+                case "municipal":
+                    actvPlace.setText(loc.getLocation());
+
+                    break;
+
+            }
+
+        params.put("name", name);
         params.put("city", city);
         params.put("state", state);
         params.put("category", category);

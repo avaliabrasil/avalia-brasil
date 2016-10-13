@@ -3,6 +3,7 @@ package org.avaliabrasil.avaliabrasil2.avb.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -10,6 +11,10 @@ import com.google.android.gms.location.places.PlacePhotoMetadata;
 import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.Places;
+
+import org.avaliabrasil.avaliabrasil2.R;
+
+import static com.facebook.GraphRequest.TAG;
 
 /**
  * Created by Developer on 12/04/2016.
@@ -49,8 +54,9 @@ public class ImageLoader extends AsyncTask<String, Void, ImageLoader.AttributedP
         AttributedPhoto attributedPhoto = null;
 
         PlacePhotoMetadataResult result = Places.GeoDataApi
-                .getPlacePhotos(mGoogleApiClient, placeId).await();
+                .getPlacePhotos(mGoogleApiClient, "ChIJecgtHONoGZURS0jyJmaNCZg").await();
 
+        Log.d("ImageLoader",result.getStatus().getStatusMessage());
 
         if (result.getStatus().isSuccess()) {
             PlacePhotoMetadataBuffer photoMetadataBuffer = result.getPhotoMetadata();

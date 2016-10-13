@@ -3,7 +3,6 @@ package org.avaliabrasil.avaliabrasil2.avb.activity;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -206,14 +205,11 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onResume() {
         super.onResume();
-        String ref = getIntent().getExtras().getString("photo_reference", "");
-        if (!ref.isEmpty()) {
             DisplayMetrics metrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
             new ImageLoader(EvaluationActivity.this, 500, 500
                     , ivPlace).execute(place_id);
-        }
     }
 
     public CallbackManager getCallbackManager() {

@@ -31,6 +31,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,9 +40,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
 import org.avaliabrasil.avaliabrasil2.R;
+import org.avaliabrasil.avaliabrasil2.avb.dao.LocationDAO;
 import org.avaliabrasil.avaliabrasil2.avb.dao.PlaceCategoryDAO;
 import org.avaliabrasil.avaliabrasil2.avb.dao.PlaceTypeDAO;
+import org.avaliabrasil.avaliabrasil2.avb.factory.LocationFactory;
+import org.avaliabrasil.avaliabrasil2.avb.factory.LocationFactoryImpl;
+import org.avaliabrasil.avaliabrasil2.avb.impl.LocationDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.NavigatorViewImpl;
 import org.avaliabrasil.avaliabrasil2.avb.fragments.main.PlacesListFragment;
 import org.avaliabrasil.avaliabrasil2.avb.fragments.main.PlacesMapFragment;
@@ -51,8 +65,11 @@ import org.avaliabrasil.avaliabrasil2.avb.impl.InstrumentDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.PlaceCategoryDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.PlaceTypeDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.QuestionDAOImpl;
+import org.avaliabrasil.avaliabrasil2.avb.javabeans.google.places.Location;
+import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationResponse;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.survey.AvaliaBrasilCategory;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.survey.AvaliaBrasilPlaceType;
+import org.avaliabrasil.avaliabrasil2.avb.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil2.avb.sync.ServiceAnwserSync;
 import org.avaliabrasil.avaliabrasil2.avb.util.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil2.avb.dao.PlaceDetailsDAO;
@@ -70,9 +87,13 @@ import org.avaliabrasil.avaliabrasil2.avb.util.CircleTransform;
 import org.avaliabrasil.avaliabrasil2.avb.util.LocationPermission;
 import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -321,6 +342,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private List<AvaliaBrasilCategory> getPlaceCategories(){
         List<AvaliaBrasilCategory> avaliaBrasilCategoryList = new ArrayList<>();
+        avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("0","Todos"));
         avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("1","Saúde"));
         avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("2","Educação"));
         avaliaBrasilCategoryList.add(new AvaliaBrasilCategory("3","Segurança"));
@@ -334,6 +356,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private List<AvaliaBrasilPlaceType> getAvaliaBrasilPlaceTypes(){
         List<AvaliaBrasilPlaceType> avaliaBrasilCategoryList = new ArrayList<>();
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("100","Todos","0"));
         avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("101","Posto de Saúde","1"));
         avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("102","Unidade Básica de Saúde","1"));
         avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("103","Policlínica","1"));
@@ -389,13 +412,40 @@ public class MainActivity extends AppCompatActivity implements
                         Thread.sleep(3000);
                     }
                 }
+
+                LocationFactory locationFactory = new LocationFactoryImpl(MainActivity.this);
+                final LocationDAO locationDAO = new LocationDAOImpl(MainActivity.this,locationFactory);
+
+                if(locationDAO.isEmpty()){
+                    StringRequest stringRequest = new StringRequest(Request.Method.GET, AvaliaBrasilAPIClient.getLocations(),
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    Gson gson = new Gson();
+
+                                    Type listType = new TypeToken<ArrayList<LocationResponse>>(){}.getType();
+
+                                    List<LocationResponse> locationList = gson.fromJson(response, listType);
+
+                                    locationDAO.bulkAddLocation(locationList);
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    });
+
+                    Volley.newRequestQueue(MainActivity.this).add(stringRequest);
+                }
+                PlaceCategoryDAO placeCategoryDAO = new PlaceCategoryDAOImpl(MainActivity.this);
+                PlaceTypeDAO placeTypeDAO = new PlaceTypeDAOImpl(MainActivity.this);
+                placeCategoryDAO.bulkInsertPlaceCategory(getPlaceCategories());
+                placeTypeDAO.bulkInsertPlaceType(getAvaliaBrasilPlaceTypes());
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            PlaceCategoryDAO placeCategoryDAO = new PlaceCategoryDAOImpl(MainActivity.this);
-            PlaceTypeDAO placeTypeDAO = new PlaceTypeDAOImpl(MainActivity.this);
-            placeCategoryDAO.bulkInsertPlaceCategory(getPlaceCategories());
-            placeTypeDAO.bulkInsertPlaceType(getAvaliaBrasilPlaceTypes());
             return null;
         }
 

@@ -53,6 +53,10 @@ public class AvBContract {
     public static final String PATH_ANWSER = "anwser";
     public static final String PATH_ANWSERS = "anwser/*";
 
+    public static final String PATH_LOCATION = "location";
+    public static final String PATH_LOCATIONS = "location/*";
+    public static final String PATH_LOCATIONSBYID = "locations/*";
+
 
     public static final int PLACE = 1;
     public static final int PLACE_ID = 2;
@@ -73,6 +77,9 @@ public class AvBContract {
     public static final int PLACE_PERIODS = 17;
     public static final int ANWSER = 18;
     public static final int ANWSERS = 19;
+    public static final int LOCATION = 20;
+    public static final int LOCATIONS = 21;
+    public static final int LOCATIONSBYID = 22;
 
     public static final class PlaceEntry implements BaseColumns {
 
@@ -357,6 +364,26 @@ public class AvBContract {
 
         public static Uri getAnwserBySurveyId(String surveyId) {
             Uri uri = Uri.parse("content://" + CONTENT_AUTHORITY + "/anwser/" + surveyId);
+            return uri;
+        }
+    }
+
+    public static final class LocationEntry implements BaseColumns{
+        public static final Uri LOCATION_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_LOCATION).build();
+
+        public static final String TABLE_NAME = "location";
+
+        public static final String IDWEB = "idWeb";
+        public static final String TYPE = "type";
+        public static final String DESCRIPTION = "description";
+
+        public static Uri getFilteredLocation(String description) {
+            Uri uri = Uri.parse("content://" + CONTENT_AUTHORITY + "/location/" + description);
+            return uri;
+        }
+        public static Uri getById(String id) {
+            Uri uri = Uri.parse("content://" + CONTENT_AUTHORITY + "/locations/" + id);
             return uri;
         }
     }

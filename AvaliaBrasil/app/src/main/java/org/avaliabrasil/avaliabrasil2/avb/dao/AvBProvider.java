@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
@@ -15,6 +14,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.util.Calendar;
+
+import static com.facebook.GraphRequest.TAG;
 
 /**
  * Created by Pedro on 23/02/2016.
@@ -58,6 +59,10 @@ public class AvBProvider extends ContentProvider {
 
         uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_ANWSER, AvBContract.ANWSER);
         uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_ANWSERS, AvBContract.ANWSERS);
+
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_LOCATION, AvBContract.LOCATION);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_LOCATIONS, AvBContract.LOCATIONS);
+        uriMatcher.addURI(AvBContract.CONTENT_AUTHORITY, AvBContract.PATH_LOCATIONSBYID, AvBContract.LOCATIONSBYID);
     }
 
     @Override
@@ -120,10 +125,18 @@ public class AvBProvider extends ContentProvider {
                 break;
 
             case AvBContract.ANWSER:
-
                 c = db.query("anwser", projection, selection, selectionArgs, null, null, sortOrder);
-
-
+                break;
+            case AvBContract.LOCATION:
+                c = db.query("location",projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+            case AvBContract.LOCATIONS:
+                String queryParam = uri.getPathSegments().get(1);
+                queryParam = "%" + queryParam + "%";
+                c = db.rawQuery("select * from location where description like ? ", new String[]{queryParam});
+                break;
+            case AvBContract.LOCATIONSBYID:
+                c = db.rawQuery("select * from location where idWeb = ? ", new String[]{uri.getPathSegments().get(1)});
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
@@ -250,6 +263,14 @@ public class AvBProvider extends ContentProvider {
                 rowID = db.insertWithOnConflict(AvBContract.AnwserEntry.TABLE_NAME, "", values, SQLiteDatabase.CONFLICT_REPLACE);
                 if (rowID > 0) {
                     Uri _uri = ContentUris.withAppendedId(AvBContract.AnwserEntry.ANWSER_URI, rowID);
+                    getContext().getContentResolver().notifyChange(_uri, null);
+                    return _uri;
+                }
+
+            case AvBContract.LOCATION:
+                rowID = db.insertWithOnConflict(AvBContract.LocationEntry.TABLE_NAME, "", values, SQLiteDatabase.CONFLICT_REPLACE);
+                if (rowID > 0) {
+                    Uri _uri = ContentUris.withAppendedId(AvBContract.LocationEntry.LOCATION_URI, rowID);
                     getContext().getContentResolver().notifyChange(_uri, null);
                     return _uri;
                 }
@@ -506,6 +527,25 @@ public class AvBProvider extends ContentProvider {
                             continue;
                         }
                         long rowID = db.insertWithOnConflict(AvBContract.AnwserEntry.TABLE_NAME, "", value, SQLiteDatabase.CONFLICT_REPLACE);
+                        if (rowID != -1) {
+                            returnCount++;
+                        }
+                    }
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return returnCount;
+            case AvBContract.LOCATION:
+                db.beginTransaction();
+                Log.d(TAG, "bulkInsert size: " + values.length);
+                try {
+                    for (ContentValues value : values) {
+                        if (value == null) {
+                            continue;
+                        }
+                        long rowID = db.insertWithOnConflict(AvBContract.LocationEntry.TABLE_NAME, "", value, SQLiteDatabase.CONFLICT_REPLACE);
                         if (rowID != -1) {
                             returnCount++;
                         }
