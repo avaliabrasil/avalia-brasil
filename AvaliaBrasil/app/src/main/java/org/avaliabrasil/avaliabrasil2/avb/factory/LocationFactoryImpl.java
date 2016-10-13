@@ -30,7 +30,6 @@ public class LocationFactoryImpl implements LocationFactory<Cursor> {
 
     @Override
     public Location getLocationByType(Cursor c) {
-        while(c.moveToNext()){
             switch(c.getString(c.getColumnIndex(AvBContract.LocationEntry.TYPE))){
                 case "1":
                     return new LocationCountry(c);
@@ -43,8 +42,6 @@ public class LocationFactoryImpl implements LocationFactory<Cursor> {
                 default:
                     return null;
             }
-        }
-        return null;
     }
 
     @Nullable

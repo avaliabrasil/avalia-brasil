@@ -42,7 +42,8 @@ public class CategoryCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
-
-        viewHolder.text1.setText(cursor.getString(cursor.getColumnIndex("name")));
+        if(!cursor.isClosed()){
+            viewHolder.text1.setText(cursor.getString(cursor.getColumnIndex("name")));
+        }
     }
 }

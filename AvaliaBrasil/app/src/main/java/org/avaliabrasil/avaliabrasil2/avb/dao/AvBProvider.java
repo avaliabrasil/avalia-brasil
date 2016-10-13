@@ -132,8 +132,9 @@ public class AvBProvider extends ContentProvider {
                 break;
             case AvBContract.LOCATIONS:
                 String queryParam = uri.getPathSegments().get(1);
-                queryParam = "%" + queryParam + "%";
-                c = db.rawQuery("select * from location where description like ? ", new String[]{queryParam});
+                queryParam =  "%"+queryParam + "%";
+                c = db.query("location",null,"description like ?",new String[]{queryParam},null,null,null);
+                //c = db.rawQuery("select * from location where description like ? ", new String[]{queryParam});
                 break;
             case AvBContract.LOCATIONSBYID:
                 c = db.rawQuery("select * from location where idWeb = ? ", new String[]{uri.getPathSegments().get(1)});

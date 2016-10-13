@@ -83,7 +83,7 @@ public class LocationDAOImpl implements LocationDAO<LocationResponse> {
 
         while (c.moveToNext()) {
             loc = locationFactory.getLocationByType(c);
-            if(loc != null){
+           if(loc != null){
                 locationsList.add(loc);
             }
         }
@@ -102,7 +102,10 @@ public class LocationDAOImpl implements LocationDAO<LocationResponse> {
         }
         AvBDBHelper db = new AvBDBHelper(context);
         Cursor c = db.getReadableDatabase().rawQuery("select * from location where idWeb = ? and type = ?",new String[]{webId,String.valueOf(locationType.ordinal()+1)});
-        return locationFactory.getLocationByType(c);
+        Location loc = locationFactory.getLocationByType(c);
+        c.close();
+        db.close();
+        return loc;
     }
 
     @Override

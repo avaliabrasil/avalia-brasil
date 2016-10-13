@@ -33,6 +33,9 @@ public class PlaceRankingAdapter extends RecyclerView.Adapter<PlaceRankingAdapte
     public PlaceRankingAdapter(RecyclerView recyclerView,Context context, List<PlaceRanking> items , RankingActivityPresenter rankingActivityPresenter) {
 
         this.recyclerView = recyclerView;
+        if(items == null){
+            items = new ArrayList<PlaceRanking>();
+        }
         this.items = items;
         this.context = context;
         this.rankingActivityPresenter = rankingActivityPresenter;

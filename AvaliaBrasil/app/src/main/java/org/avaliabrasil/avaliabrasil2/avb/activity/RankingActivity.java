@@ -175,7 +175,7 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
 
                         break;
                     case REGION:
-                        params.put("regionId", clickedLocation.getId());
+                        params.put("idRegion", clickedLocation.getId());
 
                         break;
                     case STATE:
@@ -392,11 +392,14 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
     private void fetchData(String response) {
         Gson gson = new Gson();
         Log.d("RankingActivity", "Response: " + response);
-        PlaceRankingSearch placeRanking = gson.fromJson(response, PlaceRankingSearch.class);
-
-        rvRankingList.setAdapter(new PlaceRankingAdapter(rvRankingList,RankingActivity.this, placeRanking.getPlaceRankings(),RankingActivity.this));
-
-        rvRankingList.setHasFixedSize(true);
+        if(!response.contentEquals("[]")){
+            PlaceRankingSearch placeRanking = gson.fromJson(response, PlaceRankingSearch.class);
+            rvRankingList.setAdapter(new PlaceRankingAdapter(rvRankingList,RankingActivity.this, placeRanking.getPlaceRankings(),RankingActivity.this));
+            rvRankingList.setHasFixedSize(true);
+        }else{
+            rvRankingList.setAdapter(new PlaceRankingAdapter(rvRankingList,RankingActivity.this, null,RankingActivity.this));
+            rvRankingList.setHasFixedSize(true);
+        }
     }
 
     @Override
