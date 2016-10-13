@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class AvBDBHelper extends SQLiteOpenHelper {
     private static String database = "AvaliaBrasil";
 
-    public static final int version = 9;
+    public static final int version = 10;
 
     private static final String createQueryPlaceDetails = "CREATE TABLE place_detail (" +
             "    place_id             TEXT REFERENCES place (place_id) UNIQUE," +
@@ -132,6 +132,14 @@ public class AvBDBHelper extends SQLiteOpenHelper {
             "    question_type TEXT " +
             ");";
 
+    private static final String createLocation = "CREATE TABLE location (" +
+            "    _id           INTEGER PRIMARY KEY" +
+            "                          NOT NULL," +
+            "    idWeb         TEXT NOT NULL," +
+            "    type          TEXT NOT NULL," +
+            "    description   TEXT NOT NULL" +
+            ");";
+
 
     public AvBDBHelper(Context context) {
         super(context, database, null, version);
@@ -151,6 +159,7 @@ public class AvBDBHelper extends SQLiteOpenHelper {
         db.execSQL(createPlaceType);
         db.execSQL(createPlacePeriod);
         db.execSQL(createAnwser);
+        db.execSQL(createLocation);
     }
 
     @Override
@@ -174,6 +183,8 @@ public class AvBDBHelper extends SQLiteOpenHelper {
                 db.execSQL("alter table place_detail add column city TEXT ");
             case 9:
                 db.execSQL(createAnwser);
+            case 10:
+                db.execSQL(createLocation);
 
         }
     }
@@ -192,6 +203,7 @@ public class AvBDBHelper extends SQLiteOpenHelper {
             db.delete(AvBContract.PlaceEntry.TABLE_NAME, null, null);
             db.delete(AvBContract.PlacePeriodEntry.TABLE_NAME, null, null);
             db.delete(AvBContract.AnwserEntry.TABLE_NAME, null, null);
+            db.delete(AvBContract.LocationEntry.TABLE_NAME, null, null);
 
             return true;
         } catch (SQLException e) {

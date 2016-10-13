@@ -223,7 +223,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                     public void onResponse(String response) {
                         Gson gson = new Gson();
                         JsonParser jsonParser = new JsonParser();
-                        JsonObject jo = (JsonObject) jsonParser.parse("{\"data\":{\"token\":\"token\",\"expires\":\"4ever\"}}"/*response*/);
+                        JsonObject jo = (JsonObject) jsonParser.parse("{userId:userid}}"/*response*/);
 
                         UserToken userToken = gson.fromJson(jo.get("data").getAsJsonObject(), UserToken.class);
 
@@ -317,7 +317,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 user.setAndroid_id(android_id);
                 Map<String, String> params = new HashMap<String, String>();
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.add("userId", new JsonPrimitive(android_id));
+                jsonObject.add("deviceId", new JsonPrimitive(android_id));
                 params.put("", jsonObject.toString());
 
                 return params;

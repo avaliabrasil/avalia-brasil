@@ -58,7 +58,7 @@ public class AvaliaBrasilAPIClient {
         //target.append("user/");
         target.append("authenticate");
 
-        Log.d("GoogleAPI", "URL: " + target.toString());
+        Log.d("AvaliaBrasilAPI", "URL: " + target.toString());
 
         return target.toString();
     }
@@ -77,7 +77,7 @@ public class AvaliaBrasilAPIClient {
         target.append("survey/");
         target.append(place_id);
 
-        Log.d("GoogleAPI", "URL: " + target.toString());
+        Log.d("AvaliaBrasilAPI", "URL: " + target.toString());
 
         return target.toString();
     }
@@ -96,7 +96,7 @@ public class AvaliaBrasilAPIClient {
         target.append("survey/");
         target.append(place_id);
 
-        Log.d("GoogleAPI", "URL: " + target.toString());
+        Log.d("AvaliaBrasilAPI", "URL: " + target.toString());
 
         return target.toString();
     }
@@ -115,7 +115,7 @@ public class AvaliaBrasilAPIClient {
         target.append("ranking/");
         target.append(place_id);
 
-        Log.d("GoogleAPI", "URL: " + target.toString());
+        Log.d("AvaliaBrasilAPI", "URL: " + target.toString());
 
         return target.toString();
     }
@@ -145,7 +145,25 @@ public class AvaliaBrasilAPIClient {
             }
         }
 
-        Log.d("GoogleAPI", "URL: " + target.toString());
+        Log.d("AvaliaBrasilAPI", "URL: " + target.toString());
+
+        return target.toString();
+    }
+
+    /**
+     * Default path to the AvaliaBrasil API call to get place ranking.
+     * Need to be called has GET method, and pass the user token and place id in the body.
+     *
+     * @return {@link String} targeting the base API.
+     * @version 1.0
+     * @since 1.0
+     */
+    public static String getLocations() {
+        StringBuilder target = new StringBuilder();
+        target.append(avaliabrasilApiTarget);
+        target.append("locations");
+
+        Log.d("AvaliaBrasilAPI", "URL: " + target.toString());
 
         return target.toString();
     }
