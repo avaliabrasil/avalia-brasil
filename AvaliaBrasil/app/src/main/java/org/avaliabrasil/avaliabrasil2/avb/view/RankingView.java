@@ -45,10 +45,10 @@ public class RankingView extends RelativeLayout {
 
         switch (status) {
             case "up":
-                ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+                ivRankingStatus.setImageResource(R.drawable.up_arrow);
                 break;
             case "down":
-                ivRankingStatus.setImageResource(R.drawable.ic_arrow_drop_down_black_24dp);
+                ivRankingStatus.setImageResource(R.drawable.down_arrow);
                 break;
             case "none":
                 ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
