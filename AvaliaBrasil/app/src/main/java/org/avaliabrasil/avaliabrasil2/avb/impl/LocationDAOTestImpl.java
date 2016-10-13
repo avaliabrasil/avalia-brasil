@@ -8,6 +8,7 @@ import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationCity;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationCountry;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationRegion;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationState;
+import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class LocationDAOTestImpl implements LocationDAO<Location> {
     }
 
     @Override
-    public Location findLocationByWebID(String webId) {
+    public Location findLocationByWebID(String webId, LocationType locationType) {
         return locationList.get(0);
     }
 

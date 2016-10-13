@@ -3,16 +3,19 @@ package org.avaliabrasil.avaliabrasil2.avb.impl;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.avaliabrasil.avaliabrasil2.avb.dao.AvBContract;
+import org.avaliabrasil.avaliabrasil2.avb.dao.AvBDBHelper;
 import org.avaliabrasil.avaliabrasil2.avb.dao.LocationDAO;
 import org.avaliabrasil.avaliabrasil2.avb.factory.LocationFactory;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.Location;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationRegion;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationResponse;
+import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,11 +94,14 @@ public class LocationDAOImpl implements LocationDAO<LocationResponse> {
     }
 
     @Override
-    public Location findLocationByWebID(String webId) {
+    public Location findLocationByWebID(String webId, LocationType locationType) {
+
+        Log.d("LocationDAO", "findLocationByWebID [webId][locationType] [" + webId + "][" + (locationType.ordinal()+1) + "]");
         if(webId.isEmpty()){
             webId = "31";
         }
-        Cursor c = context.getContentResolver().query(AvBContract.LocationEntry.getById(webId), null, null, null, null);
+        AvBDBHelper db = new AvBDBHelper(context);
+        Cursor c = db.getReadableDatabase().rawQuery("select * from location where idWeb = ? and type = ?",new String[]{webId,String.valueOf(locationType.ordinal()+1)});
         return locationFactory.getLocationByType(c);
     }
 

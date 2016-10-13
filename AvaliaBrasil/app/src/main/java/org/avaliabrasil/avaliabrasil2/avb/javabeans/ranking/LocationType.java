@@ -5,5 +5,5 @@ package org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking;
  */
 public enum LocationType {
 
-    CITY,STATE,COUNTRY,REGION;
+    COUNTRY,REGION,STATE,CITY;
 }

@@ -48,6 +48,7 @@ import org.avaliabrasil.avaliabrasil2.avb.adapters.PlaceRankingAdapter;
 import org.avaliabrasil.avaliabrasil2.avb.adapters.PlaceTypeCursorAdapter;
 import org.avaliabrasil.avaliabrasil2.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.Location;
+import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationType;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.PlaceRanking;
 import org.avaliabrasil.avaliabrasil2.avb.mvp.RankingActivityPresenter;
 import org.avaliabrasil.avaliabrasil2.avb.util.AvaliaBrasilApplication;
@@ -319,7 +320,7 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
         //TODO send the rankingType to the query.
         HashMap<String, String> params = new HashMap<>();
 
-        Location loc = locationDAO.findLocationByWebID(webId);
+        Location loc = null;
 
             switch (rankingType) {
 
@@ -327,12 +328,15 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
                    actvPlace.setText("Brasil");
                     break;
                 case "regional":
+                    loc = locationDAO.findLocationByWebID(webId, LocationType.REGION);
                     actvPlace.setText(loc.getLocation());
                     break;
                 case "estadual":
+                    loc = locationDAO.findLocationByWebID(webId, LocationType.STATE);
                     actvPlace.setText(loc.getLocation());
                     break;
                 case "municipal":
+                    loc = locationDAO.findLocationByWebID(webId, LocationType.CITY);
                     actvPlace.setText(loc.getLocation());
 
                     break;
