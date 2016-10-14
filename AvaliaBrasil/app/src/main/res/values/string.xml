@@ -86,7 +86,8 @@
     <string name="general_classification">Classificação Geral</string>
      
     <!--fragment_share_evaluate.xml -->
-    <string name="share_text_1">Sua ajuda é fundamental para que possamos aprimorar a prestação de serviços públicos no Brasil!</string>
+    <string name="share_text_1">    "Sua ajuda é fundamental para que possamos aprimorar a prestação de serviços públicos no Brasil!\n\n"
+        "Incentive seus amigos a usar o Avalia Brasil compartilhando um link na sua timeline! Quanto mais pessoas usarem o aplicativo, mais informações teremos disponíveis!"</string>
     <string name="share_text_2">\nIncentive seus amigos a fazerem o mesmo.</string>
     <string name="share_button_text">Compartilhar esta avaliação</string>
     <string name="skip_share">Pular essa etapa</string>
