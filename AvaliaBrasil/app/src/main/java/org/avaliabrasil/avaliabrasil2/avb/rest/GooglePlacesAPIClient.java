@@ -25,6 +25,8 @@ import org.avaliabrasil.avaliabrasil2.avb.dao.AvBContract;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.place.placedetail.PlaceDetails;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.place.search.PlaceSearch;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>
  *         <p/>

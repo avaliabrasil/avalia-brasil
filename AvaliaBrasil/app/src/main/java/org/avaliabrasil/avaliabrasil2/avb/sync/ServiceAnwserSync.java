@@ -1,5 +1,6 @@
 package org.avaliabrasil.avaliabrasil2.avb.sync;
 
+import android.accounts.AccountManager;
 import android.app.Service;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,6 +8,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -67,6 +69,13 @@ public class ServiceAnwserSync extends Service {
      */
     private SurveyDAO surveyDAO;
 
+    /**
+     * The {@link AccountManager} for getting user informations.
+     */
+    private AccountManager manager;
+
+    private String token;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -75,6 +84,8 @@ public class ServiceAnwserSync extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        manager = AccountManager.get(ServiceAnwserSync.this);
+        token = manager.getUserData(manager.getAccountsByType(Constant.ACCOUNT_TYPE)[0], Constant.ACCOUNT_TOKEN);
         Log.d(TAG, "onCreate: Starting ServiceAnwserSync");
 
         surveyDAO = new SurveyDAOImpl(ServiceAnwserSync.this,new InstrumentDAOImpl(ServiceAnwserSync.this,
@@ -114,6 +125,13 @@ public class ServiceAnwserSync extends Service {
                     Log.d(TAG, "body: " + response.toString());
 
                     return response == null ? null : response.toString().getBytes(Charset.forName("UTF-8"));
+                }
+
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> header = new HashMap<String,String>();
+                    header.put("userId",token);
+                    return header;
                 }
             };
             Log.d(TAG, "Sending survey: " + survey.getSurveyId());

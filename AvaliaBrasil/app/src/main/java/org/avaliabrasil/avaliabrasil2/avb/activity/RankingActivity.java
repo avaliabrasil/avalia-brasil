@@ -62,6 +62,7 @@ import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 import org.avaliabrasil.avaliabrasil2.avb.view.DelayAutoCompleteTextView;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;

@@ -1,5 +1,6 @@
 package org.avaliabrasil.avaliabrasil2.avb.activity;
 
+import android.accounts.AccountManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -48,13 +50,17 @@ import org.avaliabrasil.avaliabrasil2.avb.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.survey.Anwser;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.survey.Survey;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.survey.Question;
+import org.avaliabrasil.avaliabrasil2.avb.sync.Constant;
 import org.avaliabrasil.avaliabrasil2.avb.util.ImageLoader;
 import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EvaluationActivity extends AppCompatActivity implements View.OnClickListener {
     public final String TAG = this.getClass().getSimpleName();
@@ -123,10 +129,22 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
 
     private SurveyDAO surveyDAO;
 
+
+    /**
+     * The {@link AccountManager} for getting user informations.
+     */
+    private AccountManager manager;
+
+    private String token;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_evaluation);
+
+
+        manager = AccountManager.get(EvaluationActivity.this);
+        token = manager.getUserData(manager.getAccountsByType(Constant.ACCOUNT_TYPE)[0], Constant.ACCOUNT_TOKEN);
 
         if (getIntent().getExtras() == null || getIntent().getExtras().getString("name") == null) {
             finish();
@@ -305,13 +323,18 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
         }) {
             @Override
             public byte[] getBody() {
-
                 JsonObject response = anwserService.prepareForSendAnwser("1",place_id,surveyService.getSurvey().getSurveyId());
-
                 Log.d(TAG, "getBody: " + response.toString());
 
                 return response == null ? null : response.toString().getBytes(Charset.forName("UTF-8"));
 
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> header = new HashMap<String,String>();
+                header.put("userId",token);
+                return header;
             }
         };
         Volley.newRequestQueue(EvaluationActivity.this).add(stringRequest);

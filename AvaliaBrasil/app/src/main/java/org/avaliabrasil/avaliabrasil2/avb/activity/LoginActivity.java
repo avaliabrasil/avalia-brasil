@@ -18,9 +18,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.AccessToken;
@@ -54,12 +56,14 @@ import org.json.JSONObject;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.facebook.GraphRequest.TAG;
+import static org.avaliabrasil.avaliabrasil2.avb.sync.Constant.ACCOUNT_TOKEN;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
     public final String LOG_TAG = this.getClass().getSimpleName();
@@ -237,38 +241,46 @@ public class LoginActivity extends AccountAuthenticatorActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
+                        Log.d("LoginActivity", "onResponse: " + response);
                         Gson gson = new Gson();
                         JsonParser jsonParser = new JsonParser();
-                        JsonObject jo = (JsonObject) jsonParser.parse("{\"data\":{\"token\":\"token\",\"expires\":\"4ever\"}}"/*response*/);
+                        JsonObject jo = (JsonObject) jsonParser.parse(response);
 
-                        UserToken userToken = gson.fromJson(jo.get("data").getAsJsonObject(), UserToken.class);
+                        if(jo.has("Error")){
+                            Toast.makeText(context, "Ocorreu um erro com o servidor, entre em contato com o suporte!", Toast.LENGTH_SHORT).show();
+                        }else if(jo.has("authorized")){
+                            if(jo.get("authorized").getAsBoolean()){
+                                Intent intent_main_activity = new Intent(context, MainActivity.class);
+                                intent_main_activity.putExtra("userId", user.getAndroid_id());
 
-                        user.setToken(userToken.getToken());
+                                Account account = new Account(user.getName() == null ? "Anonimo" : user.getName(), Constant.ACCOUNT_TYPE);
 
-                        Intent intent_main_activity = new Intent(context, MainActivity.class);
-                        intent_main_activity.putExtra("userId", user.getAndroid_id());
+                                Bundle bundle = new Bundle();
 
-                        Account account = new Account(user.getName() == null ? "Anonimo" : user.getName(), Constant.ACCOUNT_TYPE);
+                                bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, Constant.ACCOUNT_TYPE);
+                                bundle.putString(AccountManager.KEY_ACCOUNT_NAME, user.getName() == null ? "Anonimo" : user.getName());
+                                bundle.putString(AccountManager.KEY_AUTHTOKEN, user.getToken());
+                                bundle.putString(Constant.ACCOUNT_EMAIL, user.getEmail() == null ? "avaliabrasil@gmail.com" : user.getEmail());
+                                bundle.putString(Constant.ACCOUNT_EMAIL, user.getEmail() == null ? "avaliabrasil@gmail.com" : user.getEmail());
+                                bundle.putString(Constant.ACCOUNT_TOKEN, jo.get("userId").getAsString());
+                                bundle.putString(Constant.ARG_ACCOUNT_TYPE, user.getName() == null ? Constant.ACCOUNT_TYPE_USER : Constant.ACCOUNT_TYPE_FACEBOOK);
 
-                        Bundle bundle = new Bundle();
+                                accountManager.addAccountExplicitly(account, null, bundle);
 
-                        bundle.putString(AccountManager.KEY_ACCOUNT_TYPE, Constant.ACCOUNT_TYPE);
-                        bundle.putString(AccountManager.KEY_ACCOUNT_NAME, user.getName() == null ? "Anonimo" : user.getName());
-                        bundle.putString(AccountManager.KEY_AUTHTOKEN, user.getToken());
-                        bundle.putString(Constant.ACCOUNT_EMAIL, user.getEmail() == null ? "avaliabrasil@gmail.com" : user.getEmail());
-                        bundle.putString(Constant.ARG_ACCOUNT_TYPE, user.getName() == null ? Constant.ACCOUNT_TYPE_USER : Constant.ACCOUNT_TYPE_FACEBOOK);
+                                setAccountAuthenticatorResult(bundle);
 
-                        accountManager.addAccountExplicitly(account, null, bundle);
+                                //TODO DYNAMIC GET THE CATEGORY AND THE PLACE TYPE
 
-                        setAccountAuthenticatorResult(bundle);
-
-                        //TODO DYNAMIC GET THE CATEGORY AND THE PLACE TYPE
-
-                        if (accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0) {
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            intent.putExtra("showSplash", false);
-                            startActivity(intent);
+                                if (accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0) {
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    intent.putExtra("showSplash", false);
+                                    startActivity(intent);
+                                }
+                            }else{
+                                Toast.makeText(context, "Não foi possível autoriza-lo!", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -279,17 +291,20 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             }
         }) {
             @Override
-            protected Map<String, String> getParams() {
+            public byte[] getBody() throws AuthFailureError {
                 String android_id = Settings.Secure.getString(context.getContentResolver(),
                         Settings.Secure.ANDROID_ID);
                 Log.d("AndroidID", "onResponse: " + android_id);
                 user.setAndroid_id(android_id);
-                Map<String, String> params = new HashMap<String, String>();
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.add("deviceId", new JsonPrimitive(android_id));
-                params.put("", jsonObject.toString());
-
-                return params;
+                Log.d("AndroidID", "onResponse: " + jsonObject.toString());
+                try {
+                    return jsonObject.toString() == null ? null : jsonObject.toString().getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", jsonObject.toString(), "utf-8");
+                    return null;
+                }
             }
         };
         Volley.newRequestQueue(context).add(stringRequest);

@@ -1,5 +1,6 @@
 package org.avaliabrasil.avaliabrasil2.avb.activity;
 
+import android.accounts.AccountManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -52,9 +54,12 @@ import org.avaliabrasil.avaliabrasil2.avb.javabeans.survey.Instrument;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.survey.Survey;
 import org.avaliabrasil.avaliabrasil2.avb.rest.AvaliaBrasilAPIClient;
 import org.avaliabrasil.avaliabrasil2.avb.rest.GooglePlacesAPIClient;
+import org.avaliabrasil.avaliabrasil2.avb.sync.Constant;
+import org.avaliabrasil.avaliabrasil2.avb.sync.ServiceAnwserSync;
 import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -78,7 +83,8 @@ public class PlaceActivity extends AppCompatActivity {
     private InstrumentDAO instrumentDAO;
     private ProgressDialog progress;
     private String photoRef;
-
+    private AccountManager manager;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +94,9 @@ public class PlaceActivity extends AppCompatActivity {
                 || (getIntent().getExtras().getString("distance") == null)) {
             finish();
         } else {
+
+            manager = AccountManager.get(PlaceActivity.this);
+            token = manager.getUserData(manager.getAccountsByType(Constant.ACCOUNT_TYPE)[0], Constant.ACCOUNT_TOKEN);
             setContentView(R.layout.activity_place);
 
             place_id = getIntent().getExtras().getString("placeid");
@@ -181,7 +190,14 @@ public class PlaceActivity extends AppCompatActivity {
                     ivRankingStatus.setImageResource(R.drawable.ic_remove_black_24dp);
 
                 }
-            });
+            }){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> header = new HashMap<String,String>();
+                    header.put("userId",token);
+                    return header;
+                }
+            };
             Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
         }
     }

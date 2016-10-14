@@ -35,6 +35,7 @@ import org.avaliabrasil.avaliabrasil2.avb.util.DateAsXAxisLabel;
 import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 import org.avaliabrasil.avaliabrasil2.avb.view.RankingView;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -132,6 +133,8 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
     private void fetchData(String response) {
         Gson gson = new Gson();
+
+        Log.d("PlaceStatisticsActivity", "fetchData: " + response);
 
         placeStats = gson.fromJson(new String((Utils.normalizeAvaliaBrasilResponse(response)).replace("\\\\", "\\").getBytes(Charset.defaultCharset())), PlaceStatistics.class);
 
@@ -366,7 +369,7 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
                     error.printStackTrace();
                     fetchData("");
                 }
-            }) {
+            }){
                 @Override
                 protected Map<String, String> getParams() {
                     Map<String, String> params = new HashMap<String, String>();

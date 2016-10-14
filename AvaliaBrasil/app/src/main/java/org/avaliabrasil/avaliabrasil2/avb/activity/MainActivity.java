@@ -91,6 +91,7 @@ import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;

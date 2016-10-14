@@ -18,5 +18,6 @@ public class Constant {
     public static final String ARG_ACCOUNT_NAME = "ACCOUNT_NAME";
 
     public static final String ACCOUNT_EMAIL = "ACCOUNT_EMAIL";
+    public static final String ACCOUNT_TOKEN = "ACCOUNT_TOKEN";
 
 }
