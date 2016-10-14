@@ -54,7 +54,7 @@ public class ImageLoader extends AsyncTask<String, Void, ImageLoader.AttributedP
         AttributedPhoto attributedPhoto = null;
 
         PlacePhotoMetadataResult result = Places.GeoDataApi
-                .getPlacePhotos(mGoogleApiClient, "ChIJecgtHONoGZURS0jyJmaNCZg").await();
+                .getPlacePhotos(mGoogleApiClient, placeId).await();
 
         Log.d("ImageLoader",result.getStatus().getStatusMessage());
 
