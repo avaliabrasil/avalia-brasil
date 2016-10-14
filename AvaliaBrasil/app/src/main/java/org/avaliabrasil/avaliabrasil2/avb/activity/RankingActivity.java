@@ -2,6 +2,7 @@ package org.avaliabrasil.avaliabrasil2.avb.activity;
 
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -19,6 +20,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -57,6 +59,7 @@ import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.PlaceRankingSearch;
 import org.avaliabrasil.avaliabrasil2.avb.sync.Constant;
 import org.avaliabrasil.avaliabrasil2.avb.util.CircleTransform;
 import org.avaliabrasil.avaliabrasil2.avb.util.Utils;
+import org.avaliabrasil.avaliabrasil2.avb.view.DelayAutoCompleteTextView;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -79,7 +82,7 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
     /**
      *
      */
-    private AutoCompleteTextView actvPlace;
+    private DelayAutoCompleteTextView actvPlace;
 
     /**
      *
@@ -155,7 +158,7 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
             ivProfilePhoto.setImageBitmap(new CircleTransform().transform(photo));
         }
 
-        actvPlace = (AutoCompleteTextView) findViewById(R.id.actvPlace);
+        actvPlace = (DelayAutoCompleteTextView) findViewById(R.id.actvPlace);
 
         locationAdapter = new LocationAdapter(RankingActivity.this,locationDAO);
 
@@ -166,7 +169,11 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Location clickedLocation = locationAdapter.getLocation(position);
 
-                System.out.println(clickedLocation);
+                if (actvPlace != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(actvPlace.getWindowToken(), 0);
+                }
+
                 HashMap<String, String> params = new HashMap<>();
 
                 switch(clickedLocation.getLocationType()){
@@ -194,11 +201,9 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
 
                 if(!(category.contains("Todos"))){
                     Cursor cur = (Cursor) categoryCursorAdapter.getItem(spCategory.getSelectedItemPosition());
-                    params.put("categoryId",cur.getString(cur.getColumnIndex("category_id")));
-                    cur.close();
+                    params.put("idCategory",cur.getString(cur.getColumnIndex("category_id")));
                     cur = (Cursor) placeTypeCursorAdapter.getItem(spPlaceType.getSelectedItemPosition());
-                    params.put("typeId",cur.getString(cur.getColumnIndex("category_id")));
-                    cur.close();
+                    params.put("idType",cur.getString(cur.getColumnIndex("_id")));
                 }
                 requestRankingUpdate(params);
              }
@@ -227,7 +232,7 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
             getIntentInfo();
         } else {
             if (getIntent().getExtras().getDouble("latitude") != 0) {
-                actvPlace.setText("");
+                actvPlace.setText("Brasil");
             }
             requestRankingUpdate(null);
         }
@@ -329,14 +334,17 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
                     break;
                 case "regional":
                     loc = locationDAO.findLocationByWebID(webId, LocationType.REGION);
+                    params.put("idRegion", loc.getId());
                     actvPlace.setText(loc.getLocation());
                     break;
                 case "estadual":
                     loc = locationDAO.findLocationByWebID(webId, LocationType.STATE);
+                    params.put("idState", loc.getId());
                     actvPlace.setText(loc.getLocation());
                     break;
                 case "municipal":
                     loc = locationDAO.findLocationByWebID(webId, LocationType.CITY);
+                    params.put("idCity", loc.getId());
                     actvPlace.setText(loc.getLocation());
 
                     break;
@@ -344,11 +352,8 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
             }
 
         params.put("name", name);
-        params.put("city", city);
-        params.put("state", state);
-        params.put("category", category);
-        params.put("type", placeType);
-        params.put("rankingType", rankingType);
+        params.put("idCategory", category);
+        params.put("idType", placeType);
 
         requestRankingUpdate(params);
     }
@@ -370,7 +375,7 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                fetchData("");
+                fetchData("[]");
                 progress.dismiss();
             }
         }) {

@@ -38,7 +38,7 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true" />
 
-                <AutoCompleteTextView
+                <org.avaliabrasil.avaliabrasil2.avb.view.DelayAutoCompleteTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"

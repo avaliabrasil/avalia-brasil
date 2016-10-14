@@ -74,75 +74,75 @@ public class AvBProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public synchronized Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-        SQLiteDatabase db = helper.getWritableDatabase();
-        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        Cursor c;
+            SQLiteDatabase db = helper.getWritableDatabase();
+            SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+            Cursor c;
 
-        switch (uriMatcher.match(uri)) {
-            case AvBContract.PLACE:
-                qb.setTables(AvBContract.PlaceEntry.TABLE_NAME);
+            switch (uriMatcher.match(uri)) {
+                case AvBContract.PLACE:
+                    qb.setTables(AvBContract.PlaceEntry.TABLE_NAME);
 
-                if (selectionArgs != null) {
-                    c = qb.query(db, projection, "name like ?", selectionArgs, null, null, "distance asc");
-                } else {
-                    c = qb.query(db, projection, selection, selectionArgs, null, null, "distance asc");
-                }
+                    if (selectionArgs != null) {
+                        c = qb.query(db, projection, "name like ?", selectionArgs, null, null, "distance asc");
+                    } else {
+                        c = qb.query(db, projection, selection, selectionArgs, null, null, "distance asc");
+                    }
 
-                c.setNotificationUri(getContext().getContentResolver(), uri);
-                break;
-            case AvBContract.PLACE_ID:
-                c = db.rawQuery("select * from place_detail LEFT OUTER join place on place_detail.PLACE_ID = place.PLACE_ID where place_detail.PLACE_ID = ? order by distance asc", new String[]{uri.getPathSegments().get(1)});
-                break;
-            case AvBContract.INSTRUMENTS:
-                c = db.rawQuery("select instrument.instrument_id,instrument.updated_at from instrument_places left join instrument on instrument.instrument_id = instrument_places.instrument_id where PLACE_ID = ? ", new String[]{uri.getPathSegments().get(1)});
-                break;
-            case AvBContract.GROUP_QUESTIONS:
-                c = db.rawQuery("select * from instrument left join group_question on instrument.instrument_id = group_question.instrument_id left join question on question.group_id = group_question.group_id " +
-                        "where instrument.instrument_id = ? ", new String[]{uri.getPathSegments().get(1)});
-                break;
-            case AvBContract.SURVEY:
-                c = db.query(AvBContract.SurveyEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
+                    c.setNotificationUri(getContext().getContentResolver(), uri);
+                    break;
+                case AvBContract.PLACE_ID:
+                    c = db.rawQuery("select * from place_detail LEFT OUTER join place on place_detail.PLACE_ID = place.PLACE_ID where place_detail.PLACE_ID = ? order by distance asc", new String[]{uri.getPathSegments().get(1)});
+                    break;
+                case AvBContract.INSTRUMENTS:
+                    c = db.rawQuery("select instrument.instrument_id,instrument.updated_at from instrument_places left join instrument on instrument.instrument_id = instrument_places.instrument_id where PLACE_ID = ? ", new String[]{uri.getPathSegments().get(1)});
+                    break;
+                case AvBContract.GROUP_QUESTIONS:
+                    c = db.rawQuery("select * from instrument left join group_question on instrument.instrument_id = group_question.instrument_id left join question on question.group_id = group_question.group_id " +
+                            "where instrument.instrument_id = ? ", new String[]{uri.getPathSegments().get(1)});
+                    break;
+                case AvBContract.SURVEY:
+                    c = db.query(AvBContract.SurveyEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                    break;
 
-            case AvBContract.NEWPLACE:
-                c = db.query("newPlace", projection, selection, selectionArgs, null, null, sortOrder);
-                break;
+                case AvBContract.NEWPLACE:
+                    c = db.query("newPlace", projection, selection, selectionArgs, null, null, sortOrder);
+                    break;
 
-            case AvBContract.PLACE_CATEGORY:
-                c = db.rawQuery("select * from place_category", null);
-                break;
-            case AvBContract.PLACE_TYPES:
-                c = db.rawQuery("select * from place_type where category_id = ? ", new String[]{uri.getPathSegments().get(1)});
-                break;
-            case AvBContract.PLACE_PERIOD:
-                c = db.rawQuery("select * from place_period ", null);
-                break;
-            case AvBContract.PLACE_PERIODS:
-                Calendar calendar = Calendar.getInstance();
-                c = db.rawQuery("select * from place_period where place_id = ? and day = ? order by status", new String[]{uri.getPathSegments().get(1), String.valueOf(calendar.get(Calendar.DAY_OF_WEEK))});
-                break;
+                case AvBContract.PLACE_CATEGORY:
+                    c = db.rawQuery("select * from place_category", null);
+                    break;
+                case AvBContract.PLACE_TYPES:
+                    c = db.rawQuery("select * from place_type where category_id = ? ", new String[]{uri.getPathSegments().get(1)});
+                    break;
+                case AvBContract.PLACE_PERIOD:
+                    c = db.rawQuery("select * from place_period ", null);
+                    break;
+                case AvBContract.PLACE_PERIODS:
+                    Calendar calendar = Calendar.getInstance();
+                    c = db.rawQuery("select * from place_period where place_id = ? and day = ? order by status", new String[]{uri.getPathSegments().get(1), String.valueOf(calendar.get(Calendar.DAY_OF_WEEK))});
+                    break;
 
-            case AvBContract.ANWSER:
-                c = db.query("anwser", projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case AvBContract.LOCATION:
-                c = db.query("location",projection, selection, selectionArgs, null, null, sortOrder);
-                break;
-            case AvBContract.LOCATIONS:
-                String queryParam = uri.getPathSegments().get(1);
-                queryParam =  "%"+queryParam + "%";
-                c = db.query("location",null,"description like ?",new String[]{queryParam},null,null,null);
-                //c = db.rawQuery("select * from location where description like ? ", new String[]{queryParam});
-                break;
-            case AvBContract.LOCATIONSBYID:
-                c = db.rawQuery("select * from location where idWeb = ? ", new String[]{uri.getPathSegments().get(1)});
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown URI " + uri);
-        }
-        return c;
+                case AvBContract.ANWSER:
+                    c = db.query("anwser", projection, selection, selectionArgs, null, null, sortOrder);
+                    break;
+                case AvBContract.LOCATION:
+                    c = db.query("location", projection, selection, selectionArgs, null, null, sortOrder);
+                    break;
+                case AvBContract.LOCATIONS:
+                    String queryParam = uri.getPathSegments().get(1);
+                    queryParam = "%" + queryParam + "%";
+                    c = db.query("location", null, "description like ?", new String[]{queryParam}, null, null, null);
+                    //c = db.rawQuery("select * from location where description like ? ", new String[]{queryParam});
+                    break;
+                case AvBContract.LOCATIONSBYID:
+                    c = db.rawQuery("select * from location where idWeb = ? ", new String[]{uri.getPathSegments().get(1)});
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown URI " + uri);
+            }
+            return c;
     }
 
     @Nullable

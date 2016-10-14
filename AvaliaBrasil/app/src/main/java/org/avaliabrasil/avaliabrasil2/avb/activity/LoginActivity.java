@@ -9,10 +9,12 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -30,6 +32,10 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -52,6 +58,8 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.facebook.GraphRequest.TAG;
 
 public class LoginActivity extends AccountAuthenticatorActivity {
     public final String LOG_TAG = this.getClass().getSimpleName();
@@ -84,6 +92,11 @@ public class LoginActivity extends AccountAuthenticatorActivity {
      *
      */
     private LocationPermission locationPermission;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,6 +187,9 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             }
         });
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     @Override
@@ -248,54 +264,6 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 
                         //TODO DYNAMIC GET THE CATEGORY AND THE PLACE TYPE
 
-
-                        ContentValues[] values = new ContentValues[2];
-
-                        for (int i = 0; i < values.length; i++) {
-                            values[i] = new ContentValues();
-                        }
-
-                        values[0].put(AvBContract.PlaceCategoryEntry.CATEGORY_ID, 1);
-                        values[0].put(AvBContract.PlaceCategoryEntry.NAME, "Saúde");
-
-                        values[1].put(AvBContract.PlaceCategoryEntry.CATEGORY_ID, 2);
-                        values[1].put(AvBContract.PlaceCategoryEntry.NAME, "Educação");
-
-                        getContentResolver().bulkInsert(AvBContract.PlaceCategoryEntry.PLACE_CATEGORY_URI, values);
-
-                        values = new ContentValues[8];
-
-                        for (int i = 0; i < values.length; i++) {
-                            values[i] = new ContentValues();
-                        }
-
-                        values[0].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
-                        values[0].put(AvBContract.PlaceTypeEntry.NAME, "Posto de Saúde");
-
-                        values[1].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
-                        values[1].put(AvBContract.PlaceTypeEntry.NAME, "Unidade Básica de Saude");
-
-                        values[2].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
-                        values[2].put(AvBContract.PlaceTypeEntry.NAME, "Policlínica");
-
-                        values[3].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
-                        values[3].put(AvBContract.PlaceTypeEntry.NAME, "Hospital");
-
-                        values[4].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
-                        values[4].put(AvBContract.PlaceTypeEntry.NAME, "Unidade Mista");
-
-                        values[5].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 1);
-                        values[5].put(AvBContract.PlaceTypeEntry.NAME, "Pronto Socorro");
-
-                        values[6].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 2);
-                        values[6].put(AvBContract.PlaceTypeEntry.NAME, "Escola");
-
-                        values[7].put(AvBContract.PlaceTypeEntry.CATEGORY_ID, 2);
-                        values[7].put(AvBContract.PlaceTypeEntry.NAME, "Universidade");
-
-                        getContentResolver().bulkInsert(AvBContract.PlaceTypeEntry.PLACE_TYPE_URI, values);
-
-
                         if (accountManager.getAccountsByType(Constant.ACCOUNT_TYPE).length > 0) {
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -314,6 +282,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
             protected Map<String, String> getParams() {
                 String android_id = Settings.Secure.getString(context.getContentResolver(),
                         Settings.Secure.ANDROID_ID);
+                Log.d("AndroidID", "onResponse: " + android_id);
                 user.setAndroid_id(android_id);
                 Map<String, String> params = new HashMap<String, String>();
                 JsonObject jsonObject = new JsonObject();

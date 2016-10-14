@@ -131,7 +131,7 @@ public class AvaliaBrasilAPIClient {
     public static String getPlacesRanking(HashMap<String, String> params) {
         StringBuilder target = new StringBuilder();
         target.append(avaliabrasilApiTarget);
-        target.append("ranking/");
+        target.append("ranking");
 
         if (params != null) {
             if (!params.isEmpty()) {
@@ -141,7 +141,9 @@ public class AvaliaBrasilAPIClient {
                     target.append(key);
                     target.append("=");
                     target.append(params.get(key));
+                    target.append("&");
                 }
+                target.deleteCharAt(target.toString().length() -1);
             }
         }
 

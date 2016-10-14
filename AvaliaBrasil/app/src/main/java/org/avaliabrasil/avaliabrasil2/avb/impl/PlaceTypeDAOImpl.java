@@ -31,6 +31,7 @@ public class PlaceTypeDAOImpl implements PlaceTypeDAO{
 
             for (int i = 0; i < types.size(); i++) {
                 value = new ContentValues();
+                value.put(AvBContract.PlaceTypeEntry._ID, types.get(i).getId());
                 value.put(AvBContract.PlaceTypeEntry.CATEGORY_ID, types.get(i).getIdCategory());
                 value.put(AvBContract.PlaceTypeEntry.NAME, types.get(i).getCategory());
                 values[i] = value;

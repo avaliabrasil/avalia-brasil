@@ -104,7 +104,6 @@ public class LocationDAOImpl implements LocationDAO<LocationResponse> {
         Cursor c = db.getReadableDatabase().rawQuery("select * from location where idWeb = ? and type = ?",new String[]{webId,String.valueOf(locationType.ordinal()+1)});
         Location loc = locationFactory.getLocationByType(c);
         c.close();
-        db.close();
         return loc;
     }
 
