@@ -421,7 +421,16 @@ public class PlaceActivity extends AppCompatActivity {
                 params.put("", jsonObject.toString());
                 return params;
             }
+
+            /**Pedro's fix to Header Problem on Evaluate Place*/
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> header = new HashMap<String,String>();
+                header.put("userId",token);
+                return header;
+            }
         };
+
         Volley.newRequestQueue(PlaceActivity.this).add(stringRequest);
 
     }
