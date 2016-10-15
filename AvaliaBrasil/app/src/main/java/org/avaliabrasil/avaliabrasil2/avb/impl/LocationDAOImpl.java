@@ -102,6 +102,7 @@ public class LocationDAOImpl implements LocationDAO<LocationResponse> {
         }
         AvBDBHelper db = new AvBDBHelper(context);
         Cursor c = db.getReadableDatabase().rawQuery("select * from location where idWeb = ? and type = ?",new String[]{webId,String.valueOf(locationType.ordinal()+1)});
+        c.moveToFirst();
         Location loc = locationFactory.getLocationByType(c);
         c.close();
         return loc;

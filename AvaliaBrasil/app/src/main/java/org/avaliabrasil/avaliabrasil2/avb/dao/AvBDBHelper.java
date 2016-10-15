@@ -107,7 +107,7 @@ public class AvBDBHelper extends SQLiteOpenHelper {
             "                        NOT NULL," +
             "    category_id INTEGER REFERENCES place_category (category_id) " +
             "                        NOT NULL," +
-            "    name        TEXT    NOT NULL UNIQUE" +
+            "    name        TEXT    NOT NULL" +
             ");";
 
 

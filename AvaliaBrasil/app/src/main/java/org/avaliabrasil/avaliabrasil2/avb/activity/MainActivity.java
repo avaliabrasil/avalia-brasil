@@ -359,7 +359,15 @@ public class MainActivity extends AppCompatActivity implements
 
     private List<AvaliaBrasilPlaceType> getAvaliaBrasilPlaceTypes(){
         List<AvaliaBrasilPlaceType> avaliaBrasilCategoryList = new ArrayList<>();
-        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("100","Todos","0"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("89","Todos","0"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("90","Todos","1"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("91","Todos","2"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("92","Todos","3"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("93","Todos","4"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("94","Todos","5"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("95","Todos","6"));
+        avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("96","Todos","7"));
+
         avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("101","Posto de Saúde","1"));
         avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("102","Unidade Básica de Saúde","1"));
         avaliaBrasilCategoryList.add(new AvaliaBrasilPlaceType("103","Policlínica","1"));

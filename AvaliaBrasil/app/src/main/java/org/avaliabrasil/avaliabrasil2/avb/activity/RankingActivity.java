@@ -283,23 +283,24 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
     private String lastSettedOption = "";
 
     private void getIntentInfo() {
-        String name = getIntent().getExtras().getString("name", "");
+        /*String name = getIntent().getExtras().getString("name", "");
         String city = getIntent().getExtras().getString("city", "");
-        String state = getIntent().getExtras().getString("state", "");
+        String state = getIntent().getExtras().getString("state", "");*/
+
         String category = getIntent().getExtras().getString("category", "");
         String placeType = getIntent().getExtras().getString("type", "");
         String rankingType = getIntent().getExtras().getString("rankingType", "");
         String webId = getIntent().getExtras().getString("webId", "");
 
-        actvPlace.setText(name + "," + city + " " + state);
-
-        //TODO set {#link spCategory} by category string
         Cursor cur = categoryCursorAdapter.getCursor();
         final Cursor placeTypeCursor;
+
+        HashMap<String, String> params = new HashMap<>();
 
         while (cur.moveToNext()) {
             if (cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)).contains(category)) {
                 Log.d("RankingActivity", "setted category: " + cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)));
+                params.put("idCategory",  cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID)));
                 lastSettedOption = cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME));
                 spCategory.setSelection(cur.getPosition());
 
@@ -309,10 +310,10 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
 
                 spPlaceType.setAdapter(placeTypeCursorAdapter);
 
-
                 Log.d("RankingActivity", "PlaceType: " + placeType);
                 while (placeTypeCursor.moveToNext()) {
                     Log.d("RankingActivity", "setted placeType: " + placeTypeCursor.getString(placeTypeCursor.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)));
+
 
                     if (placeTypeCursor.getString(placeTypeCursor.getColumnIndex(AvBContract.PlaceCategoryEntry.NAME)).contains(placeType)) {
                         Log.d("RankingActivity", "position cursor: " + placeTypeCursor.getPosition());
@@ -322,15 +323,15 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
                 }
                 break;
             }
-        }
-        //TODO send the rankingType to the query.
-        HashMap<String, String> params = new HashMap<>();
+        };
 
         Location loc = null;
 
             switch (rankingType) {
 
                 case "nacional":
+                    loc = locationDAO.findLocationByWebID(webId, LocationType.COUNTRY);
+                    params.put("idCountry", loc.getId());
                    actvPlace.setText("Brasil");
                     break;
                 case "regional":
@@ -352,9 +353,6 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
 
             }
 
-        params.put("name", name);
-        params.put("idCategory", category);
-        params.put("idType", placeType);
 
         requestRankingUpdate(params);
     }
