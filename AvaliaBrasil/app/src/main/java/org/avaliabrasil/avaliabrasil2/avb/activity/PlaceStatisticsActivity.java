@@ -38,6 +38,7 @@ import org.avaliabrasil.avaliabrasil2.avb.view.RankingView;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -165,6 +166,7 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
         graph.getViewport().setMinY(0);
         graph.getViewport().setMaxY(100);
+        graph.getViewport().setYAxisBoundsManual(true);
 
         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabel(PlaceStatisticsActivity.this));
         graph.getGridLabelRenderer().setNumHorizontalLabels(6);
@@ -207,14 +209,24 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
         graph.removeAllSeries();
 
+        prepareGraphData();
 
+
+        rvComments.setAdapter(new CommentAdapter(PlaceStatisticsActivity.this, placeStats.getComments()));
+
+        rvComments.setHasFixedSize(true);
+    }
+
+    private void prepareGraphData() {
         DataPoint[] points = new DataPoint[6];
         int month;
         int year;
+        Date firstMonth = null;
+        Date lastMonth = null;
 
         for (int i = 0; i < points.length; i++) {
             Calendar calendar = Calendar.getInstance();
-            month = calendar.get(Calendar.MONTH) + i - 5;
+            month = calendar.get(Calendar.MONTH) + i - 6;
             year = calendar.get(Calendar.YEAR);
             calendar.set(Calendar.DATE , 1);
             calendar.set(Calendar.HOUR , 1);
@@ -238,6 +250,8 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
             }
             Log.d("PlaceStatisticsActivity", "A Month/year: " + month + "/" + year + "\n");
             points[i] = new DataPoint(calendar.getTime(), 0);
+            firstMonth = checkIfIsBeforeDate(firstMonth,calendar.getTime());
+            lastMonth = checkIfIsAfterDate(lastMonth,calendar.getTime());
         }
 
         DataPoint newDp;
@@ -252,7 +266,7 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
             Log.d("PlaceStatistics", "fetchData: " + requestYear);
             requestMonth = requestMonth.substring(5);
 
-            calendar.set(Calendar.MONTH,Integer.valueOf(requestMonth) + i);
+            calendar.set(Calendar.MONTH,Integer.valueOf(requestMonth)-1);
             calendar.set(Calendar.YEAR,Integer.valueOf(requestYear));
             calendar.set(Calendar.DATE , 1);
             calendar.set(Calendar.HOUR , 1);
@@ -260,7 +274,7 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
             calendar.set(Calendar.SECOND , 1);
 
             for (int j = 0; j < points.length; j++) {
-                DataPoint dp = (DataPoint) points[j];
+                DataPoint dp = points[j];
                 newDp =  new DataPoint(calendar.getTime(), placeStats.getQualityIndex().get(i).getValue());
 
                 Calendar c2 = Calendar.getInstance();
@@ -269,25 +283,56 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
                 Log.d("PlaceStatistics", "m1: " + calendar.get(Calendar.MONTH) + " | m2: " + c2.get(Calendar.MONTH));
 
                 if(calendar.get(Calendar.MONTH) == c2.get(Calendar.MONTH)){
+                    Log.d("PlaceStatistics", c2.getTime().toString());
                     points[j] = newDp;
+                    break;
                 }
             }
             Log.d("PlaceStatistics", "value: " + points[i].getY());
         }
 
-        for (int i = 0; i < points.length; i++) {
-            Log.d("PlaceStatistics", "x: " + points[i].getX() + " | y: " + points[i].getY());
-        }
-            LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(points);
+        Calendar c = Calendar.getInstance();
+        c.setTime(firstMonth);
+        c.add(Calendar.MONTH,-1);
+        graph.getViewport().setMinX(c.getTime().getTime());
+        c.setTime(lastMonth);
+        c.add(Calendar.MONTH,1);
+        graph.getViewport().setMaxX(c.getTime().getTime());
+        graph.getViewport().setXAxisBoundsManual(true);
+
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(points);
         PointsGraphSeries<DataPoint> series2 = new PointsGraphSeries<DataPoint>(points);
         series2.setSize(7);
-            graph.addSeries(series);
+        graph.addSeries(series);
         graph.addSeries(series2);
+    }
 
+    private Date checkIfIsBeforeDate(
+            Date firstMonth,
+            Date date){
 
-        rvComments.setAdapter(new CommentAdapter(PlaceStatisticsActivity.this, placeStats.getComments()));
+        if(firstMonth == null){
+            return date;
+        }else{
+            if(firstMonth.after(date)){
+                return date;
+            }
+        }
+        return  firstMonth;
+    }
 
-        rvComments.setHasFixedSize(true);
+    private Date checkIfIsAfterDate(
+            Date lastMonth,
+            Date date){
+
+        if(lastMonth == null){
+            return date;
+        }else{
+            if(lastMonth.before(date)){
+                return date;
+            }
+        }
+        return lastMonth;
     }
 
     @Override

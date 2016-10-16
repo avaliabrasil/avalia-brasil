@@ -94,7 +94,7 @@ public class NavigatorViewImpl implements NavigationView.OnNavigationItemSelecte
                 AvBDBHelper helper = new AvBDBHelper(activity);
                 helper.clearAllData(helper.getWritableDatabase());
 
-                Bitmap photo = Utils.getImageBitmap(activity);
+                Utils.removeProfilePhoto(activity);
 
                 progress.dismiss();
 
