@@ -7,6 +7,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,6 +130,7 @@ public class PlacesListFragment extends Fragment implements Observer {
 
     @Override
     public synchronized void update(Cursor cursor) {
+        Log.d("PlacesListFragment", "updating list fragment");
         mPlacesListAdapter.swapCursor(cursor);
     }
 }

@@ -123,6 +123,8 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
 
     boolean isFirstSelected = true;
 
+    private Location loc = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -168,45 +170,11 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
         actvPlace.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Location clickedLocation = locationAdapter.getLocation(position);
-
                 if (actvPlace != null) {
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(actvPlace.getWindowToken(), 0);
                 }
-
-                HashMap<String, String> params = new HashMap<>();
-
-                switch(clickedLocation.getLocationType()){
-
-                    case COUNTRY:
-
-                        break;
-                    case REGION:
-                        params.put("idRegion", clickedLocation.getId());
-
-                        break;
-                    case STATE:
-                        params.put("idState", clickedLocation.getId());
-
-                        break;
-                    case CITY:
-                        params.put("idCity", clickedLocation.getId());
-
-                        break;
-
-                }
-
-                String category = ((TextView)spCategory.getSelectedView()).getText().toString();
-                String placeType = ((TextView)spPlaceType.getSelectedView()).getText().toString();
-
-                if(!(category.contains("Todos"))){
-                    Cursor cur = (Cursor) categoryCursorAdapter.getItem(spCategory.getSelectedItemPosition());
-                    params.put("idCategory",cur.getString(cur.getColumnIndex("category_id")));
-                    cur = (Cursor) placeTypeCursorAdapter.getItem(spPlaceType.getSelectedItemPosition());
-                    params.put("idType",cur.getString(cur.getColumnIndex("_id")));
-                }
-                requestRankingUpdate(params);
+                sendFilter(position);
              }
         });
 
@@ -239,34 +207,82 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
         }
     }
 
+    private void sendFilter(int position) {
+        if(position >= 0){
+            loc = locationAdapter.getLocation(position);
+        }
+
+        HashMap<String, String> params = new HashMap<>();
+
+        if(loc != null){
+            switch(loc.getLocationType()){
+                case COUNTRY:
+                    params.put("idCountry", loc.getId());
+                    break;
+                case REGION:
+                    params.put("idRegion", loc.getId());
+                    break;
+                case STATE:
+                    params.put("idState", loc.getId());
+                    break;
+                case CITY:
+                    params.put("idCity", loc.getId());
+                    break;
+            }
+        }
+
+        String category = ((TextView)spCategory.getSelectedView()).getText().toString();
+        String placeType = "Todos";
+
+        if(!(spPlaceType.getSelectedView() == null)){
+            placeType = ((TextView)spPlaceType.getSelectedView()).getText().toString();
+        }
+
+        if(!(category.contains("Todos"))){
+            Cursor cur = (Cursor) categoryCursorAdapter.getItem(spCategory.getSelectedItemPosition());
+            params.put("idCategory",cur.getString(cur.getColumnIndex("category_id")));
+            if(!placeType.contains(("Todos"))){
+                cur = (Cursor) placeTypeCursorAdapter.getItem(spPlaceType.getSelectedItemPosition());
+                params.put("idType",cur.getString(cur.getColumnIndex("_id")));
+            }
+        }
+        requestRankingUpdate(params);
+    }
+
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
+
         spCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 Log.d("RankingActivity", "onItemSelected: LastSelected: " + lastSettedOption + " | View: " + ((TextView)selectedItemView).getText().toString());
                 if(!lastSettedOption.isEmpty()){
                     if(!((TextView)selectedItemView).getText().toString().contains(lastSettedOption)){
-
                         Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
                         cur.moveToPosition(position);
                         placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));
                         spPlaceType.setAdapter(placeTypeCursorAdapter);
                     }
                 }else{
-
                     Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
                     cur.moveToPosition(position);
                     placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));
                     spPlaceType.setAdapter(placeTypeCursorAdapter);
+                    sendFilter(-1);
                 }
             }
-
             @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
+            public void onNothingSelected(AdapterView<?> parentView) {}
+        });
 
+        spPlaceType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                sendFilter(-1);
             }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {}
         });
     }
 
@@ -325,8 +341,6 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
             }
         };
 
-        Location loc = null;
-
             switch (rankingType) {
 
                 case "nacional":
@@ -360,6 +374,19 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
     private void requestRankingUpdate(final HashMap<String, String> params) {
          /* -------------------------------------------------------------------------------------------------------------- */
 
+        Log.d("RankingActivity", "Sending data....");
+
+        if(progress != null){
+            if(!progress.isShowing()){
+                fetchFromDb(params);
+
+            }
+        }else{
+            fetchFromDb(params);
+        }
+    }
+
+    private void fetchFromDb(final HashMap<String, String> params) {
         progress = ProgressDialog.show(this, getResources().getString(R.string.progress_dialog_title),
                 getResources().getString(R.string.progress_dialog_message), true);
 

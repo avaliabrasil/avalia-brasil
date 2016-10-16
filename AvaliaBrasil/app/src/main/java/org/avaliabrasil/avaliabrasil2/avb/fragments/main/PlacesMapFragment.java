@@ -9,6 +9,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ import org.avaliabrasil.avaliabrasil2.R;
 import org.avaliabrasil.avaliabrasil2.avb.activity.PlaceActivity;
 import org.avaliabrasil.avaliabrasil2.avb.util.AvaliaBrasilApplication;
 import org.avaliabrasil.avaliabrasil2.avb.sync.Observer;
+
+import static com.facebook.GraphRequest.TAG;
 
 /**
  * Created by Pedro on 29/02/2016.
@@ -125,6 +128,7 @@ public class PlacesMapFragment extends Fragment implements GoogleMap.OnMarkerCli
 
     @Override
     public synchronized void update(Cursor cursor) {
+        Log.d("PlaceMapFragment", "updating map fragment");
         googleMap.clear();
 
         double latitude = avaliaBrasilApplication.getLocation()  == null ? 0 : avaliaBrasilApplication.getLocation() .getLatitude();
