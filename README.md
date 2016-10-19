@@ -3,6 +3,7 @@
 ### What is this repository for? ###
 
 * This is the Avalia Brasil Android App project repository. Avalia Brasil is an Android app aiming to make Brazillian public service evaluation possible. The project was selected in InovApps contest from Brazillian Federal Government (MTIC ministry).
+### What is Avalia Brasil for? ###
 * Our app lets every citizen evaluate public service places using Google Places Api integrated with our Api and our database. This is the first and only SERVPERF app and web api tailored to mass evaluation we're aware of. (SERVPERF is a service performance perception scale intended to measure service quality as perceived by customers).
 * To get a grasp of what the app does, please watch (portuguese-only): https://www.youtube.com/watch?v=d9b6NZ6DXpY
 * https://avaliabrasil.org
