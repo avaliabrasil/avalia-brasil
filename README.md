@@ -1,29 +1,15 @@
-# README #
-
-This README would normally document whatever steps are necessary to get your application up and running.
+# About Avalia Brasil #
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* This is the Avalia Brasil Android App project repository. Avalia Brasil is an Android app aiming to make Brazillian public service evaluation possible. The project was selected in InovApps contest from Brazillian Federal Government (MTIC ministry).
+* Our app lets every citizen evaluate public service places using Google Places Api integrated with our Api and our database. This is the first and only SERVPERF app and web api tailored to mass evaluation we're aware of. (SERVPERF is a service performance perception scale intended to measure service quality as perceived by customers).
+* To get a grasp of what the app does, please watch (portuguese-only): https://www.youtube.com/watch?v=d9b6NZ6DXpY
+* https://avaliabrasil.org
 
-### How do I get set up? ###
+### Can I deploy it to my country? ###
+* If you want to fork Avalia Brasil to use it in your country, city or whatever place, let us know. Even though we've created our app with Brazil in mind, it would be nice to have it working on other countries too, specially those in which public services play an important role.
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+### Nice. Who do I talk to? ###
 
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+* contato at avaliabrasil.org
