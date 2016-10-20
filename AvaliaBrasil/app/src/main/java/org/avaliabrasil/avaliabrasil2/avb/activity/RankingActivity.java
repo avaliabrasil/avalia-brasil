@@ -63,6 +63,7 @@ import org.avaliabrasil.avaliabrasil2.avb.view.DelayAutoCompleteTextView;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -197,13 +198,33 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
 
         spPlaceType = (Spinner) findViewById(R.id.spPlaceType);
 
+        actvPlace.setText("Brasil");
+
         if (getIntent().hasExtra("rankingType")) {
             getIntentInfo();
         } else {
             if (getIntent().getExtras().getDouble("latitude") != 0) {
-                actvPlace.setText("Brasil");
+                try {
+                    List<Address> addresses = null;
+                    geocoder = new Geocoder(this, Locale.getDefault());
+                    addresses = geocoder.getFromLocation(getIntent().getExtras().getDouble("latitude"), getIntent().getExtras().getDouble("longitude"), 5);
+                    if(addresses.size() > 0){
+                        List<Location> locations = locationDAO.findLocationByName(addresses.get(0).getAdminArea());
+
+                        if(locations.size() > 0){
+                            loc = locations.get(0);
+                            actvPlace.setText(loc.toString());
+                            sendFilter(-1);
+                        }else{
+                            requestRankingUpdate(null);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }else{
+                requestRankingUpdate(null);
             }
-            requestRankingUpdate(null);
         }
     }
 

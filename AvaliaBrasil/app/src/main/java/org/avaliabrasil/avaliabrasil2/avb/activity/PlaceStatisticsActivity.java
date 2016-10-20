@@ -293,10 +293,10 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
         Calendar c = Calendar.getInstance();
         c.setTime(firstMonth);
-        c.add(Calendar.MONTH,-1);
+        //c.add(Calendar.MONTH,-1);
         graph.getViewport().setMinX(c.getTime().getTime());
         c.setTime(lastMonth);
-        c.add(Calendar.MONTH,1);
+        //c.add(Calendar.MONTH,1);
         graph.getViewport().setMaxX(c.getTime().getTime());
         graph.getViewport().setXAxisBoundsManual(true);
 
