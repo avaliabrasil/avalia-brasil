@@ -14,4 +14,4 @@
 
 ### Nice. Who do I talk to? ###
 
-* contato at avaliabrasil.org
+* contact at avaliabrasil.org
