@@ -37,10 +37,6 @@ public class AnwserDAOImpl implements AnwserDAO{
     }
 
     @Override
-    public void deleteAllAnwserByPlaceId(String placeId) {
-    }
-
-    @Override
     public void setSurveyAsCompleted() {
         ContentValues cv = new ContentValues();
 
@@ -80,5 +76,10 @@ public class AnwserDAOImpl implements AnwserDAO{
             return new Anwser(c);
         }
         return null;
+    }
+
+    @Override
+    public void deleteAnswerBySurveyId(String surveyId) {
+        context.getContentResolver().delete(AvBContract.AnwserEntry.ANWSER_URI, AvBContract.AnwserEntry.SURVEY_ID + " = ?", new String[]{surveyId});
     }
 }

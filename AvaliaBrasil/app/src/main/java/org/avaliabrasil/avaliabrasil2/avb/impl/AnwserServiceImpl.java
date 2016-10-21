@@ -29,10 +29,8 @@ public class AnwserServiceImpl implements AnwserService{
     }
 
     @Override
-    public JsonObject prepareForSendAnwser(String userId,String placeId, String surveyId) {
+    public JsonObject prepareForSendAnwser(String placeId, String surveyId) {
         JsonObject response = new JsonObject();
-
-        response.addProperty("userId", "1");
 
         checkIfNewPlace(placeId, response);
 

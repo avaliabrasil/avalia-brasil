@@ -31,6 +31,13 @@ public class AvbAuthenticator extends AbstractAccountAuthenticator {
         throw new UnsupportedOperationException();
     }
 
+    public Bundle getAccountRemovalAllowed(AccountAuthenticatorResponse response, Account account) {
+        Bundle result = new Bundle();
+        boolean allowed = true; // or whatever logic you want here
+        result.putBoolean(AccountManager.KEY_BOOLEAN_RESULT, allowed);
+        return result;
+    }
+
 
     @Override
     public Bundle addAccount(

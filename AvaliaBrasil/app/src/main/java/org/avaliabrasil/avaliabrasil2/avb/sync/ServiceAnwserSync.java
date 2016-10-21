@@ -109,6 +109,8 @@ public class ServiceAnwserSync extends Service {
                         @Override
                         public void onResponse(String response) {
                             surveyDAO.removeSurvey(survey);
+                            newPlaceDAO.deleteNewPlaceByPlaceId(survey.getPlaceId());
+                            anwserDAO.deleteAnswerBySurveyId(survey.getSurveyId());
                         }
                     }, new Response.ErrorListener() {
                 @Override
@@ -120,7 +122,7 @@ public class ServiceAnwserSync extends Service {
             }) {
                 @Override
                 public byte[] getBody() {
-                    JsonObject response = anwserService.prepareForSendAnwser("1",survey.getPlaceId(),survey.getSurveyId());
+                    JsonObject response = anwserService.prepareForSendAnwser(survey.getPlaceId(),survey.getSurveyId());
 
                     Log.d(TAG, "body: " + response.toString());
 

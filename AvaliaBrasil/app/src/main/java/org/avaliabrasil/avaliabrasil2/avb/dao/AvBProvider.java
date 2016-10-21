@@ -300,6 +300,9 @@ public class AvBProvider extends ContentProvider {
             case AvBContract.NEWPLACE:
                 count = db.delete(AvBContract.NewPlaceEntry.TABLE_NAME, selection, selectionArgs);
                 break;
+            case AvBContract.ANWSER:
+                count = db.delete(AvBContract.AnwserEntry.TABLE_NAME, selection, selectionArgs);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }

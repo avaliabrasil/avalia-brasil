@@ -40,6 +40,7 @@ import org.avaliabrasil.avaliabrasil2.avb.impl.InstrumentDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.PlaceDetailsDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.QuestionDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.SurveyDAOImpl;
+import org.avaliabrasil.avaliabrasil2.avb.javabeans.etc.APIError;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.place.placedetail.ResultDetails;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.survey.NewPlace;
 import org.avaliabrasil.avaliabrasil2.avb.impl.AnwserDAOImpl;
@@ -288,24 +289,46 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        ShareEvaluateFragment share = new ShareEvaluateFragment();
+                        final APIError error = Utils.checkForError(response);
+                        if(!(error == null)){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progress.dismiss();
+                                    Toast.makeText(EvaluationActivity.this,error.getResponse().getError(), Toast.LENGTH_SHORT).show();
 
-                        JsonParser parser = new JsonParser();
-                        JsonObject o = parser.parse(Utils.normalizeAvaliaBrasilResponse(response)).getAsJsonObject();
+                                    newPlaceDAO.deleteNewPlaceByPlaceId(place_id);
+                                    anwserDAO.deleteSendedSurvey();
+                                    anwserDAO.deleteAnswerBySurveyId(surveyService.getSurvey().getSurveyId());
 
-                        Log.d(TAG, "onResponse: " + o.get("response").getAsJsonObject().get("fbShareText").getAsString());
+                                    Intent intent = new Intent(EvaluationActivity.this,MainActivity.class);
+                                    intent.putExtra("placeid", place_id);
+                                    intent.putExtra("name", getIntent().getExtras().getString("name"));
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            });
+                        }else {
+                            ShareEvaluateFragment share = new ShareEvaluateFragment();
 
-                        args.putString("shareString", o.get("response").getAsJsonObject().get("fbShareText").getAsString());
+                            JsonParser parser = new JsonParser();
+                            JsonObject o = parser.parse(Utils.normalizeAvaliaBrasilResponse(response)).getAsJsonObject();
 
-                        share.setArguments(args);
+                            Log.d(TAG, "onResponse: " + o.get("response").getAsJsonObject().get("fbShareText").getAsString());
 
-                        newPlaceDAO.deleteNewPlaceByPlaceId(place_id);
-                        anwserDAO.deleteSendedSurvey();
+                            args.putString("shareString", o.get("response").getAsJsonObject().get("fbShareText").getAsString());
 
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragment_container, share).commit();
+                            share.setArguments(args);
 
-                        progress.dismiss();
+                            newPlaceDAO.deleteNewPlaceByPlaceId(place_id);
+                            anwserDAO.deleteSendedSurvey();
+                            anwserDAO.deleteAnswerBySurveyId(surveyService.getSurvey().getSurveyId());
+
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.fragment_container, share).commit();
+
+                            progress.dismiss();
+                        }
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -323,7 +346,7 @@ public class EvaluationActivity extends AppCompatActivity implements View.OnClic
         }) {
             @Override
             public byte[] getBody() {
-                JsonObject response = anwserService.prepareForSendAnwser("1",place_id,surveyService.getSurvey().getSurveyId());
+                JsonObject response = anwserService.prepareForSendAnwser(place_id,surveyService.getSurvey().getSurveyId());
                 Log.d(TAG, "getBody: " + response.toString());
 
                 return response == null ? null : response.toString().getBytes(Charset.forName("UTF-8"));

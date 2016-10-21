@@ -11,10 +11,10 @@ import java.util.List;
 public interface AnwserDAO {
 
     public void insertAnwser(Anwser anwser);
-    public void deleteAllAnwserByPlaceId(String placeId);
     public List<Anwser> getUnsendedAnwsersBySurveyId(String surveyId);
     public void setSurveyAsCompleted();
     public void deleteSendedSurvey();
     public Anwser getLastAnwserBySurveyId(String surveyId);
+    public void deleteAnswerBySurveyId(String surveyId);
 
 }

@@ -46,6 +46,7 @@ import org.avaliabrasil.avaliabrasil2.avb.impl.PlacePeriodDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.PlaceTypeDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.QuestionDAOImpl;
 import org.avaliabrasil.avaliabrasil2.avb.impl.SurveyDAOImpl;
+import org.avaliabrasil.avaliabrasil2.avb.javabeans.etc.APIError;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.google.places.Period;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.place.placedetail.PlaceDetails;
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.place.placedetail.ResultDetails;
@@ -157,6 +158,7 @@ public class PlaceActivity extends AppCompatActivity {
                         public void onResponse(String response) {
                             Log.d("Teste", "onResponse: " + response);
                             Gson gson = new Gson();
+                            
                             placeStats = gson.fromJson(Utils.normalizeAvaliaBrasilResponse(response), PlaceStatistics.class);
 
                             if (placeStats == null) {
@@ -377,7 +379,19 @@ public class PlaceActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         try {
-                            fetchData(response);
+                            final APIError error = Utils.checkForError(response);
+                            Log.d("PlaceActivity", "response: " + response);
+                            if(!(error == null)){
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        Toast.makeText(PlaceActivity.this,error.getResponse().getError(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }else{
+                                fetchData(response);
+                            }
                         } catch (SQLException e) {
                             e.printStackTrace();
                             Toast.makeText(PlaceActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -400,7 +414,6 @@ public class PlaceActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-
                 JsonObject jsonObject = new JsonObject();
                 JsonArray availableInstruments = new JsonArray();
 
@@ -414,9 +427,6 @@ public class PlaceActivity extends AppCompatActivity {
                 }
 
                 jsonObject.add("availableInstruments", availableInstruments);
-
-                //TODO get the user token to send into the request
-                jsonObject.addProperty("userID", "");
 
                 params.put("", jsonObject.toString());
                 return params;

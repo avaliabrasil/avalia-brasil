@@ -9,13 +9,13 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
+import com.google.gson.Gson;
+
 import org.avaliabrasil.avaliabrasil2.R;
-import org.avaliabrasil.avaliabrasil2.avb.javabeans.ranking.LocationRegion;
+import org.avaliabrasil.avaliabrasil2.avb.javabeans.etc.APIError;
 
 import java.io.FileInputStream;
 import java.util.HashMap;
@@ -54,6 +54,7 @@ public abstract class Utils {
 
     /**
      * Check whatever is network available, if so, return true.
+     *
      * @param context
      * @return true if has network connection
      */
@@ -65,10 +66,11 @@ public abstract class Utils {
 
     /**
      * Check whatever is GPS available, if so, return true.
+     *
      * @param context
      * @return true if has GPS connection
      */
-    public static boolean isGPSAvailable(Context context){
+    public static boolean isGPSAvailable(Context context) {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
@@ -157,6 +159,20 @@ public abstract class Utils {
             response = new StringBuilder(response).replace(ind, ind + 1, "").toString();
 
         return response;
+    }
+
+    public static APIError checkForError(String response) {
+        if (response == null) {return null;}
+
+        else if (response.isEmpty()) {return null;}
+
+        else if (response.contains("\"error\":")) {
+            Gson gson = new Gson();
+
+            return gson.fromJson(Utils.normalizeAvaliaBrasilResponse(response), APIError.class);
+        } else {
+            return null;
+        }
     }
 
     private static HashMap<String, String> states = new HashMap<>();
