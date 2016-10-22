@@ -219,36 +219,14 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
     private void prepareGraphData() {
         DataPoint[] points = new DataPoint[6];
-        int month;
-        int year;
         Date firstMonth = null;
         Date lastMonth = null;
 
         for (int i = 0; i < points.length; i++) {
             Calendar calendar = Calendar.getInstance();
-            month = calendar.get(Calendar.MONTH) + i - 6;
-            year = calendar.get(Calendar.YEAR);
-            calendar.set(Calendar.DATE , 1);
-            calendar.set(Calendar.HOUR , 1);
-            calendar.set(Calendar.MINUTE , 1);
-            calendar.set(Calendar.SECOND , 1);
+            calendar.add(Calendar.MONTH,(i - 5));
 
-            Log.d("PlaceStatisticsActivity", "B Month/year: " + month + "/" + year);
-            if(month <= 0){
-                calendar.set(Calendar.YEAR,year - 1);
-                calendar.set(Calendar.MONTH,11 + month);
-                month = calendar.get(Calendar.MONTH);
-                year = calendar.get(Calendar.YEAR);
-            }else if(month > 11){
-                calendar.set(Calendar.YEAR,year + 1);
-                calendar.set(Calendar.MONTH,(month - 12));
-                month = calendar.get(Calendar.MONTH);
-                year = calendar.get(Calendar.YEAR);
-            }else{
-                calendar.set(Calendar.MONTH,month + 1);
-                month = calendar.get(Calendar.MONTH);
-            }
-            Log.d("PlaceStatisticsActivity", "A Month/year: " + month + "/" + year + "\n");
+            Log.d("PlaceStatisticsActivity", "A Month/year: " + calendar.get(Calendar.MONTH) + "/" + calendar.get(Calendar.YEAR) + "\n");
             points[i] = new DataPoint(calendar.getTime(), 0);
             firstMonth = checkIfIsBeforeDate(firstMonth,calendar.getTime());
             lastMonth = checkIfIsAfterDate(lastMonth,calendar.getTime());
@@ -268,10 +246,6 @@ public class PlaceStatisticsActivity extends AppCompatActivity implements View.O
 
             calendar.set(Calendar.MONTH,Integer.valueOf(requestMonth)-1);
             calendar.set(Calendar.YEAR,Integer.valueOf(requestYear));
-            calendar.set(Calendar.DATE , 1);
-            calendar.set(Calendar.HOUR , 1);
-            calendar.set(Calendar.MINUTE , 1);
-            calendar.set(Calendar.SECOND , 1);
 
             for (int j = 0; j < points.length; j++) {
                 DataPoint dp = points[j];

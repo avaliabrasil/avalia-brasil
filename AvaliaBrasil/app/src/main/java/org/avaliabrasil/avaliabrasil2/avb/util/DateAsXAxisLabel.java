@@ -1,11 +1,14 @@
 package org.avaliabrasil.avaliabrasil2.avb.util;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+
+import static com.facebook.GraphRequest.TAG;
 
 /**
  * @author <a href="https://github.com/Klauswk">Klaus Klein</a>
@@ -60,6 +63,8 @@ public class DateAsXAxisLabel extends DefaultLabelFormatter {
         if (isValueX) {
             mCalendar.setTimeInMillis((long) value);
             int month = mCalendar.get(Calendar.MONTH) + 1;
+
+            Log.d("DateAsXAxis", "Month: " + month);
 
             String monthString;
             switch (month) {
