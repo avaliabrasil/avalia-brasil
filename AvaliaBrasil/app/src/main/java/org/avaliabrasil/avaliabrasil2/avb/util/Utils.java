@@ -213,6 +213,14 @@ public abstract class Utils {
         return states.get(state);
     }
 
+    public static boolean checkIfIsNullOrEmpty(String string){
+
+        if(string == null)return true;
+
+        if(string.isEmpty()) return true;
+
+        return false;
+    }
 
     public static String formatTime(String time) {
         StringBuilder builder = new StringBuilder();

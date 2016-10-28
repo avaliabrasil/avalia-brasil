@@ -277,9 +277,15 @@ public class RankingActivity extends AppCompatActivity implements RankingActivit
         spCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                Log.d("RankingActivity", "onItemSelected: LastSelected: " + lastSettedOption + " | View: " + ((TextView)selectedItemView).getText().toString());
-                if(!lastSettedOption.isEmpty()){
-                    if(!((TextView)selectedItemView).getText().toString().contains(lastSettedOption)){
+
+                if(!Utils.checkIfIsNullOrEmpty(lastSettedOption)){
+                    if(selectedItemView == null){
+                        Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
+                        cur.moveToPosition(position);
+                        placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));
+                        spPlaceType.setAdapter(placeTypeCursorAdapter);
+                        sendFilter(-1);
+                    }else if(!((TextView)selectedItemView).getText().toString().contains(lastSettedOption)){
                         Cursor cur = (Cursor) categoryCursorAdapter.getItem(position);
                         cur.moveToPosition(position);
                         placeTypeCursorAdapter = new PlaceTypeCursorAdapter(RankingActivity.this, getContentResolver().query(AvBContract.PlaceTypeEntry.buildPlaceTypeUri(cur.getString(cur.getColumnIndex(AvBContract.PlaceCategoryEntry.CATEGORY_ID))), null, null, null, null));

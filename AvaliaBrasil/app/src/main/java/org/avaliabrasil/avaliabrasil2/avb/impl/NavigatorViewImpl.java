@@ -76,7 +76,7 @@ public class NavigatorViewImpl implements NavigationView.OnNavigationItemSelecte
             case R.id.btnLogout:
 
                 progress = ProgressDialog.show(activity, activity.getResources().getString(R.string.progress_dialog_title),
-                        activity.getResources().getString(R.string.progress_dialog_message), true);
+                        activity.getResources().getString(R.string.progress_dialog_message), false);
 
                 progress.show();
 
@@ -87,6 +87,7 @@ public class NavigatorViewImpl implements NavigationView.OnNavigationItemSelecte
                 if (AccessToken.getCurrentAccessToken() != null) {
                     LoginManager.getInstance().logOut();
                 }
+
                 for (Account c : manager.getAccountsByType(Constant.ACCOUNT_TYPE)) {
                     manager.removeAccount(c, null, null);
                 }
@@ -96,7 +97,6 @@ public class NavigatorViewImpl implements NavigationView.OnNavigationItemSelecte
 
                 Utils.removeProfilePhoto(activity);
 
-                progress.dismiss();
 
                 manager.addAccount(Constant.ACCOUNT_TYPE, Constant.ACCOUNT_TOKEN_TYPE_USER, null, null,activity, new AccountManagerCallback<Bundle>() {
                     @Override
@@ -114,6 +114,7 @@ public class NavigatorViewImpl implements NavigationView.OnNavigationItemSelecte
                     }
                 }, null);
 
+                progress.dismiss();
 
                 break;
             case R.id.btnHelp:
