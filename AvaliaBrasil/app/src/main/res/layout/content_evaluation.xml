@@ -5,72 +5,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".avb.EvaluationActivity"
-    tools:showIn="@layout/activity_evaluation">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:id="@+id/question"
-        android:text="1. As instalações internas e externas da Instituições são visualmente atrativas."
-        style="@style/DefaultText"
-
-        />
+    tools:context=".avb.activity.EvaluationActivity">
 
     <RadioGroup
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="left"
-        android:layout_weight="5"
         android:id="@+id/options">
 
         <RadioButton
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Concordo Totalmente"
-            android:id="@+id/option1"
-            />
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Concordo"
-            android:id="@+id/option2"
-            />
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Neutro"
-            android:id="@+id/option3"
-            />
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Discordo"
-            android:id="@+id/option4"
-            />
-        <RadioButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Discordo Totalmente"
-            android:id="@+id/option5"
-            />
-</RadioGroup>
+            android:text="@string/likert_fully_agree"
+            android:id="@+id/option1" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:text="Próxima Pergunta (2/17) "
-        android:layout_weight="1"
-        android:id="@+id/submit_answer"
-        style="@style/MainActionButton"/>
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/likert_agree"
+            android:id="@+id/option2" />
 
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/likert_neutral"
+            android:id="@+id/option3" />
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/likert_disagree"
+            android:id="@+id/option4" />
+
+        <RadioButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/likert_fully_disagree"
+            android:id="@+id/option5" />
+    </RadioGroup>
 </LinearLayout>

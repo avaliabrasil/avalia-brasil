@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="login_with_facebook">Faça login com o facebook</string>
+    <string name="anonymous_login"><u>Ou Entre sem se Identificar</u></string>
+
+    <string name="navigation_drawer_open">Abrir Painel Lateral</string>
+    <string name="navigation_drawer_close">Fechar painel lateral</string>
+
+    <string name="places_list">Lista</string>
+    <string name="places_map">Mapa</string>
+    <string name="title_activity_place"></string>
+    <string name="action_settings">Configurações</string>
+    <string name="help_text">
+"Obrigado por utilizar o Avalia Brasil! Veja a seguir respostas à algumas perguntas importantes.\n\n"
+
+"Para que serve o Avalia Brasil?\n"
+"O Avalia Brasil foi criado para que usuários de serviços públicos possam dar feedback aos administradores públicos de maneira transparente e estruturada."
+"O objetivo é que os cidadãos tenham uma maneira adequada de expressar sua percepção sobre a qualidade do serviço, e os administradores públicos tem mais informações para cumprir seu papel, melhorando a qualidade do serviço público.\n\n"
+
+"Como surgiu esta iniciativa?\n"
+"O projeto do app Avalia Brasil foi submetido e selecionado no InovApps 2015, um concurso do Ministério da Ciência, Tecnologia, Inovações e Comunicações do Governo Federal, que visou promover o desenvolvimento de apps de interesse público.\n\n"
+
+"Como o índice de Qualidade é Calculado?\n"
+"Cada resposta às perguntas objetivas do Avalia Brasil é levada em consideração para o calculo do índice de qualidade, que vai de 0 a 100."
+"Para o calculo do índice, o app leva em consideração as respostas dos últimos 60 dias aos estabelecimento, e sempre é re-calculado à medida que novas respostas são enviadas pelo app. Utilizamos a escala SERVPERF como referência.\n\n"
+
+"Não acho um estabelecimento. O que faço?\n"
+"O Avalia Brasil utiliza a API do Google Maps para mostrar locais próximos a você."
+"Se o estabelecimento que você está tentando procurar não aparece, é possível que ele não esteja cadastrado no Google com o nome que você está procurando."
+"Tente realizar sua busca de manerias diferentes. Também é possível que o local não esteja cadastrado no Google Maps. Neste caso, você deve tentar cadastrá-lo com o App do Google Maps, e em alguns dias o local deve aparecer no Avalia Brasil.\n\n"
+
+"Vejo no App estabelecimentos que não prestam serviço público. Porque isso acontece?\n"
+"O Google Maps não nos diz que Apps são ou não estabelecimentos de serviço público. Usamos um filtro para procurar lugares com mais chances de serem estabelecimentos públicos (ex.: estabelecimentos de saúde, educação), mas mesmo assim isto não garante que apenas apareçam estabelecimentos públicos.\n\n"
+    </string>
+    <string name="title_activity_evaluation">Avaliação</string>
+    <string name="title_activity_place_statistics">Estatísticas</string>
+    <string name="title_activity_ranking">Ranking</string>
+    <string name="title_activity_new_place">Novo local</string>
+    <string name="title_activity_temp_search">TempSearchActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="evaluate_place">Avaliar Local</string>
+    <string name="see_statistics">Ver estatísicas</string>
+    <string name="quality_index_label">Índice de qualidade</string>
+    <string name="state_ranking_position_label">Posição no ranking estadual</string>
+    <string name="temp_place_name">UPA Zona Norte</string>
+    <string name="temp_place_adress">Praça Ernest Herman</string>
+    <string name="temp_place_phone">(51) 3212 2015</string>
+    <string name="temp_place_mail">email@site.com.br</string>
+    <string name="temp_place_open_hours">Aberto hoje 08:00 às 21:00</string>
+    <string name="submit_answer">Responder</string>
+    <string name="local">Local</string>
+    <string name="category">Categoria: </string>
+    <string name="place_type">Tipo de Local: </string>
+    <string name="search_places">Pesquisar</string>
+    <string name="search_hint">Procurar por local</string>
+
+
+    <!-- General Dialogs -->
+    <string name="location_access_needed">É necessário o privilégio de acesso à sua localização para o correto funcionamento do app.</string>
+    <string name="internet_connection_error">Não foi possível conectar-se, verifique sua internet.</string>
+    <string name="location_error">Não foi possível localiza-lo, verifique se o GPS está ligado.</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+    <string name="progress_dialog_title">Aguarde....</string>
+    <string name="progress_dialog_message">Buscando informações no servidor</string>
+    <string name="anwser_dialog_title">Enviando dados</string>
+    <string name="anwser_dialog_message">Encaminhando suas respostas ao servidor.</string>
+
+    <!-- LoginActivity -->
+    <string name="user_already_logged">Um usuário já está logado!</string>
+
+    <!-- MainActivity -->
+    <string name="fetching_provider_location">Buscando novo local!</string>
+    <string name="evaluation_not_completed">Há um questionário pendente, deseja finalizá-lo?</string>
+    <string name="evaluation_not_completed_error">Erro ao buscar avaliação</string>
+
+    <!-- PlaceActivity -->
+    <string name="isOpen">Abre ás</string>
+    <string name="isClose">Fecha ás</string>
+
+    <!-- EvaluationActivity -->
+    <string name="new_place_dialog">Você é o primeiro a avaliar este local, por favor nos dê algumas informações adicionais.</string>
+    <string name="question_not_anwsered">Você não respondeu a questão!</string>
+    <string name="submit_button_text">Enviar</string>
+
+    <!-- ShareEvaluateFragment -->
+    <string name="evaluate_shared">Avaliação compartilhada!</string>
+    <string name="evaluate_shared_error">Ocorreu um erro ao compartilhar</string>
+
+    <!-- activity_main_drawer.xml -->
+    <string name="drawer_place_search">Busca de Instituições</string>
+    <string name="drawer_classification">Classificação</string>
+    <string name="drawer_logout">Sair</string>
+    <string name="drawer_help">Ajuda</string>
+    <string name="drawer_terms_of_use">Termos de Uso</string>
+
+    <!-- content_evaluation.xml -->
+    <string name="likert_fully_agree">Concordo Totalmente</string>
+    <string name="likert_agree">Concordo</string>
+    <string name="likert_neutral">Neutro</string>
+    <string name="likert_disagree">Discordo</string>
+    <string name="likert_fully_disagree">Discordo Totalmente</string>
+
+    <!-- content_ranking.xml -->
+    <string name="general_classification">Classificação Geral</string>
+     
+    <!--fragment_share_evaluate.xml -->
+    <string name="share_text_1">
+        "Sua ajuda é fundamental para que possamos aprimorar a prestação de serviços públicos no Brasil!\n\n"
+        "Incentive seus amigos a usar o Avalia Brasil compartilhando um link na sua timeline! Quanto mais pessoas usarem o aplicativo, mais informações teremos disponíveis!"</string>
+    <string name="share_button_text">Compartilhar esta avaliação</string>
+    <string name="skip_share">Pular essa etapa</string>
+    <string name="evaluation_thanks">Obrigado pela participação!</string>
+
+    <!-- content_place_statistics.xml -->
+    <string name="statistics_place">Local</string>
+    <string name="statistics_category">Categoria</string>
+    <string name="statistics_institute_type">Tipo de Instituição</string>
+    <string name="statistics_quality_indice">Índice de Qualidade</string>
+    <string name="statistics_last_week_evaluations">Avaliações na ultima semana:</string>
+
+
+</resources>

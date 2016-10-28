@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".avb.PlaceStatisticsActivity"
+    tools:context=".avb.activity.PlaceStatisticsActivity"
     tools:showIn="@layout/activity_place_statistics">
 
     <android.support.v4.widget.NestedScrollView
@@ -17,69 +17,151 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/local"
-                style="@style/DefaultText"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Porto Alegre, RS"
-                android:id="@+id/local"
-                android:layout_marginLeft="8dp"
-                style="@style/DefaultText"/>
-        </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
 
-            <LinearLayout
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/statistics_place"
+                    android:layout_alignParentLeft="true"
+                    android:textColor="@android:color/holo_blue_dark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/tvPlace" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/statistics_category"
+                    android:layout_alignParentLeft="true"
+                    android:textColor="@android:color/holo_blue_dark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/tvCategory" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/statistics_institute_type"
+                    android:layout_alignParentLeft="true"
+                    android:textColor="@android:color/holo_blue_dark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/tvPlaceType" />
+            </RelativeLayout>
+
+
+            <include layout="@layout/divider"></include>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/statistics_quality_indice"
+                    android:layout_alignParentLeft="true" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/tvQualityIndice" />
+            </RelativeLayout>
+
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="match_parent"
+                android:layout_height="200dip"
+                android:padding="20dp"
+                android:id="@+id/graph"
+                app:seriesColor="@color/colorPrimary" />
+
+            <include layout="@layout/divider"></include>
+
+            <org.avaliabrasil.avaliabrasil2.avb.view.RankingView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/category"
-                    style="@style/DefaultText"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Saúde"
-                    android:id="@+id/category"
-                    android:layout_marginLeft="8dp"
-                    style="@style/DefaultText"/>
-            </LinearLayout>
+                android:id="@+id/rvNacional"></org.avaliabrasil.avaliabrasil2.avb.view.RankingView>
 
-            <LinearLayout
+            <org.avaliabrasil.avaliabrasil2.avb.view.RankingView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/place_type"
-                    style="@style/DefaultText"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Unidade de Pronto Atendimento"
-                    android:id="@+id/place_type"
-                    android:layout_marginLeft="8dp"
-                    style="@style/DefaultText"/>
-            </LinearLayout>
+                android:id="@+id/rvRegional"></org.avaliabrasil.avaliabrasil2.avb.view.RankingView>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/large_text"/>
+            <org.avaliabrasil.avaliabrasil2.avb.view.RankingView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rvEstadual"></org.avaliabrasil.avaliabrasil2.avb.view.RankingView>
+
+            <org.avaliabrasil.avaliabrasil2.avb.view.RankingView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rvMunicipal"></org.avaliabrasil.avaliabrasil2.avb.view.RankingView>
+
+            <include layout="@layout/divider"></include>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/statistics_last_week_evaluations"
+                    android:layout_alignParentLeft="true"
+                    android:id="@+id/textView" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/tvNumberOfAvaliation" />
+            </RelativeLayout>
+
+            <include layout="@layout/divider"></include>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rvComments"></android.support.v7.widget.RecyclerView>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
+
 </RelativeLayout>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cityName">Cidade:</string>
+    <string name="stateLatter">Estado:</string>
+    <string name="gps_off">GPS está desativado em seu dispositivo.</string>
+    <string name="no_statistics_error">Não há estatísticas a serem mostradas deste local.</string>
+</resources>

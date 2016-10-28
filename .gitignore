@@ -1,6 +1,6 @@
 .DS_Store
 Thumbs.db
 AvaliaBrasil/.idea/
-rk.jks
+*.apk
 AvaliaBrasil/projectFilesBackup/
-AvaliaBrasil/app/app-release.apk
+rk.jks

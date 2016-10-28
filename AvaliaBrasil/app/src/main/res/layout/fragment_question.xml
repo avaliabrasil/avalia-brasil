@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="O Estabelecimento não tem os horários de funcionamento adequado às necessidades dos clientes. "
+        android:id="@+id/tvQuestion"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:padding="4dp"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        style="@style/DefaultText"
+        android:layout_gravity="center_horizontal" />
+
+</RelativeLayout>

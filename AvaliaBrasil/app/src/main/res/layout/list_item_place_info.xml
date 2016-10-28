@@ -1,65 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="?android:attr/listPreferredItemHeight"
-    >
+    android:minHeight="?android:attr/listPreferredItemHeight">
 
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.2">
+
         <ImageView
             android:id="@+id/place_icon"
-            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_location_on_24dp"/>
+            android:layout_gravity="center"
+            android:src="@drawable/ic_location_on_24dp" />
     </FrameLayout>
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="0dp"
-        android:layout_weight="1"
         android:layout_height="match_parent"
-        android:orientation="vertical"
         android:layout_gravity="center_vertical"
         android:layout_margin="8dp"
-        >
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:gravity="center_vertical"
-        android:text="Place Name"
-        android:textColor="@color/blackText"
-        android:id="@+id/place_name_text_view"
-        android:layout_weight="2"/>
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <TextView
+            android:id="@+id/place_name_text_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_weight="2"
+            android:ellipsize="end"
             android:gravity="center_vertical"
-            android:text="Place Adress"
+            android:maxLength="50"
+            android:textColor="@color/blackText" />
+
+        <TextView
+            android:id="@+id/place_address_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:id="@+id/place_address_text_view" />
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:maxLines="1" />
     </LinearLayout>
 
     <FrameLayout
-    android:layout_width="0dp"
-    android:layout_height="match_parent"
-    android:layout_weight="0.3">
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="120m"
-        android:id="@+id/place_distance_text_view"
-        android:layout_gravity="center"
-        />
+        <TextView
+            android:id="@+id/place_distance_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
     </FrameLayout>
 
 </LinearLayout>
