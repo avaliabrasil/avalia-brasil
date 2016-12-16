@@ -2,6 +2,7 @@
 <resources>
     <string name="cityName">City:</string>
     <string name="stateLatter">State:</string>
-    <string name="gps_off">GPS its disabled.</string>
+    <string name="gps_off">We need to know your location to search for places near to you. Please turn on your GPS and internet!</string>
+    <string name="gps_off_message">Looks like your GPS is disabled. Please turn it on, so we can find places near to you!</string>
     <string name="no_statistics_error">There is no statistics over this place to be showed</string>
 </resources>

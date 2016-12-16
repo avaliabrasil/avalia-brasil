@@ -9,6 +9,6 @@
         android:id="@+id/tvEmpty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/internet_connection_error"
+        android:text="@string/empty_places"
         android:gravity="center" />
 </LinearLayout>

@@ -32,7 +32,7 @@ public abstract class Utils {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
         alertDialogBuilder
                 .setMessage(
-                        context.getString(R.string.gps_off))
+                        context.getString(R.string.gps_off_message))
                 .setCancelable(false)
                 .setPositiveButton("Configurações de ativação do GPS",
                         new DialogInterface.OnClickListener() {
@@ -61,7 +61,8 @@ public abstract class Utils {
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnected();
+        boolean isConnected = networkInfo != null && networkInfo.isConnected();
+        return isConnected;
     }
 
     /**

@@ -42,7 +42,7 @@
 
     <!-- General Dialogs -->
     <string name="location_access_needed">This application need the access location to work property</string>
-    <string name="internet_connection_error">Could not login,verify your internet</string>
+    <string name="internet_connection_error">There is something wrong with your internet connection. Please fix it, so we can continue.</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="progress_dialog_title">Fetching Data</string>
@@ -50,7 +50,7 @@
     <string name="location_error">Couldnt location you, check if GPS is on.</string>
 
     <string name="anwser_dialog_title">Sending Data</string>
-    <string name="anwser_dialog_message">Sending to server your anwsers...</string>
+    <string name="anwser_dialog_message">Sending your answers to our server</string>
 
 
     <string name="help_text">
@@ -83,6 +83,7 @@
     <string name="fetching_provider_location">Fetching location!</string>
     <string name="evaluation_not_completed">Evaluation not completed, want to return?</string>
     <string name="evaluation_not_completed_error">Error while retrieving the evaluation</string>
+    <string name="empty_places">Loading places near to you. If it takes too long, check your internet and your GPS.</string>
 
     <!-- PlaceActivity -->
     <string name="isOpen">Open</string>

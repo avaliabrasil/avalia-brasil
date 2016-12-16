@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="gps_off">GPS está desativado em seu dispositivo.</string>
+    <string name="gps_off">Precisamos saber sua localização para procurar por estabelecimentos próximos a você. Por isso, mantenha seu GPS e internet ligados!</string>
+    <string name="gps_off_message">Parece que seu GPS está desativado. Por favor ligue o mesmo para que seja possível encontrar estabelecimentos próximos a você!</string>
 </resources>

@@ -67,6 +67,11 @@ public class PlacesListFragment extends Fragment implements Observer {
         mPlacesListAdapter = new PlacesListAdapter(getContext(), null, 0, ((AvaliaBrasilApplication)getActivity().getApplication()).getLocation());
 
         LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        /** Aqui abaixo
+         *
+         * if (Utils.isGPSAvailable(getContext())) {
+         *
+         * **/
         if (Utils.isGPSAvailable(getContext())) {
             tvEmpty.setText(getContext().getString(R.string.gps_off));
         }else if(!Utils.isNetworkAvailable(getContext())){
