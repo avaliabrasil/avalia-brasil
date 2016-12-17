@@ -26,6 +26,9 @@ import org.avaliabrasil.avaliabrasil2.avb.javabeans.place.placedetail.PlaceDetai
 import org.avaliabrasil.avaliabrasil2.avb.javabeans.place.search.PlaceSearch;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+import static com.facebook.GraphRequest.TAG;
 
 /**
  * @author <a href="https://github.com/Klauswk/">Klaus Klein</a>
@@ -162,7 +165,7 @@ public class GooglePlacesAPIClient {
                 "zoo");
 
         target.append("&name=");
-        target.append(name.trim());
+        target.append(name);
 
         target.append("&key=");
         target.append(key);
@@ -231,6 +234,9 @@ public class GooglePlacesAPIClient {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+
+                        Log.d("GooglePlacesAPI", response);
+
                         Gson gson = new Gson();
                         PlaceSearch placeSearch = gson.fromJson(response, PlaceSearch.class);
 
@@ -259,7 +265,12 @@ public class GooglePlacesAPIClient {
 
                         Bundle bundle = new Bundle();
                         //TODO melhorar
-                        bundle.putString("query", "%" + name + "%");
+                        Log.d("GooglePlacesAPI", "onResponse: " + name);
+                        try {
+                            bundle.putString("query", "%" + URLDecoder.decode(name,"UTF-8") + "%");
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
                         activity.getSupportLoaderManager().restartLoader(0, bundle, loader);
 
                     }

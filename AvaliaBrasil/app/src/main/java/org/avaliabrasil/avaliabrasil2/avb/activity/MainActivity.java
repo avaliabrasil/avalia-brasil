@@ -94,6 +94,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -188,7 +189,11 @@ public class MainActivity extends AppCompatActivity implements
                     imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                 }
                 if(query != null){
-                   query = query.replaceAll(" ", "%20");
+                    try {
+                        query = URLEncoder.encode(query,"UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                 }
                 GooglePlacesAPIClient.getPlacesByName(MainActivity.this, MainActivity.this, avaliaBrasilApplication.getLocation(), query);
 
