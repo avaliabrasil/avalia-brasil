@@ -187,6 +187,9 @@ public class MainActivity extends AppCompatActivity implements
                     InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                 }
+                if(query != null){
+                   query = query.replaceAll(" ", "%20");
+                }
                 GooglePlacesAPIClient.getPlacesByName(MainActivity.this, MainActivity.this, avaliaBrasilApplication.getLocation(), query);
 
                 return true;
