@@ -51,7 +51,6 @@ public class PlacesListFragment extends Fragment implements Observer {
 
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -136,6 +135,10 @@ public class PlacesListFragment extends Fragment implements Observer {
     @Override
     public synchronized void update(Cursor cursor) {
         Log.d("PlacesListFragment", "updating list fragment");
+        /** Pedro: Issue #59: Se não há resultados, dizer para o usuário de modo apropriado **/
+        if (!(cursor.getCount() > 0)) {
+            tvEmpty.setText(getContext().getString(R.string.no_places_found));
+        }
         mPlacesListAdapter.swapCursor(cursor);
     }
 }

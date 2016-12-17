@@ -72,6 +72,7 @@
     <string name="evaluation_not_completed">Evaluation not completed, want to return?</string>
     <string name="evaluation_not_completed_error">Error while retrieving the evaluation</string>
     <string name="empty_places">Loading places near to you. If it takes too long, check your internet and your GPS.</string>
+    <string name="no_places_found">We couldn\'t find places with this name. Try to search for another name.</string>
 
 
     <!-- EvaluationActivity -->
